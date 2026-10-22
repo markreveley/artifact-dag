@@ -62,13 +62,33 @@ graph loads.
 | Project files (the Library) | `dag/`: the node files and `_bundle.json`. The source of truth | Claude threads; people through the app |
 | claude.ai artifact | `viewer.html`, one page per project | Claude, by publishing |
 
-**The page.** The viewer is a single HTML file (no server code) that
-claude.ai hosts as an artifact and shows in a sandboxed frame. Nothing deploys
-it automatically. A Claude thread runs `bin/build-viewer.js`, which inlines
-`src/` into `viewer/template.html` with the project's id, and publishes the
-result to the artifact's existing URL. The page runs only while it is open;
-its state (the parsed graph, the selection) lives in that tab's memory and is
-gone when the tab or panel closes. Every open loads from scratch.
+**The page.** The viewer is a single HTML file with no server code. claude.ai
+hosts it as an artifact at `claude.ai/artifact/<id>` and shows it in a
+sandboxed iframe embedded in the claude.ai page you are using (the chat or
+project view is the host). The frame runs JavaScript, which does all the
+work: listing, reading, parsing and drawing. It runs on its own origin, so it
+cannot reach claude.ai's page, your cookies or other artifacts.
+
+Nothing deploys it automatically. A Claude thread runs `bin/build-viewer.js`,
+which inlines `src/` into `viewer/template.html` with the project's id, and
+uploads the result with its artifact publish tool to the artifact's existing
+URL; each publish adds a version. The publish also declares what the page may
+use, here the `files` capability for one project. The artifact is private to
+its owner until they share it.
+
+Limits on what the page can be:
+
+- At most 16 MB, with no server-side code.
+- Scripts only from approved CDNs (cdnjs, jsDelivr, unpkg and a few others;
+  dagre comes from cdnjs), stylesheets only from Google Fonts, everything
+  else inline.
+- Anything beyond static behavior goes through capabilities claude.ai offers
+  and the publish declares: project files, a shared database, asking Claude,
+  and others.
+
+The page runs only while it is open; its state (the parsed graph, the
+selection) lives in that tab's memory and is gone when the tab or panel
+closes. Every open loads from scratch.
 
 **Reading files.** The page cannot reach the files directly. claude.ai
 injects `window.claude` into the frame, and `claude.use("files")` returns two
@@ -80,10 +100,13 @@ storage:
   without contents. One call (one per 500 files).
 - `read(path)` returns one file's bytes.
 
-claude.ai limits how fast one page may call. A burst gets some calls back as
-`rate_limited` with a wait time instead of the file, and the page waits and
-retries them. One `read` per node therefore takes minutes for a few hundred
-nodes.
+These calls are the only way in: the page runs in your browser, which has no
+direct route to project storage. claude.ai's files service limits how fast
+one page may call (the limits are not published). A burst gets some calls
+back as `rate_limited` with a wait time instead of the file, and the page
+waits and retries them. The viewer sends at most four reads at a time; that
+is its own choice, to avoid tripping the limit, not a limit of the host. One
+`read` per node therefore takes minutes for a few hundred nodes.
 
 **The bundle.** `bin/bundle.js dag/` writes `dag/_bundle.json`: for each
 `.md` file, its path, its byte size at bundle time, and its text. A load is:
@@ -100,6 +123,13 @@ an edit that leaves a file's byte size exactly the same: the sizes match and
 the old text shows. `list` gives no hash or edit time to check instead, so
 rebuild the bundle after every change to `dag/` (the `dag` skill does). With
 no bundle, the page reads every file as before.
+
+**Storage the page could use instead.** If the publish declares it, an
+artifact gets a small document database kept by claude.ai: collections of
+JSON documents the page can get, list, query, set, update and delete. Every
+viewer of the artifact sees the same data, and a Claude thread can read and
+write it too. Separately, the browser's own storage (`localStorage`) keeps
+data per viewer on one device. The viewer uses neither.
 
 The bundle is a file in the project's files, not the artifact's own database,
 so it carries the same permission as the nodes: someone the artifact is
