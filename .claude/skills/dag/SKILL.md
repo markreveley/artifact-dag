@@ -43,6 +43,20 @@ node <repo>/bin/dagcheck.js /mnt/project-files/dag/ --json   # graph JSON
 
 Exit code 1 means at least one error. External links are `info`.
 
+## Bundle
+
+After every change under `dag/`, rebuild the bundle the viewer loads from:
+
+```sh
+node <repo>/bin/bundle.js /mnt/project-files/dag/
+```
+
+It writes `dag/_bundle.json` (every `.md` file's path, byte size and text).
+The viewer uses an entry only while the file's listed size matches, and reads
+other files one by one, so a stale bundle only slows loading. An edit that
+keeps a file's exact size would show the old text until the next rebuild.
+If the project mirrors `dag/` in a repo, copy `_bundle.json` there too.
+
 ## Commands (from docs/USAGE.md)
 
 | user says                     | do                                                                                  |

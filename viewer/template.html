@@ -225,26 +225,44 @@ async function loadFromProject() {
     }
   };
   try {
-    const out = [];
+    const listed = [];
     let cursor;
     do {
       const page = await call(() => files.list({ path: CONFIG.root, recursive: true, cursor }));
-      for (const e of page.entries) if (!e.isDirectory && /\.md$/i.test(e.path)) out.push(e.path);
+      for (const e of page.entries) if (!e.isDirectory && /\.md$/i.test(e.path)) listed.push(e);
       cursor = page.cursor;
     } while (cursor);
     const dec = new TextDecoder();
-    const texts = new Array(out.length);
+    // `_bundle.json` (written by `bin/bundle.js`) holds every file's text in
+    // one read. Use an entry while its file is listed with the same size;
+    // read the rest one by one. No bundle just means reading them all.
+    const bundled = new Map();
+    try {
+      const r = await call(() => files.read(`${CONFIG.root}/_bundle.json`));
+      for (const f of JSON.parse(dec.decode(r.bytes)).files || []) bundled.set(f.path, f);
+    } catch (err) {
+      if (err?.code === "not_granted") throw err;
+    }
+    const rel = (p) => (p.startsWith(CONFIG.root + "/") ? p.slice(CONFIG.root.length + 1) : p);
+    const texts = [];
+    const todo = [];
+    for (const e of listed) {
+      const b = bundled.get(rel(e.path));
+      if (b && b.size === e.size) texts.push({ path: e.path, text: b.text });
+      else todo.push(e.path);
+    }
     let done = 0, next = 0;
     const readOne = async (i) => {
-      const r = await call(() => files.read(out[i]));
-      texts[i] = { path: out[i], text: dec.decode(r.bytes) };
-      $("counts").textContent = `reading ${++done} of ${out.length}`;
+      const r = await call(() => files.read(todo[i]));
+      texts.push({ path: todo[i], text: dec.decode(r.bytes) });
+      $("counts").textContent = `reading ${++done} of ${todo.length}`;
     };
     // The first read alone (it may wait on a permission prompt), then a few
     // at a time; bursts beyond that come back rate_limited and are retried.
-    if (out.length) await readOne(next++);
-    const worker = async () => { while (next < out.length) await readOne(next++); };
+    if (todo.length && !bundled.size) await readOne(next++);
+    const worker = async () => { while (next < todo.length) await readOne(next++); };
     await Promise.all([worker(), worker(), worker(), worker()]);
+    texts.sort((a, b) => a.path.localeCompare(b.path));
     return { files: texts, reason: "" };
   } catch (err) {
     const code = err?.code || "unavailable";
