@@ -202,24 +202,34 @@ const $ = (id) => document.getElementById(id);
 async function loadFromProject() {
   const files = await window.claude?.use?.("files");
   if (!files) return { files: null, reason: "Project files aren't available in this view, so this is the built-in example collection." };
+  // One call at a time. The capability answers `rate_limited` to bursts and
+  // while its permission prompt is open, so wait and retry those quietly.
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const call = async (fn) => {
+    for (let attempt = 0; ; attempt++) {
+      try { return await fn(); }
+      catch (err) {
+        const code = err?.code;
+        if (code === "rate_limited" && attempt < 8) { await sleep(err.retryAfterMs || 1500); continue; }
+        if (code === "changed" && attempt < 2) { await sleep(500); continue; }
+        throw err;
+      }
+    }
+  };
   try {
     const out = [];
     let cursor;
     do {
-      const page = await files.list({ path: CONFIG.root, recursive: true, cursor });
+      const page = await call(() => files.list({ path: CONFIG.root, recursive: true, cursor }));
       for (const e of page.entries) if (!e.isDirectory && /\.md$/i.test(e.path)) out.push(e.path);
       cursor = page.cursor;
     } while (cursor);
     const dec = new TextDecoder();
     const texts = [];
-    // a few at a time: the capability rate-limits bursts
-    for (let i = 0; i < out.length; i += 4) {
-      const chunk = out.slice(i, i + 4);
-      const reads = await Promise.all(chunk.map(async (path) => {
-        try { const r = await files.read(path); return { path, text: dec.decode(r.bytes) }; }
-        catch (err) { if (err?.code === "changed") { const r = await files.read(path); return { path, text: dec.decode(r.bytes) }; } throw err; }
-      }));
-      texts.push(...reads);
+    for (const path of out) {
+      const r = await call(() => files.read(path));
+      texts.push({ path, text: dec.decode(r.bytes) });
+      $("counts").textContent = `reading ${texts.length} of ${out.length}`;
     }
     return { files: texts, reason: "" };
   } catch (err) {
@@ -227,7 +237,7 @@ async function loadFromProject() {
     const why = {
       not_found: `No "${CONFIG.root}/" folder was found in this project's files, or you can't open them. Showing the built-in example instead.`,
       not_granted: "Access to the project's files was declined, so this is the built-in example collection.",
-      rate_limited: "The project's files are busy. Try Reload in a moment. Showing the built-in example meanwhile.",
+      rate_limited: "The project's files kept answering \"busy\" after several tries. Press Reload. Showing the built-in example meanwhile.",
     }[code] || "The project's files couldn't be read right now. Try Reload. Showing the built-in example meanwhile.";
     return { files: null, reason: why };
   }
