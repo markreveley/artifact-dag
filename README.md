@@ -137,6 +137,33 @@ shared with but who cannot open the project's files sees only the built-in
 example. If the files can't be read (viewer outside the project, access
 declined, no `dag/` folder) a banner says so and the example stays.
 
+**What we learned about the platform.** Details and the type definitions
+are in [docs/platform/](docs/platform/README.md).
+
+- *An artifact belongs to its author, not to a project.* A project's files
+  are something the artifact is granted at publish, and only a member of
+  that project can publish the grant.
+- *One project per artifact.* The `files` grant names exactly one project,
+  and the page's `list`/`read` calls take no project argument. Declaring two
+  projects is rejected at publish (tested 2026-10-22). So no single page can
+  read several projects' Libraries, and a cross-project view has to get the
+  other projects' nodes some other way (see Federation).
+- *The page lives only while it is open.* In the projects view the artifact
+  opens as a modal iframe; closing it ends the page, and opening another
+  project's viewer starts a fresh page. That is fine for one viewer per
+  project, because every open loads from scratch in two calls.
+- *Busy answers.* The files service answers `rate_limited` to bursts and
+  while its permission prompt is open. The page waits the given time and
+  retries rather than giving up.
+- *The database is reachable from any project.* A Claude thread reads and
+  writes an artifact's database by the artifact's URL, acting as the person,
+  when that person can edit the artifact. Which project the thread runs in
+  does not matter. A page itself can write only its own database.
+- *Database limits.* Documents are JSON objects at slash-separated paths, at
+  most 256 KiB each, with a total size cap the docs don't state. By default
+  everyone the artifact is shared with can read shared data and only the
+  owner and editors write; access rules declared at publish can narrow both.
+
 **Where Claude works.** A Claude thread runs in a cloud container with clones
 of the attached repos. The project's files are mounted there at
 `/mnt/project-files/` (`/mnt` is the Unix convention for mounted
