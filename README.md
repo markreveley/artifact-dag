@@ -8,6 +8,11 @@ This repo holds the generic pieces. Each project that wants a graph attaches
 the repo, keeps its nodes under `dag/` in its project files, and publishes its
 own instance of the viewer.
 
+**Start with [docs/USAGE.md](docs/USAGE.md)**: how the DAG looks and works
+from inside a Claude project, how nodes get added without a terminal or a
+file editor, and the `dag …` commands Claude understands there. The rest of
+this file is for someone working on the code.
+
 ## Pieces
 
 | path               | what                                                        |
@@ -19,6 +24,8 @@ own instance of the viewer.
 | `examples/dag/`    | an example collection (epistemics) to copy into a project   |
 | `viewer/template.html` | the viewer page, with placeholders for the parser and config |
 | `bin/build-viewer.js` | stamps one project's id into the template, inlining `src/` |
+| `docs/USAGE.md`    | the user guide, written for the Claude project view          |
+| `.claude/skills/dag/` | what Claude does with `dag …` requests in a project that has this repo |
 
 ## Use
 

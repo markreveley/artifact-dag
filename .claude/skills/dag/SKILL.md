@@ -1,0 +1,71 @@
+---
+name: dag
+description: Maintain a project's DAG of definition and claim nodes (Markdown files under dag/ in the project's files) and its viewer artifact. Use when the user says "dag ..." or asks to add, edit, link, check, list or publish definitions, claims or the graph viewer.
+---
+
+# DAG nodes and viewer
+
+The project keeps a graph of **definitions** and **claims** as Markdown
+files under `dag/` in its project files (`/mnt/project-files/dag/`). A
+viewer artifact reads that folder directly. This repo (`artifact-dag`) holds
+the schema, parser and viewer template. Read `SCHEMA.md` before writing a
+node; `docs/USAGE.md` is the user-facing guide and defines the commands.
+
+## Rules
+
+- Node files are the source of truth. Never keep a parallel copy elsewhere.
+- Ids are global: `def:<slug>` and `claim:<slug>`, lowercase, hyphenated.
+  Reuse an id that exists in another project when it means the same thing.
+- A link to an id not present in this project is fine (an external node).
+- Keep frontmatter flat; the parser handles only the subset in SCHEMA.md.
+- Definitions: `dag/definitions/<slug>.md`. Claims: `dag/claims/<slug>.md`.
+- After any change, run the validator and report errors to the user.
+- Project files are a network mount: write, then re-read about ten seconds
+  later before building on it. Other threads may write too, so read a file
+  immediately before changing it.
+- Project files have no editor in the app, so a request to "edit" a node
+  means you edit the file. Don't suggest converting nodes to Claude Docs.
+
+## Validator
+
+```sh
+node <repo>/bin/dagcheck.js /mnt/project-files/dag/          # report
+node <repo>/bin/dagcheck.js /mnt/project-files/dag/ --json   # graph JSON
+```
+
+Exit code 1 means at least one error. External links are `info`.
+
+## Commands (from docs/USAGE.md)
+
+| user says                     | do                                                                                  |
+|-------------------------------|-------------------------------------------------------------------------------------|
+| `dag check [--json]`          | run the validator; post the report (attach `graph.json` for `--json`)               |
+| `dag list`                    | ids and titles grouped by type, from the validator's JSON                           |
+| `dag show <id>`               | post the file's contents                                                            |
+| `dag add def <term>`          | write a definition; draft the meta-definition from the request or ask for it         |
+| `dag add claim <statement>`   | write a claim, `subtype: proposition` unless told otherwise; set `subject` if clear  |
+| `dag link A <kind> B`         | add B to A's `<kind>` list (`uses`, `depends_on`, `supports`, `contradicts`, `refines`) |
+| `dag unlink A <kind> B`       | remove it                                                                           |
+| `dag rename <id> <new-id>`    | rename the file and id, and rewrite every reference in `dag/`                       |
+| `dag externals`               | the validator's `external` notes                                                    |
+| `dag publish`                 | see below                                                                           |
+| `dag republish`               | rebuild and publish to the project's existing viewer URL                            |
+
+Plain-language requests that mean one of these get the same treatment.
+
+## Publishing the viewer
+
+1. If `dag/` doesn't exist, offer to copy `examples/dag/definitions` and
+   `examples/dag/claims` into it as a starter, or create it empty.
+2. Build with this project's id (the `chan_...` id of the current project):
+   ```sh
+   node <repo>/bin/build-viewer.js --project chan_XXXX --title "<project name> DAG" > <scratch>/viewer.html
+   ```
+3. Publish `viewer.html` with the Artifact tool, declaring
+   `capabilities: {files: {project: "chan_XXXX"}}` with the same id, and
+   `icon: "graph"`. Keep a copy at `/mnt/project-files/dag-viewer/viewer.html`.
+4. Post the link. Tell the user the page will ask once for permission to
+   read the project's files, and that an outside viewer sees the example.
+
+For `dag republish`, publish to the existing artifact's URL (find it with
+the Artifact tool's list action if this thread didn't publish it).
