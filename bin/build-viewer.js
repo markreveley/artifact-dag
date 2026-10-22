@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 // Build one instance of the viewer for one project.
 //   build-viewer --project chan_... [--root dag] [--title "Name"] > viewer.html
+//   build-viewer --project chan_... --federation --slug dag --name "DAG" [--title ...]
+// --federation adds the bundles other projects pushed to the artifact's
+// database (see bin/push-plan.js); --slug and --name label this project.
 // Inlines src/ into viewer/template.html along with the example collection,
 // which the page shows whenever the project's files can't be read.
 
@@ -16,7 +19,9 @@ if (!project) {
   console.error('usage: build-viewer --project chan_... [--root dag] [--title "Name"]');
   process.exit(2);
 }
-const config = { project, root: opt("root", "dag") };
+const federation = args.includes("--federation");
+const config = { project, root: opt("root", "dag"), federation,
+  slug: opt("slug", "this"), name: opt("name", "This project") };
 const title = opt("title", "Definitions and claims");
 
 // ESM modules become one inline script: drop imports, strip `export`.
