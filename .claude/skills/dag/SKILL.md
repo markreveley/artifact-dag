@@ -100,27 +100,51 @@ project's `dag/` live plus every bundle other projects push into its
 database, joined on ids. One artifact cannot read several projects' files
 (see `docs/platform/README.md`), so this push is how a project joins.
 
-`dag push`, in any project with this repo attached:
+`dag push`, in any project with this repo attached. `<dag>` is
+`/mnt/project-files/dag/` in a project thread, or a local copy of the
+project's `dag/` when the push runs from Claude Code on the user's machine
+(see "When the write is blocked").
 
-1. Pick the slug: the project's name in lowercase with hyphens
-   (`identikey`). Reuse the slug already in the database for this project if
-   there is one (match on `project` in `projects` documents).
-2. Read what's there with the ArtifactData tool on the federation URL:
-   `get` collection `projects`, doc `<slug>` (note its `version`), and `list`
-   collection `projects/<slug>/chunks` (note each chunk's `version`). Both
-   are absent on a first push.
-3. Plan the writes:
+1. Validate: `node <repo>/bin/dagcheck.js <dag>`. Stop and show any
+   problems.
+2. Pick the slug: the project's name in lowercase with hyphens
+   (`identikey`). `list` collection `projects` on the federation URL with
+   the ArtifactData tool. If a document there already has this project's
+   `project` id, reuse its slug. Write only under `projects/<slug>`, and
+   never touch other projects' documents.
+3. Read what's there: `get` collection `projects`, doc `<slug>` (note its
+   `version`), and `list` collection `projects/<slug>/chunks` (note each
+   chunk's `version`). Both are absent on a first push.
+4. Plan the writes:
    ```sh
-   node <repo>/bin/push-plan.js /mnt/project-files/dag/ --slug <slug> \
+   node <repo>/bin/push-plan.js <dag> --slug <slug> \
      --project chan_XXXX --name "<project name>" --out <scratch>/push \
      --versions '{"meta": <v>, "c0": <v>, ...}'
    ```
-   Leave out `--versions` on a first push.
-4. Send each batch it prints, in order, as one ArtifactData `batch` call.
-   The meta document is in the last batch.
-5. Report how many nodes were pushed and link the federation view. A
-   pinned write that fails means someone pushed in between: re-read and
-   re-plan.
+   Leave out `--versions` on a first push. With it, every write to an
+   existing document is pinned to that version (`if_version`), and chunks
+   that the new plan no longer uses get delete writes. The planner prints
+   `files` (node files plus `README.md`), `chunks` and `batches`.
+5. Send each batch, in order, as one ArtifactData `batch` call, with the
+   writes exactly as printed, `file_path` included. The meta document is in
+   the last batch.
+6. If a pinned write fails on a version mismatch, someone pushed in
+   between: go back to step 3 and plan again. Never force it.
+7. Confirm: `get` `projects`/`<slug>` and check that `files` and `chunks`
+   match the plan. Report how many nodes were pushed, link the federation
+   view, and give the versions the next push will need (each write's
+   result shows them).
+
+### When the write is blocked
+
+In a cloud thread in auto mode, the safety check can block the database
+write, because the write publishes the project's nodes to everyone the
+federation view is shared with. Steps 1–4 still work. Hand the push to a
+Claude Code session on the user's machine, where the user approves the
+prompt. That session needs a local `dag/` that matches the project: the
+project's GitHub mirror (for example `identikey-dev`), pulled. Check that
+`dagcheck` gives the same node count there as in the project before
+pushing.
 
 Pushing from the home project is unnecessary; the view reads it live.
 After `dag push` was used once, push again after each batch of node edits.

@@ -131,7 +131,7 @@ that means the same thing, and the graphs can be joined later.
 
 Each project gets its own viewer because an artifact can read the files of
 only one project. Cross-project links still work: they show as external
-nodes until a federation view (planned, step 4) unions the projects.
+nodes until they are pushed to the federation view (below).
 
 ## Seeing several projects together (federation)
 
@@ -142,7 +142,8 @@ that was pushed to it.
 
 - To add a project, or refresh it after edits, say `dag push` in a thread
   of that project. Claude copies the project's nodes into the federation
-  view's database. Nothing changes in the project itself.
+  view's database. Nothing changes in the project itself. How a push works
+  is under "What a push does" below.
 - In the federation view, a node linked from one project and defined in
   another is a real node, not an external one. A **Project** menu narrows
   the graph to one project and whatever it links to elsewhere.
@@ -152,6 +153,44 @@ that was pushed to it.
 - Anyone you share the federation view with can read every pushed project's
   nodes, even without access to those projects. It is private to you until
   you share it.
+
+### What a push does
+
+A push copies one project's node files into the federation view's
+database. It is a snapshot, not a live link.
+
+1. **Check.** Claude validates the nodes, so nothing broken gets copied.
+2. **Look.** Claude reads what the database already holds for this
+   project, under `projects/<slug>`. If nothing is there, it's a first
+   push.
+3. **Pack.** The nodes are packed into **chunk** documents
+   (`projects/<slug>/chunks/c0`, `c1`, …), because one database document
+   holds at most 256 KiB. A small **meta** document, `projects/<slug>`,
+   records the project's name, its file count and which chunks are current.
+4. **Write.** The chunks and the meta document go in a single batch, chunks
+   first and meta last, so the page never sees a meta document that names
+   chunks that aren't there.
+5. **Confirm.** Claude reads the meta document back and checks it against
+   the plan.
+
+**Pushing again.** Every database document has a version number that goes
+up each time the document is written. To overwrite a document, a write has
+to name the version it expects to replace. If someone pushed in the
+meantime, the versions differ and the write fails rather than overwriting
+their copy. So a later push starts by reading the current versions (step
+2) and passes them to the planner. If the project now needs fewer chunks,
+the planner also deletes the leftover ones. If a write fails on a version
+mismatch, Claude reads the versions again and replans. It never forces the
+write. You don't have to track the numbers yourself.
+
+**If the thread can't write.** A thread running in auto mode may have its
+database write blocked by the safety check. The validation and the plan
+still work. Run the push from a Claude Code session on your computer
+instead, where you approve the write yourself: point it at a local copy
+of the project's `dag/` (for example the project's GitHub mirror, pulled)
+and the procedure in the `dag` skill. Check that the local copy matches
+the project first: `dag check` should report the same node count in both
+places.
 
 ## Limits worth knowing
 

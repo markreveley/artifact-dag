@@ -161,6 +161,15 @@ are in [docs/platform/](docs/platform/README.md).
   writes an artifact's database by the artifact's URL, acting as the person,
   when that person can edit the artifact. Which project the thread runs in
   does not matter. A page itself can write only its own database.
+- *Writes are pinned to versions.* Every document carries a version that
+  goes up on each write, and a write to an existing document must name the
+  version it replaces, or it is refused. `push-plan.js --versions` exists
+  for this.
+- *Auto mode can block the push.* A cloud thread in auto mode had its
+  federation write blocked by the safety check (2026-10-22), since the
+  write shares the nodes with the view's audience. The first Identikey push
+  (543 nodes) ran from Claude Code on the owner's machine instead; see
+  the `dag` skill, "When the write is blocked".
 - *Database limits.* Documents are JSON objects at slash-separated paths, at
   most 256 KiB each, with a total size cap the docs don't state. By default
   everyone the artifact is shared with can read shared data and only the
