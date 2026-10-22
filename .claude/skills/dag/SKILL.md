@@ -39,9 +39,19 @@ Documents). Link each claim to the definitions it `uses` and to the claims it
 ```sh
 node <repo>/bin/dagcheck.js /mnt/project-files/dag/          # report
 node <repo>/bin/dagcheck.js /mnt/project-files/dag/ --json   # graph JSON
+node <repo>/bin/dagcheck.js /mnt/project-files/dag/ --lint   # also link findings
+node <repo>/bin/dagcheck.js /mnt/project-files/dag/ --lint --json
 ```
 
 Exit code 1 means at least one error. External links are `info`.
+
+`--lint` runs the Datalog rules in `lint/rules.dl` (and `dag/lint.dl` if the
+collection has one) and lists findings such as a definition named in text
+with no link to it. The linter never edits nodes. For each finding, read the
+node and decide: add the edge (`refines` for a narrower term, a wikilink in a
+definition, `uses` in a claim), or record that the word is meant in another
+sense with `not_links: [def:…]`. Do not add edges from word matches without
+reading them; put the decisions in a PR so they are reviewed as a diff.
 
 ## Bundle
 
@@ -62,6 +72,7 @@ If the project mirrors `dag/` in a repo, copy `_bundle.json` there too.
 | user says                     | do                                                                                  |
 |-------------------------------|-------------------------------------------------------------------------------------|
 | `dag check [--json]`          | run the validator; post the report (attach `graph.json` for `--json`)               |
+| `dag lint [--json]`           | run `dagcheck --lint`; post the counts by code and the warnings for what changed     |
 | `dag list`                    | ids and titles grouped by type, from the validator's JSON                           |
 | `dag show <id>`               | post the file's contents                                                            |
 | `dag add def <term>`          | write a definition; draft the meta-definition from the request or ask for it         |

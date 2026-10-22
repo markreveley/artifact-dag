@@ -2,7 +2,7 @@
 // and nothing more, so it can ship inside the viewer page with no deps.
 
 const LIST_KEYS = new Set([
-  "aliases", "tags", "sources",
+  "aliases", "tags", "sources", "not_links",
   "uses", "depends_on", "supports", "contradicts", "refines",
 ]);
 

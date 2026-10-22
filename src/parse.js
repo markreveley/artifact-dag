@@ -82,6 +82,7 @@ export function parseFile(path, text) {
     order: /^\d+$/.test(fm.order || "") ? Number(fm.order) : null,
     value,
     subdefinitions: subSection ? parseSubdefinitions(subSection) : [],
+    notLinks: fm.not_links || [],
     path,
   };
 
