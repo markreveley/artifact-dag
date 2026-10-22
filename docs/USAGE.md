@@ -17,7 +17,10 @@ A project that uses the DAG has three visible parts:
    can see it, which is how it knows the node format, the commands below, and
    how to publish or rebuild the viewer. You never need to open it.
 
-Nothing is copied or synced. The viewer reads the files every time it loads.
+The viewer reads the files every time it loads. To keep that to a few calls,
+`dag/_bundle.json` holds every node's text in one file; Claude rebuilds it
+after each change. Files changed since the last bundle are read one by one,
+so loading slows down, but stays correct, if the bundle falls behind.
 
 ## Reading the graph
 
@@ -60,7 +63,7 @@ a thread. Any thread in the project will do; Claude reads this repo's
 > sub-definition, and link it to credence.
 
 or the shorter command forms below. Claude writes or changes the file under
-`dag/`, runs the validator, and reports. Press **Reload** in the viewer to see
+`dag/`, runs the validator, rebuilds the bundle, and reports. Press **Reload** in the viewer to see
 it.
 
 Other routes into `dag/`:

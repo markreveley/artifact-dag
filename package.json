@@ -4,10 +4,11 @@
   "description": "A DAG of definitions and claims kept as Markdown files, viewed in a Claude artifact",
   "type": "module",
   "license": "MIT",
-  "bin": { "dagcheck": "bin/dagcheck.js" },
+  "bin": { "dagcheck": "bin/dagcheck.js", "dag-bundle": "bin/bundle.js" },
   "scripts": {
     "test": "node --test test/*.test.js",
     "check": "node bin/dagcheck.js",
-    "build": "node bin/build-viewer.js"
+    "build": "node bin/build-viewer.js",
+    "bundle": "node bin/bundle.js"
   }
 }
