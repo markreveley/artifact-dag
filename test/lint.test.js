@@ -39,6 +39,7 @@ test("matching is whole word, case-insensitive, with simple plurals", () => {
 test("a longer term wins over the shorter term inside it", () => {
   const forms = termForms([def("def:token", "Token"), def("def:access-token", "Access token")]);
   assert.deepEqual(findTerms("send the access  token", forms).map((h) => h.id), ["def:access-token"]);
+  assert.deepEqual(findTerms("the access-token risk", forms).map((h) => h.id), ["def:access-token"]);
 });
 
 test("short terms match only in capitals, and then case-sensitively", () => {

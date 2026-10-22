@@ -197,7 +197,7 @@ Datalog rules in `lint/rules.dl`, then any rules in `<folder>/lint.dl`. A
 rule derives `finding(Code, Level, Node, Target)`; the facts it can read are
 listed at the top of `src/facts.js`. Matching words in text is done in
 JavaScript before the rules run: whole words, case-insensitive, with a
-plural `s` or `es`; the longest term wins where two overlap ("access token"
+plural `s` or `es`, a space in a term also matching a hyphen; the longest term wins where two overlap ("access token"
 names Access token, not Token); a title's trailing parenthetical is dropped
 when what remains is no other title ("C2 (managed)" is named by "C2"); a
 title or alias of three characters or fewer counts only in capitals

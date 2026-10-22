@@ -48,7 +48,7 @@ export function termForms(nodes) {
       if (!f) continue;
       const upper = isUpper(f);
       if (f.length <= 3 && !upper) continue;
-      const body = escape(f).replace(/\s+/g, "\\s+");
+      const body = escape(f).replace(/\s+/g, "[\\s-]+");
       const re = new RegExp(`(?<![\\p{L}\\p{N}])${body}(?:s|es)?(?![\\p{L}\\p{N}])`,
         upper && f.length <= 3 ? "gu" : "giu");
       out.push({ id: d.id, form: f, re });
