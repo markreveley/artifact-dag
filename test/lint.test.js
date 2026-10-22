@@ -88,6 +88,12 @@ test("unlinked_term: plain-text names with no edge, unless not_links says so", (
   ]);
 });
 
+test("unlinked_term skips a definition tagged pervasive", () => {
+  const mk = (id, title, value, tags = []) => ({ id, type: "definition", title, aliases: [], tags, value, notLinks: [], path: id });
+  const g = { nodes: [mk("def:x", "X thing", "Built by Acme."), mk("def:acme", "Acme", "A company.", ["pervasive"])], edges: [] };
+  assert.deepEqual(lint(g, RULES).filter((f) => f.code === "unlinked_term"), []);
+});
+
 test("narrower_unlinked: title ending in another title, with no edge", () => {
   assert.deepEqual(got("narrower_unlinked"), [["def:access-token", "def:token"]]);
 });

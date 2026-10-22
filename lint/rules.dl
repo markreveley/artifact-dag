@@ -17,9 +17,10 @@ claim_link(A) :- claim(A), claim(B), edge(A, B, K), claim_kind(K), A != B.
 claim_link(B) :- claim(A), claim(B), edge(A, B, K), claim_kind(K), A != B.
 
 % unlinked_term: a node's text names a definition it has no edge to and no
-% not_links entry for.
+% not_links entry for. A definition tagged pervasive (the collection's own
+% subject, a citation marker) is never required.
 finding("unlinked_term", "warn", N, T) :-
-  names(N, T, _), def(T), not linked(N, T), not not_link(N, T), N != T.
+  names(N, T, _), def(T), not linked(N, T), not not_link(N, T), not tag(T, "pervasive"), N != T.
 
 % narrower_unlinked: a definition's title ends with another definition's
 % title ("Access token" ends with "Token") and has no edge to it. The head

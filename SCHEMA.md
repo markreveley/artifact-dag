@@ -132,6 +132,13 @@ Tag a definition `scale` when it names an ordered set of other definitions
 scale's text wikilinks every member, in order. The linter reports a member
 the scale's text does not link as `scale_member`, an error.
 
+## Pervasive terms
+
+Tag a definition `pervasive` when nearly every node names it and a link from
+each would only make it a hub: a collection's own subject (`def:identikey`
+in the IdentiKey project), or a citation marker. `unlinked_term` never
+reports it. Nodes can still link it where the link means something.
+
 ## Documents
 
 A claim usually comes from a document that argues it in order. Three
@@ -199,7 +206,7 @@ scanned. Only a node's value is scanned, not its sub-definitions.
 
 | code | level | reported when |
 |---|---|---|
-| `unlinked_term` | warn | a node's text names a definition it has no edge to and no `not_links` entry for |
+| `unlinked_term` | warn | a node's text names a definition it has no edge to and no `not_links` entry for, unless that definition is tagged `pervasive` |
 | `narrower_unlinked` | warn | a definition's title ends with another definition's title ("Access token", Token) and it has no edge to it |
 | `scale_member` | error | a definition refines a `scale` whose text does not link it |
 | `isolated_claim` | warn | a claim with a `document` and `order` has no `depends_on`, `supports`, `contradicts` or `refines` edge to or from another claim |
