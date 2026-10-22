@@ -87,4 +87,5 @@ if (json && linting) {
   }
 }
 const failed = graph.problems.some((p) => p.level === "error") || findings.some((f) => f.level === "error");
-process.exit(failed ? 1 : 0);
+// exitCode, not exit(): exit() can cut off piped output that is still buffered.
+process.exitCode = failed ? 1 : 0;
