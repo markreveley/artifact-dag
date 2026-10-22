@@ -35,6 +35,11 @@ Nothing is copied or synced. The viewer reads the files every time it loads.
   the text jump to that node.
 - Filters hide a type; search dims everything that doesn't match on id,
   title, alias or tag. Scroll to zoom, drag to pan, **Fit** to reset.
+- The **document** picker (shown once any claim has a `document` field)
+  narrows the graph to one document's claims and what they build on, and
+  lists those claims in reading order, grouped by section. A claim from a
+  document shows previous and next links, so you can read the document
+  decomposed, one claim at a time.
 - The **problems** button lists what the validator found: missing fields,
   bad ids, duplicates, cycles, and (as notes, not errors) external links.
 - **Reload** re-reads the files. A file written in the last few seconds can

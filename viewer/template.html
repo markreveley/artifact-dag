@@ -57,6 +57,7 @@
   .tools input[type="search"] {
     background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px; min-width: 160px;
   }
+  .tools select { background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; max-width: 220px; }
   .btn { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; }
   .btn[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
   .btn.warn { border-color: var(--bad); color: var(--bad); }
@@ -149,6 +150,12 @@
   .problems li.error { border-color: var(--bad); }
   .problems li.info { border-color: var(--muted); }
   .problems code { font-family: var(--mono); font-size: 12px; }
+  .reading { list-style: none; padding: 0; margin: 0; counter-reset: none; }
+  .reading li { display: flex; gap: 8px; align-items: baseline; padding: 3px 0; }
+  .reading .n { font-family: var(--mono); font-size: 11px; color: var(--muted); flex: 0 0 26px; text-align: right; }
+  .reading h4 { font-family: var(--display); font-weight: 500; font-size: 16px; margin: 16px 0 4px; }
+  .docnav { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; font-size: 13px; }
+  .docnav .where { color: var(--muted); }
   .path { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 18px; word-break: break-all; }
 </style>
 
@@ -159,6 +166,7 @@
     <label class="chk"><input type="checkbox" id="f-def" checked><span class="swatch def"></span>definitions</label>
     <label class="chk"><input type="checkbox" id="f-claim" checked><span class="swatch claim"></span>claims</label>
     <label class="chk"><input type="checkbox" id="f-ext" checked><span class="swatch ext"></span>external</label>
+    <select id="doc" aria-label="Show one document"><option value="">All nodes</option></select>
     <input type="search" id="q" placeholder="Find a term or claim" aria-label="Find a node">
     <button class="btn" id="problems-btn" aria-pressed="false">0 problems</button>
     <button class="btn" id="reload">Reload</button>
@@ -195,7 +203,7 @@ const CONFIG = __CONFIG__;
 const SAMPLE = __SAMPLE__;
 
 /* ---- state ---- */
-const state = { graph: null, selected: null, showProblems: false, query: "", source: "" };
+const state = { graph: null, selected: null, showProblems: false, query: "", source: "", doc: "" };
 const $ = (id) => document.getElementById(id);
 
 /* ---- loading ---- */
@@ -225,12 +233,18 @@ async function loadFromProject() {
       cursor = page.cursor;
     } while (cursor);
     const dec = new TextDecoder();
-    const texts = [];
-    for (const path of out) {
-      const r = await call(() => files.read(path));
-      texts.push({ path, text: dec.decode(r.bytes) });
-      $("counts").textContent = `reading ${texts.length} of ${out.length}`;
-    }
+    const texts = new Array(out.length);
+    let done = 0, next = 0;
+    const readOne = async (i) => {
+      const r = await call(() => files.read(out[i]));
+      texts[i] = { path: out[i], text: dec.decode(r.bytes) };
+      $("counts").textContent = `reading ${++done} of ${out.length}`;
+    };
+    // The first read alone (it may wait on a permission prompt), then a few
+    // at a time; bursts beyond that come back rate_limited and are retried.
+    if (out.length) await readOne(next++);
+    const worker = async () => { while (next < out.length) await readOne(next++); };
+    await Promise.all([worker(), worker(), worker(), worker()]);
     return { files: texts, reason: "" };
   } catch (err) {
     const code = err?.code || "unavailable";
@@ -253,8 +267,33 @@ async function load() {
   n.hidden = !reason;
   n.textContent = reason;
   if (!state.selected || !nodeById(state.selected)) state.selected = null;
+  fillDocs();
   render();
   fit();
+}
+
+/* ---- documents ---- */
+function documents() {
+  return [...new Set(state.graph.nodes.map((n) => n.document).filter(Boolean))].sort();
+}
+function docLabel(d) {
+  const parts = d.split("/");
+  let name = parts.pop().replace(/\.md$/i, "");
+  if (/^readme$/i.test(name) && parts.length) name = parts.pop();
+  return name.replace(/^\d{4}-\d{2}-\d{2}-/, "").replace(/-/g, " ");
+}
+function docNodes(d) {
+  return state.graph.nodes.filter((n) => n.document === d)
+    .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity) || a.id.localeCompare(b.id));
+}
+function fillDocs() {
+  const sel = $("doc");
+  const docs = documents();
+  if (state.doc && !docs.includes(state.doc)) state.doc = "";
+  sel.innerHTML = `<option value="">All nodes</option>` + docs.map((d) =>
+    `<option value="${d.replace(/"/g, "&quot;")}">${docLabel(d).replace(/[&<>]/g, "")}</option>`).join("");
+  sel.value = state.doc;
+  sel.hidden = !docs.length;
 }
 
 /* ---- graph helpers ---- */
@@ -285,7 +324,7 @@ function layout(nodes, edges) {
     for (const e of edges) if (DAG_KINDS.has(e.kind) || e.kind === "about") g.setEdge(e.from, e.to);
     dagre.layout(g);
     for (const n of nodes) { const p = g.node(n.id); pos.set(n.id, { x: p.x, y: p.y, w: p.width, h: H }); }
-    return pos;
+    return wrapRows(pos);
   }
   // Fallback when the layout library didn't load: longest-path layers.
   const ids = new Set(nodes.map((n) => n.id));
@@ -310,7 +349,37 @@ function layout(nodes, edges) {
     let x = 20;
     for (const n of ns) { const w = W(n); pos.set(n.id, { x: x + w / 2, y: 20 + (maxDepth - k) * 96 + H / 2, w, h: H }); x += w + 28; }
   }
-  return pos;
+  return wrapRows(pos);
+}
+// A layer of many unconnected nodes (a glossary, say) comes out as one very
+// long row. Break each layer into rows no wider than a roughly square page,
+// keeping the layout's left-to-right order, and stack layers top to bottom.
+function wrapRows(pos) {
+  const gap = 28, rowGap = 24, layerGap = 56;
+  const area = [...pos.values()].reduce((s, p) => s + (p.w + gap) * (p.h + rowGap), 0);
+  const maxW = Math.max(1000, Math.sqrt(area) * 1.6);
+  const layers = new Map();
+  for (const [id, p] of pos) { const k = Math.round(p.y); if (!layers.has(k)) layers.set(k, []); layers.get(k).push([id, p]); }
+  const out = new Map();
+  let y = 20;
+  for (const k of [...layers.keys()].sort((a, b) => a - b)) {
+    const row = layers.get(k).sort((a, b) => a[1].x - b[1].x);
+    const lines = [[]];
+    let w = 0;
+    for (const item of row) {
+      if (w && w + item[1].w > maxW) { lines.push([]); w = 0; }
+      lines[lines.length - 1].push(item); w += item[1].w + gap;
+    }
+    for (const line of lines) {
+      const total = line.reduce((s, [, p]) => s + p.w + gap, -gap);
+      let x = 20 + (maxW - total) / 2;
+      const h = Math.max(...line.map(([, p]) => p.h));
+      for (const [id, p] of line) { out.set(id, { ...p, x: x + p.w / 2, y: y + h / 2 }); x += p.w + gap; }
+      y += h + rowGap;
+    }
+    y += layerGap - rowGap;
+  }
+  return out;
 }
 function labelOf(n) {
   const t = n.external ? n.id : n.title;
@@ -323,7 +392,15 @@ function render() {
   const g = state.graph;
   const vis = visibleTypes();
   const q = state.query;
-  const nodes = allNodes().filter((n) => vis[n.type]);
+  let pool = allNodes();
+  if (state.doc) {
+    // The document's own nodes, plus whatever they point at directly.
+    const own = new Set(docNodes(state.doc).map((n) => n.id));
+    const keep = new Set(own);
+    for (const e of g.edges) if (own.has(e.from)) keep.add(e.to);
+    pool = pool.filter((n) => keep.has(n.id));
+  }
+  const nodes = pool.filter((n) => vis[n.type]);
   const ids = new Set(nodes.map((n) => n.id));
   const edges = g.edges.filter((e) => ids.has(e.from) && ids.has(e.to));
   const pos = layout(nodes, edges);
@@ -401,6 +478,19 @@ function renderPane() {
     return;
   }
   const n = state.selected && nodeById(state.selected);
+  if (!n && state.doc) {
+    let sec = null;
+    const items = docNodes(state.doc).map((c) => {
+      const head = c.section && c.section !== sec ? `</ol><h4>${esc(c.section)}</h4><ol class="reading">` : "";
+      sec = c.section || sec;
+      return `${head}<li><span class="n">${c.order ?? ""}</span>${ref(c.id)}</li>`;
+    }).join("");
+    pane.innerHTML = `<div class="eyebrow">Document</div><h2>${esc(docLabel(state.doc))}</h2>
+      <div class="id">${esc(state.doc)}</div>
+      <p class="empty">Its claims in reading order. The graph shows them with the definitions and claims they build on.</p>
+      <ol class="reading">${items}</ol>`;
+    return;
+  }
   if (!n) {
     pane.innerHTML = `<div class="empty"><div class="eyebrow">${state.source === "project" ? "Project files" : "Example collection"}</div>
       <h2>Pick a node to read it</h2>
@@ -421,6 +511,7 @@ function renderPane() {
     <div class="eyebrow"><span class="pill ${n.type}">${esc(n.subtype || n.type)}</span>${n.aliases.length ? esc(n.aliases.join(" · ")) : ""}</div>
     <h2>${esc(n.title)}</h2>
     <div class="id">${esc(n.id)}</div>
+    ${docNav(n, ref, esc)}
     <div class="value">${n.value ? md(n.value) : "<p class=\"empty\">No body text.</p>"}</div>
     ${n.subdefinitions.length ? `<h3>Sub-definitions</h3>${n.subdefinitions.map((s) => `<div class="subdef"><div class="src">${esc(s.source)}</div>${md(s.text)}</div>`).join("")}` : ""}
     ${n.sources.length ? `<h3>Sources</h3><ul class="list">${n.sources.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
@@ -428,6 +519,15 @@ function renderPane() {
     <h3>Used by</h3>${list(inE, "in")}
     ${n.tags.length ? `<h3>Tags</h3><div class="tags">${n.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>` : ""}
     <div class="path">${esc(n.path)}</div>`;
+}
+
+function docNav(n, ref, esc) {
+  if (!n.document) return "";
+  const seq = docNodes(n.document);
+  const i = seq.findIndex((x) => x.id === n.id);
+  const prev = seq[i - 1], next = seq[i + 1];
+  return `<div class="docnav"><span>${prev ? "← " + ref(prev.id) : ""}</span><span>${next ? ref(next.id) + " →" : ""}</span></div>
+    <div class="docnav where"><span><a class="ref" data-doc="${esc(n.document)}">${esc(docLabel(n.document))}</a>${n.section ? " · " + esc(n.section) : ""}${n.order != null ? " · " + n.order : ""}</span></div>`;
 }
 
 /* ---- pan and zoom ---- */
@@ -481,9 +581,19 @@ function select(id) {
 /* ---- wiring ---- */
 document.addEventListener("click", (e) => {
   const a = e.target.closest("a.ref");
+  if (a && a.dataset.doc) { e.preventDefault(); setDoc(a.dataset.doc); return; }
   if (a) { e.preventDefault(); select(a.dataset.ref); }
 });
 for (const id of ["f-def", "f-claim", "f-ext"]) $(id).addEventListener("change", () => { render(); fit(); });
+function setDoc(d) {
+  state.doc = d;
+  $("doc").value = d;
+  if (d && state.selected && !docNodes(d).some((n) => n.id === state.selected)) state.selected = null;
+  state.showProblems = false;
+  render();
+  fit();
+}
+$("doc").addEventListener("change", (e) => setDoc(e.target.value));
 $("q").addEventListener("input", (e) => { state.query = e.target.value.trim().toLowerCase(); render(); });
 $("problems-btn").addEventListener("click", () => { state.showProblems = !state.showProblems; render(); });
 $("reload").addEventListener("click", load);
@@ -493,6 +603,7 @@ window.addEventListener("resize", fit);
 // First frame from the sample so the page is never blank, then the project.
 state.graph = parseCollection(SAMPLE);
 state.source = "sample";
+fillDocs();
 render();
 fit();
 load();

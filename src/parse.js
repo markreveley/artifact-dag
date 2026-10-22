@@ -60,6 +60,8 @@ export function parseFile(path, text) {
   for (const f of ["id", "title"]) if (!fm[f]) problem("missing_field", `missing "${f}"`);
   const pid = parseId(fm.id);
   if (fm.id && !pid) problem("bad_id", `id "${fm.id}" is not <prefix>:<slug>`);
+  if (fm.order !== undefined && !/^\d+$/.test(fm.order))
+    problem("bad_order", `order "${fm.order}" is not a whole number`);
   if (pid && typeDef && pid.prefix !== typeDef.prefix)
     problem("prefix_mismatch", `id "${fm.id}" should start with "${typeDef.prefix}:" for type ${fm.type}`);
 
@@ -75,6 +77,9 @@ export function parseFile(path, text) {
     tags: fm.tags || [],
     sources: fm.sources || [],
     subject: fm.subject || "",
+    document: fm.document || "",
+    section: fm.section || "",
+    order: /^\d+$/.test(fm.order || "") ? Number(fm.order) : null,
     value,
     subdefinitions: subSection ? parseSubdefinitions(subSection) : [],
     path,

@@ -26,6 +26,14 @@ node; `docs/USAGE.md` is the user-facing guide and defines the commands.
 - Project files have no editor in the app, so a request to "edit" a node
   means you edit the file. Don't suggest converting nodes to Claude Docs.
 
+## Claims from a document
+
+To decompose a document into claims, write one claim per atomic statement
+under `dag/claims/<document-slug>/`, each with `document: <repo>/<path>`,
+`section: "<heading>"` and `order: <n>` in reading order (see SCHEMA.md,
+Documents). Link each claim to the definitions it `uses` and to the claims it
+`depends_on` or `supports`. The viewer's document picker reads these fields.
+
 ## Validator
 
 ```sh
