@@ -24,6 +24,8 @@ this file is for someone working on the code.
 | `examples/dag/`    | an example collection (epistemics) to copy into a project   |
 | `viewer/template.html` | the viewer page, with placeholders for the parser and config |
 | `bin/bundle.js`    | writes `_bundle.json`, every node in one file, so the viewer loads fast |
+| `bin/push-plan.js` | plans the database writes that push a project's nodes to the federation view |
+| `federation.json`  | the federation artifact's URL and home project |
 | `bin/build-viewer.js` | stamps one project's id into the template, inlining `src/` |
 | `docs/USAGE.md`    | the user guide, written for the Claude project view          |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests in a project that has this repo |
@@ -163,6 +165,17 @@ are in [docs/platform/](docs/platform/README.md).
   most 256 KiB each, with a total size cap the docs don't state. By default
   everyone the artifact is shared with can read shared data and only the
   owner and editors write; access rules declared at publish can narrow both.
+
+**Federation.** The federation view is the same template built with
+`--federation`. It reads its home project's `dag/` through `files`, and
+reads `projects/<slug>` documents from its own database, each naming the
+chunk documents (`projects/<slug>/chunks/c0...`, under 200 KiB each) that
+hold a pushed project's files. Other projects get there by `dag push`: a
+thread in that project runs `bin/push-plan.js` and sends the writes with
+its database tool, acting as the owner. The page parses each project
+separately, joins on id (first definition wins, later ones are noted), and
+recomputes externals and cycles over the whole graph. The database rules
+let anyone the artifact is shared with read, and only editors write.
 
 **Where Claude works.** A Claude thread runs in a cloud container with clones
 of the attached repos. The project's files are mounted there at

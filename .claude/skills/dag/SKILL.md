@@ -72,6 +72,7 @@ If the project mirrors `dag/` in a repo, copy `_bundle.json` there too.
 | `dag externals`               | the validator's `external` notes                                                    |
 | `dag publish`                 | see below                                                                           |
 | `dag republish`               | rebuild and publish to the project's existing viewer URL                            |
+| `dag push`                    | push this project's nodes to the federation view; see below                         |
 
 Plain-language requests that mean one of these get the same treatment.
 
@@ -91,3 +92,35 @@ Plain-language requests that mean one of these get the same treatment.
 
 For `dag republish`, publish to the existing artifact's URL (find it with
 the Artifact tool's list action if this thread didn't publish it).
+
+## Pushing to the federation view
+
+The federation artifact (URL in `<repo>/federation.json`) shows its home
+project's `dag/` live plus every bundle other projects push into its
+database, joined on ids. One artifact cannot read several projects' files
+(see `docs/platform/README.md`), so this push is how a project joins.
+
+`dag push`, in any project with this repo attached:
+
+1. Pick the slug: the project's name in lowercase with hyphens
+   (`identikey`). Reuse the slug already in the database for this project if
+   there is one (match on `project` in `projects` documents).
+2. Read what's there with the ArtifactData tool on the federation URL:
+   `get` collection `projects`, doc `<slug>` (note its `version`), and `list`
+   collection `projects/<slug>/chunks` (note each chunk's `version`). Both
+   are absent on a first push.
+3. Plan the writes:
+   ```sh
+   node <repo>/bin/push-plan.js /mnt/project-files/dag/ --slug <slug> \
+     --project chan_XXXX --name "<project name>" --out <scratch>/push \
+     --versions '{"meta": <v>, "c0": <v>, ...}'
+   ```
+   Leave out `--versions` on a first push.
+4. Send each batch it prints, in order, as one ArtifactData `batch` call.
+   The meta document is in the last batch.
+5. Report how many nodes were pushed and link the federation view. A
+   pinned write that fails means someone pushed in between: re-read and
+   re-plan.
+
+Pushing from the home project is unnecessary; the view reads it live.
+After `dag push` was used once, push again after each batch of node edits.

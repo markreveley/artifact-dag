@@ -166,6 +166,7 @@
     <label class="chk"><input type="checkbox" id="f-def" checked><span class="swatch def"></span>definitions</label>
     <label class="chk"><input type="checkbox" id="f-claim" checked><span class="swatch claim"></span>claims</label>
     <label class="chk"><input type="checkbox" id="f-ext" checked><span class="swatch ext"></span>external</label>
+    <select id="proj" aria-label="Show one project" hidden><option value="">All projects</option></select>
     <select id="doc" aria-label="Show one document"><option value="">All nodes</option></select>
     <input type="search" id="q" placeholder="Find a term or claim" aria-label="Find a node">
     <button class="btn" id="problems-btn" aria-pressed="false">0 problems</button>
@@ -203,7 +204,7 @@ const CONFIG = __CONFIG__;
 const SAMPLE = __SAMPLE__;
 
 /* ---- state ---- */
-const state = { graph: null, selected: null, showProblems: false, query: "", source: "", doc: "" };
+const state = { graph: null, selected: null, showProblems: false, query: "", source: "", doc: "", proj: "", projects: [] };
 const $ = (id) => document.getElementById(id);
 
 /* ---- loading ---- */
@@ -275,20 +276,104 @@ async function loadFromProject() {
   }
 }
 
+/* ---- federation: bundles other projects pushed to this artifact's database ---- */
+// Layout (written by bin/push-plan.js through a Claude thread):
+//   projects/<slug>                 {slug, project, name, builtAt, files, chunks: ["c0", ...]}
+//   projects/<slug>/chunks/<id>     {files: [{path, text}]}
+async function loadPushed() {
+  const db = await window.claude?.use?.("db");
+  if (!db) return { sources: [], reason: "This view can't open the pushed bundles, so only this project's own nodes are shown." };
+  try {
+    const metas = await db.collection("projects").limit(1000).get();
+    const sources = [];
+    for (const m of metas.docs) {
+      const meta = m.data();
+      if (!meta || meta.project === CONFIG.project) continue; // this project is read live
+      const files = [];
+      for (const id of meta.chunks || []) {
+        const c = await db.doc(`projects/${m.id}/chunks/${id}`).get();
+        if (c.exists) files.push(...(c.data().files || []));
+      }
+      sources.push({ slug: m.id, name: meta.name || m.id, builtAt: meta.builtAt || "", files });
+    }
+    return { sources, reason: "" };
+  } catch (err) {
+    return { sources: [], reason: `The pushed bundles couldn't be read (${err?.code || "unavailable"}). Showing this project's own nodes. Try Reload.` };
+  }
+}
+
+// Parse each project separately, then join on id. The first definition of an
+// id wins (this project first, then pushed bundles by name); later ones are
+// noted. Externals and cycles are recomputed over the joined graph, so a link
+// that is external in one project resolves when another project defines it.
+function mergeSources(sources) {
+  const nodes = [], edges = [], problems = [];
+  const byId = new Map();
+  const seen = new Set();
+  for (const s of sources) {
+    const g = parseCollection(s.files.map((f) => ({ path: `${s.slug}/${f.path}`, text: f.text })));
+    for (const p of g.problems) if (p.code !== "external" && p.code !== "cycle") problems.push(p);
+    for (const n of g.nodes) {
+      n.project = s.slug;
+      const first = byId.get(n.id);
+      if (first) {
+        (first.alsoIn ||= []).push(s.slug);
+        problems.push({ level: "info", code: "shared", path: n.path,
+          message: `"${n.id}" is also defined in ${first.project}; showing ${first.project}'s version` });
+        continue;
+      }
+      byId.set(n.id, n);
+      nodes.push(n);
+    }
+    for (const e of g.edges) {
+      const k = `${e.from}\u0000${e.kind}\u0000${e.to}`;
+      if (!seen.has(k)) { seen.add(k); edges.push(e); }
+    }
+  }
+  const external = [...new Set(edges.map((e) => e.to).filter((id) => !byId.has(id)))].sort();
+  for (const id of external) problems.push({ level: "info", code: "external", path: "", message: `"${id}" is linked but defined in no project here` });
+  for (const cycle of findCycles(byId.keys(), edges)) {
+    problems.push({ level: "error", code: "cycle", path: byId.get(cycle[0]).path, message: `cycle: ${[...cycle, cycle[0]].join(" -> ")}` });
+  }
+  return { nodes, edges, problems, external };
+}
+
 async function load() {
   $("counts").textContent = "loading";
   const { files, reason } = await loadFromProject();
-  const src = files || SAMPLE;
   state.source = files ? "project" : "sample";
-  state.graph = parseCollection(src);
+  const reasons = [reason];
+  if (CONFIG.federation) {
+    const own = { slug: CONFIG.slug, name: CONFIG.name, builtAt: "live", files: (files || SAMPLE).map((f) => ({ path: f.path.replace(/^[^/]+\//, ""), text: f.text })) };
+    const pushed = await loadPushed();
+    reasons.push(pushed.reason);
+    pushed.sources.sort((a, b) => a.name.localeCompare(b.name));
+    state.projects = [own, ...pushed.sources];
+    state.graph = mergeSources(state.projects);
+  } else {
+    state.graph = parseCollection(files || SAMPLE);
+  }
   const n = $("notice");
-  n.hidden = !reason;
-  n.textContent = reason;
+  const text = reasons.filter(Boolean).join(" ");
+  n.hidden = !text;
+  n.textContent = text;
   if (!state.selected || !nodeById(state.selected)) state.selected = null;
   fillDocs();
+  fillProjects();
   render();
   fit();
 }
+
+function fillProjects() {
+  const sel = $("proj");
+  const ps = state.projects;
+  if (state.proj && !ps.some((p) => p.slug === state.proj)) state.proj = "";
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  sel.innerHTML = `<option value="">All projects</option>` + ps.map((p) => `<option value="${esc(p.slug)}">${esc(p.name)}</option>`).join("");
+  sel.value = state.proj;
+  sel.hidden = ps.length < 2;
+}
+function projectName(slug) { return (state.projects.find((p) => p.slug === slug) || {}).name || slug; }
 
 /* ---- documents ---- */
 function documents() {
@@ -418,6 +503,13 @@ function render() {
     for (const e of g.edges) if (own.has(e.from)) keep.add(e.to);
     pool = pool.filter((n) => keep.has(n.id));
   }
+  if (state.proj) {
+    // The project's own nodes, plus what they point at in other projects.
+    const own = new Set(g.nodes.filter((n) => n.project === state.proj).map((n) => n.id));
+    const keep = new Set(own);
+    for (const e of g.edges) if (own.has(e.from)) keep.add(e.to);
+    pool = pool.filter((n) => keep.has(n.id));
+  }
   const nodes = pool.filter((n) => vis[n.type]);
   const ids = new Set(nodes.map((n) => n.id));
   const edges = g.edges.filter((e) => ids.has(e.from) && ids.has(e.to));
@@ -460,7 +552,8 @@ function render() {
 
   const defs = g.nodes.filter((n) => n.type === "definition").length;
   const claims = g.nodes.filter((n) => n.type === "claim").length;
-  $("counts").textContent = `${defs} definitions · ${claims} claims · ${g.edges.length} edges · ${g.external.length} external`;
+  $("counts").textContent = `${defs} definitions · ${claims} claims · ${g.edges.length} edges · ${g.external.length} external` +
+    (state.projects.length > 1 ? ` · ${state.projects.length} projects` : "");
   const errs = g.problems.filter((p) => p.level === "error").length;
   const pb = $("problems-btn");
   pb.textContent = errs ? `${errs} problem${errs === 1 ? "" : "s"}` : `${g.problems.length} note${g.problems.length === 1 ? "" : "s"}`;
@@ -536,6 +629,7 @@ function renderPane() {
     <h3>Builds on</h3>${list(outE, "out")}
     <h3>Used by</h3>${list(inE, "in")}
     ${n.tags.length ? `<h3>Tags</h3><div class="tags">${n.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>` : ""}
+    ${n.project ? `<h3>Project</h3><p>${esc(projectName(n.project))}${n.alsoIn ? ` <span class="empty">(also defined in ${n.alsoIn.map((s) => esc(projectName(s))).join(", ")})</span>` : ""}</p>` : ""}
     <div class="path">${esc(n.path)}</div>`;
 }
 
@@ -612,6 +706,13 @@ function setDoc(d) {
   fit();
 }
 $("doc").addEventListener("change", (e) => setDoc(e.target.value));
+$("proj").addEventListener("change", (e) => {
+  state.proj = e.target.value;
+  if (state.proj && state.selected && nodeById(state.selected)?.project !== state.proj) state.selected = null;
+  state.showProblems = false;
+  render();
+  fit();
+});
 $("q").addEventListener("input", (e) => { state.query = e.target.value.trim().toLowerCase(); render(); });
 $("problems-btn").addEventListener("click", () => { state.showProblems = !state.showProblems; render(); });
 $("reload").addEventListener("click", load);

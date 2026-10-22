@@ -113,6 +113,7 @@ request is unambiguous.
 | `dag externals`                         | lists ids linked but not defined here                              |
 | `dag publish`                           | builds the viewer for this project and publishes it as an artifact |
 | `dag republish`                         | rebuilds and updates the project's existing viewer                 |
+| `dag push`                              | sends this project's nodes to the federation view                  |
 
 Ids are global on purpose: use the same `def:credence` in every project
 that means the same thing, and the graphs can be joined later.
@@ -131,6 +132,26 @@ that means the same thing, and the graphs can be joined later.
 Each project gets its own viewer because an artifact can read the files of
 only one project. Cross-project links still work: they show as external
 nodes until a federation view (planned, step 4) unions the projects.
+
+## Seeing several projects together (federation)
+
+Each project's viewer shows only that project, because an artifact can
+read only one project's files. The **federation view** joins them: it shows
+the DAG project's `dag/` live, plus a copy of every other project's nodes
+that was pushed to it.
+
+- To add a project, or refresh it after edits, say `dag push` in a thread
+  of that project. Claude copies the project's nodes into the federation
+  view's database. Nothing changes in the project itself.
+- In the federation view, a node linked from one project and defined in
+  another is a real node, not an external one. A **Project** menu narrows
+  the graph to one project and whatever it links to elsewhere.
+- If two projects define the same id, the first wins (the DAG project, then
+  the others by name) and the problems list says where else it is defined.
+- Pushed copies are only as fresh as the last `dag push`.
+- Anyone you share the federation view with can read every pushed project's
+  nodes, even without access to those projects. It is private to you until
+  you share it.
 
 ## Limits worth knowing
 
