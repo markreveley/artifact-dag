@@ -1,0 +1,489 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a toolbar, then a graph canvas beside a reading pane; on phones the
+     pane drops below the canvas. The graph is the working surface, the pane is
+     where a node is read in full. */
+  :root {
+    --bg: #f5f6f8;        /* cool paper */
+    --panel: #ffffff;
+    --fg: #1b2230;
+    --muted: #5b6676;
+    --line: #d9dee6;
+    --def: #1f6f8b;       /* definitions: deep teal */
+    --def-soft: #dcecf1;
+    --claim: #b2641a;     /* claims: ochre */
+    --claim-soft: #f6e6d3;
+    --ext: #8a94a3;       /* external nodes */
+    --good: #2f7d4f;
+    --bad: #b03a2e;
+    --focus: #1b2230;
+    --display: "Newsreader", Georgia, "Times New Roman", serif;
+    --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #151920; --panel: #1d222b; --fg: #e6e9ee; --muted: #9aa4b2; --line: #2f3641;
+      --def: #6fb7d0; --def-soft: #1d3540; --claim: #e0a060; --claim-soft: #3d2d1c;
+      --ext: #7a8494; --good: #6fc08f; --bad: #e07a6e; --focus: #e6e9ee; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #151920; --panel: #1d222b; --fg: #e6e9ee; --muted: #9aa4b2; --line: #2f3641;
+    --def: #6fb7d0; --def-soft: #1d3540; --claim: #e0a060; --claim-soft: #3d2d1c;
+    --ext: #7a8494; --good: #6fc08f; --bad: #e07a6e; --focus: #e6e9ee; color-scheme: dark;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 14px;
+    line-height: 1.5; display: flex; flex-direction: column; overflow: hidden;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  header {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+    padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    border-bottom: 1px solid var(--line); background: var(--panel);
+  }
+  header h1 { font-family: var(--display); font-weight: 500; font-size: 20px; margin: 0; letter-spacing: -0.01em; }
+  .counts { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-left: auto; }
+  .tools input[type="search"] {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px; min-width: 160px;
+  }
+  .btn { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; }
+  .btn[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .btn.warn { border-color: var(--bad); color: var(--bad); }
+  .chk { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .swatch.def { background: var(--def); }
+  .swatch.claim { background: var(--claim); }
+  .swatch.ext { border: 1.5px dashed var(--ext); }
+
+  .notice {
+    padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    background: var(--claim-soft); color: var(--fg); border-bottom: 1px solid var(--line); font-size: 13px;
+  }
+
+  main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr minmax(300px, 380px); }
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr; grid-template-rows: 55% 45%; }
+  }
+  #canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; }
+  #canvas svg { width: 100%; height: 100%; display: block; cursor: grab; }
+  #canvas svg.dragging { cursor: grabbing; }
+  .fit { position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); bottom: 12px; }
+  .legend {
+    position: absolute; left: max(12px, env(safe-area-inset-left, 0px)); bottom: 12px;
+    display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--muted); max-width: 70%;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i { width: 22px; height: 0; border-top: 2px solid var(--muted); display: inline-block; }
+  .legend i.dashed { border-top-style: dashed; }
+  .legend i.dotted { border-top-style: dotted; }
+  .legend i.good { border-color: var(--good); }
+  .legend i.bad { border-color: var(--bad); }
+  .legend i.faint { opacity: 0.45; }
+  @media (max-width: 760px) { .legend { display: none; } }
+
+  .node { cursor: pointer; }
+  .node rect { fill: var(--panel); stroke-width: 1.5; }
+  .node.definition rect { stroke: var(--def); fill: var(--def-soft); }
+  .node.claim rect { stroke: var(--claim); fill: var(--claim-soft); }
+  .node.external rect { stroke: var(--ext); stroke-dasharray: 4 3; fill: var(--panel); }
+  .node text { font-family: var(--body); font-size: 12px; fill: var(--fg); pointer-events: none; }
+  .node .kind { font-family: var(--mono); font-size: 9.5px; fill: var(--muted); letter-spacing: 0.04em; }
+  .node.selected rect { stroke-width: 3; }
+  .node.dim { opacity: 0.25; }
+  .edge { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+  .edge.depends_on { stroke-width: 2.5; }
+  .edge.supports { stroke: var(--good); }
+  .edge.contradicts { stroke: var(--bad); stroke-dasharray: 6 4; }
+  .edge.refines { stroke-dasharray: 2 3; }
+  .edge.mentions, .edge.about { opacity: 0.4; }
+  .edge.dim { opacity: 0.08; }
+  .edge.hi { stroke-width: 3; opacity: 1; }
+  marker path { fill: var(--muted); }
+  marker.good path { fill: var(--good); }
+  marker.bad path { fill: var(--bad); }
+
+  aside {
+    border-left: 1px solid var(--line); background: var(--panel); overflow: auto; min-width: 0;
+    padding-block: 16px 24px; padding-left: 20px; padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  @media (max-width: 760px) {
+    aside { border-left: 0; border-top: 1px solid var(--line); padding-left: max(16px, env(safe-area-inset-left, 0px)); }
+  }
+  .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .eyebrow .pill { display: inline-block; padding: 1px 7px; border-radius: 999px; color: var(--panel); margin-right: 6px; text-transform: none; letter-spacing: 0; }
+  .pill.definition { background: var(--def); }
+  .pill.claim { background: var(--claim); }
+  .pill.external { background: var(--ext); }
+  aside h2 { font-family: var(--display); font-weight: 500; font-size: 24px; line-height: 1.2; margin: 6px 0 2px; text-wrap: balance; }
+  .id { font-family: var(--mono); font-size: 12px; color: var(--muted); word-break: break-all; }
+  .value { font-family: var(--display); font-size: 17px; line-height: 1.45; margin-top: 14px; max-width: 34em; }
+  .value p { margin: 0 0 0.7em; }
+  aside h3 { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 22px 0 8px; font-weight: 600; }
+  .subdef { border-left: 2px solid var(--line); padding-left: 12px; margin-bottom: 12px; }
+  .subdef .src { font-weight: 600; font-size: 13px; }
+  .subdef p { margin: 2px 0 0; }
+  .list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+  .list li { display: flex; gap: 8px; align-items: baseline; min-width: 0; }
+  .list .kind { font-family: var(--mono); font-size: 11px; color: var(--muted); flex: 0 0 90px; }
+  a.ref { color: var(--def); text-decoration: none; border-bottom: 1px solid var(--line); cursor: pointer; }
+  a.ref.claim { color: var(--claim); }
+  a.ref:hover { border-bottom-color: currentColor; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tags span { background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 1px 7px; font-size: 12px; }
+  .empty { color: var(--muted); max-width: 30em; }
+  .empty h2 { font-size: 20px; }
+  .problems { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+  .problems li { border-left: 3px solid var(--line); padding-left: 10px; font-size: 13px; }
+  .problems li.error { border-color: var(--bad); }
+  .problems li.info { border-color: var(--muted); }
+  .problems code { font-family: var(--mono); font-size: 12px; }
+  .path { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 18px; word-break: break-all; }
+</style>
+
+<header>
+  <h1 id="title">__TITLE__</h1>
+  <span class="counts" id="counts">loading</span>
+  <div class="tools">
+    <label class="chk"><input type="checkbox" id="f-def" checked><span class="swatch def"></span>definitions</label>
+    <label class="chk"><input type="checkbox" id="f-claim" checked><span class="swatch claim"></span>claims</label>
+    <label class="chk"><input type="checkbox" id="f-ext" checked><span class="swatch ext"></span>external</label>
+    <input type="search" id="q" placeholder="Find a term or claim" aria-label="Find a node">
+    <button class="btn" id="problems-btn" aria-pressed="false">0 problems</button>
+    <button class="btn" id="reload">Reload</button>
+  </div>
+</header>
+<div class="notice" id="notice" hidden></div>
+<main>
+  <div id="canvas">
+    <svg id="svg" role="img" aria-label="Graph of definitions and claims">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"></path></marker>
+        <marker id="arrow-good" class="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"></path></marker>
+        <marker id="arrow-bad" class="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"></path></marker>
+      </defs>
+      <g id="view"></g>
+    </svg>
+    <div class="legend">
+      <span><i></i>uses</span><span><i style="border-top-width:3px"></i>depends on</span>
+      <span><i class="good"></i>supports</span><span><i class="bad dashed"></i>contradicts</span>
+      <span><i class="dotted"></i>refines</span><span><i class="faint"></i>mentions / about</span>
+    </div>
+    <button class="btn fit" id="fit">Fit</button>
+  </div>
+  <aside id="pane"></aside>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.5/dagre.min.js"></script>
+<script>
+/* ---- parser (inlined from src/ at build time) ---- */
+/*__PARSER__*/
+
+/* ---- instance configuration ---- */
+const CONFIG = __CONFIG__;
+const SAMPLE = __SAMPLE__;
+
+/* ---- state ---- */
+const state = { graph: null, selected: null, showProblems: false, query: "", source: "" };
+const $ = (id) => document.getElementById(id);
+
+/* ---- loading ---- */
+async function loadFromProject() {
+  const files = await window.claude?.use?.("files");
+  if (!files) return { files: null, reason: "Project files aren't available in this view, so this is the built-in example collection." };
+  try {
+    const out = [];
+    let cursor;
+    do {
+      const page = await files.list({ path: CONFIG.root, recursive: true, cursor });
+      for (const e of page.entries) if (!e.isDirectory && /\.md$/i.test(e.path)) out.push(e.path);
+      cursor = page.cursor;
+    } while (cursor);
+    const dec = new TextDecoder();
+    const texts = [];
+    // a few at a time: the capability rate-limits bursts
+    for (let i = 0; i < out.length; i += 4) {
+      const chunk = out.slice(i, i + 4);
+      const reads = await Promise.all(chunk.map(async (path) => {
+        try { const r = await files.read(path); return { path, text: dec.decode(r.bytes) }; }
+        catch (err) { if (err?.code === "changed") { const r = await files.read(path); return { path, text: dec.decode(r.bytes) }; } throw err; }
+      }));
+      texts.push(...reads);
+    }
+    return { files: texts, reason: "" };
+  } catch (err) {
+    const code = err?.code || "unavailable";
+    const why = {
+      not_found: `No "${CONFIG.root}/" folder was found in this project's files, or you can't open them. Showing the built-in example instead.`,
+      not_granted: "Access to the project's files was declined, so this is the built-in example collection.",
+      rate_limited: "The project's files are busy. Try Reload in a moment. Showing the built-in example meanwhile.",
+    }[code] || "The project's files couldn't be read right now. Try Reload. Showing the built-in example meanwhile.";
+    return { files: null, reason: why };
+  }
+}
+
+async function load() {
+  $("counts").textContent = "loading";
+  const { files, reason } = await loadFromProject();
+  const src = files || SAMPLE;
+  state.source = files ? "project" : "sample";
+  state.graph = parseCollection(src);
+  const n = $("notice");
+  n.hidden = !reason;
+  n.textContent = reason;
+  if (!state.selected || !nodeById(state.selected)) state.selected = null;
+  render();
+  fit();
+}
+
+/* ---- graph helpers ---- */
+function nodeById(id) { return state.graph.nodes.find((n) => n.id === id) || (state.graph.external.includes(id) ? { id, type: "external", title: id, external: true } : null); }
+function visibleTypes() {
+  return { definition: $("f-def").checked, claim: $("f-claim").checked, external: $("f-ext").checked };
+}
+function allNodes() {
+  const g = state.graph;
+  return [...g.nodes, ...g.external.map((id) => ({ id, type: "external", title: id, external: true }))];
+}
+function matches(n, q) {
+  if (!q) return true;
+  const hay = [n.id, n.title, ...(n.aliases || []), ...(n.tags || [])].join(" ").toLowerCase();
+  return hay.includes(q);
+}
+
+/* ---- layout ---- */
+function layout(nodes, edges) {
+  const W = (n) => Math.min(220, Math.max(90, 14 + 6.6 * labelOf(n).length));
+  const H = 40;
+  const pos = new Map();
+  if (window.dagre) {
+    const g = new dagre.graphlib.Graph();
+    g.setGraph({ rankdir: "TB", nodesep: 28, ranksep: 56, marginx: 20, marginy: 20 });
+    g.setDefaultEdgeLabel(() => ({}));
+    for (const n of nodes) g.setNode(n.id, { width: W(n), height: H });
+    for (const e of edges) if (DAG_KINDS.has(e.kind) || e.kind === "about") g.setEdge(e.from, e.to);
+    dagre.layout(g);
+    for (const n of nodes) { const p = g.node(n.id); pos.set(n.id, { x: p.x, y: p.y, w: p.width, h: H }); }
+    return pos;
+  }
+  // Fallback when the layout library didn't load: longest-path layers.
+  const ids = new Set(nodes.map((n) => n.id));
+  const out = new Map(nodes.map((n) => [n.id, []]));
+  for (const e of edges) if (DAG_KINDS.has(e.kind) && ids.has(e.from) && ids.has(e.to)) out.get(e.from).push(e.to);
+  const depth = new Map();
+  const visiting = new Set();
+  const d = (id) => {
+    if (depth.has(id)) return depth.get(id);
+    if (visiting.has(id)) return 0;
+    visiting.add(id);
+    const v = out.get(id).length ? 1 + Math.max(...out.get(id).map(d)) : 0;
+    visiting.delete(id);
+    depth.set(id, v);
+    return v;
+  };
+  nodes.forEach((n) => d(n.id));
+  const layers = new Map();
+  for (const n of nodes) { const k = depth.get(n.id); if (!layers.has(k)) layers.set(k, []); layers.get(k).push(n); }
+  const maxDepth = Math.max(...layers.keys());
+  for (const [k, ns] of layers) {
+    let x = 20;
+    for (const n of ns) { const w = W(n); pos.set(n.id, { x: x + w / 2, y: 20 + (maxDepth - k) * 96 + H / 2, w, h: H }); x += w + 28; }
+  }
+  return pos;
+}
+function labelOf(n) {
+  const t = n.external ? n.id : n.title;
+  return t.length > 34 ? t.slice(0, 32) + "…" : t;
+}
+
+/* ---- rendering ---- */
+let bounds = { x: 0, y: 0, w: 1, h: 1 };
+function render() {
+  const g = state.graph;
+  const vis = visibleTypes();
+  const q = state.query;
+  const nodes = allNodes().filter((n) => vis[n.type]);
+  const ids = new Set(nodes.map((n) => n.id));
+  const edges = g.edges.filter((e) => ids.has(e.from) && ids.has(e.to));
+  const pos = layout(nodes, edges);
+  const sel = state.selected;
+  const near = new Set();
+  if (sel) { near.add(sel); for (const e of edges) { if (e.from === sel) near.add(e.to); if (e.to === sel) near.add(e.from); } }
+
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const parts = [];
+  for (const e of edges) {
+    const a = pos.get(e.from), b = pos.get(e.to);
+    const up = b.y < a.y;
+    const x1 = a.x, y1 = up ? a.y - a.h / 2 : a.y + a.h / 2;
+    const x2 = b.x, y2 = up ? b.y + b.h / 2 : b.y - b.h / 2;
+    const dy = Math.max(30, Math.abs(y2 - y1) / 2);
+    const d = `M${x1},${y1} C${x1},${y1 + (up ? -dy : dy)} ${x2},${y2 + (up ? dy : -dy)} ${x2},${y2}`;
+    const marker = e.kind === "supports" ? "arrow-good" : e.kind === "contradicts" ? "arrow-bad" : "arrow";
+    const cls = ["edge", e.kind];
+    if (sel) cls.push(e.from === sel || e.to === sel ? "hi" : "dim");
+    parts.push(`<path class="${cls.join(" ")}" d="${d}" marker-end="url(#${marker})"><title>${esc(e.from)} ${esc(e.kind.replace("_", " "))} ${esc(e.to)}</title></path>`);
+  }
+  for (const n of nodes) {
+    const p = pos.get(n.id);
+    const cls = ["node", n.type];
+    if (n.id === sel) cls.push("selected");
+    const dim = (sel && !near.has(n.id)) || (q && !matches(n, q));
+    if (dim) cls.push("dim");
+    const kind = n.external ? "external" : (n.subtype || n.type);
+    parts.push(`<g class="${cls.join(" ")}" data-id="${esc(n.id)}" transform="translate(${p.x - p.w / 2},${p.y - p.h / 2})" tabindex="0" role="button" aria-label="${esc(n.title)}">
+      <rect width="${p.w}" height="${p.h}" rx="${n.type === "definition" ? p.h / 2 : 5}"></rect>
+      <text x="${p.w / 2}" y="${p.h / 2 + 1}" text-anchor="middle" class="kind" dy="-7">${esc(kind)}</text>
+      <text x="${p.w / 2}" y="${p.h / 2 + 1}" text-anchor="middle" dy="7">${esc(labelOf(n))}</text>
+    </g>`);
+  }
+  $("view").innerHTML = parts.join("");
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const p of pos.values()) { minX = Math.min(minX, p.x - p.w / 2); minY = Math.min(minY, p.y - p.h / 2); maxX = Math.max(maxX, p.x + p.w / 2); maxY = Math.max(maxY, p.y + p.h / 2); }
+  bounds = pos.size ? { x: minX, y: minY, w: maxX - minX, h: maxY - minY } : { x: 0, y: 0, w: 1, h: 1 };
+
+  const defs = g.nodes.filter((n) => n.type === "definition").length;
+  const claims = g.nodes.filter((n) => n.type === "claim").length;
+  $("counts").textContent = `${defs} definitions · ${claims} claims · ${g.edges.length} edges · ${g.external.length} external`;
+  const errs = g.problems.filter((p) => p.level === "error").length;
+  const pb = $("problems-btn");
+  pb.textContent = errs ? `${errs} problem${errs === 1 ? "" : "s"}` : `${g.problems.length} note${g.problems.length === 1 ? "" : "s"}`;
+  pb.classList.toggle("warn", errs > 0);
+  pb.setAttribute("aria-pressed", String(state.showProblems));
+  renderPane();
+}
+
+function md(text) {
+  // Minimal: paragraphs, wikilinks, bold, italic, code. Everything else is literal.
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  return text.split(/\n{2,}/).map((para) => {
+    let h = esc(para.trim());
+    h = h.replace(/\[\[([^\]|]+?)(?:\|([^\]]*))?\]\]/g, (m, id, label) => {
+      const n = nodeById(id.trim());
+      const cls = n ? `ref ${n.type}` : "ref external";
+      return `<a class="${cls}" data-ref="${id.trim()}">${label || (n && n.title) || id}</a>`;
+    });
+    h = h.replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    return `<p>${h.replace(/\n/g, " ")}</p>`;
+  }).join("");
+}
+
+function renderPane() {
+  const pane = $("pane");
+  const g = state.graph;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const ref = (id) => { const n = nodeById(id); return `<a class="ref ${n ? n.type : "external"}" data-ref="${esc(id)}">${esc(n && !n.external ? n.title : id)}</a>`; };
+
+  if (state.showProblems) {
+    pane.innerHTML = `<div class="eyebrow">Validation</div><h2>${g.problems.length ? "Problems and notes" : "Nothing to report"}</h2>
+      <ul class="problems">${g.problems.map((p) => `<li class="${p.level}"><code>${esc(p.code)}</code> ${esc(p.message)}${p.path ? `<div class="path">${esc(p.path)}</div>` : ""}</li>`).join("")}</ul>`;
+    return;
+  }
+  const n = state.selected && nodeById(state.selected);
+  if (!n) {
+    pane.innerHTML = `<div class="empty"><div class="eyebrow">${state.source === "project" ? "Project files" : "Example collection"}</div>
+      <h2>Pick a node to read it</h2>
+      <p>Pills are definitions, boxes are claims, dashed outlines are nodes linked from here but defined elsewhere. Arrows point from a node to what it builds on. Scroll to zoom, drag to pan.</p>
+      <p>Nodes are Markdown files under <code>${esc(CONFIG.root)}/</code> in this project's files. Edit a file and press Reload.</p></div>`;
+    return;
+  }
+  if (n.external) {
+    pane.innerHTML = `<div class="eyebrow"><span class="pill external">external</span></div><h2>${esc(n.id)}</h2>
+      <p class="empty">Linked from this collection but not defined in it. It may live in another project, or it still needs writing.</p>
+      <h3>Linked from</h3><ul class="list">${g.edges.filter((e) => e.to === n.id).map((e) => `<li><span class="kind">${esc(e.kind.replace("_", " "))}</span>${ref(e.from)}</li>`).join("")}</ul>`;
+    return;
+  }
+  const outE = g.edges.filter((e) => e.from === n.id);
+  const inE = g.edges.filter((e) => e.to === n.id);
+  const list = (es, dir) => es.length ? `<ul class="list">${es.map((e) => `<li><span class="kind">${esc(e.kind.replace("_", " "))}</span>${ref(dir === "out" ? e.to : e.from)}</li>`).join("")}</ul>` : `<p class="empty">none</p>`;
+  pane.innerHTML = `
+    <div class="eyebrow"><span class="pill ${n.type}">${esc(n.subtype || n.type)}</span>${n.aliases.length ? esc(n.aliases.join(" · ")) : ""}</div>
+    <h2>${esc(n.title)}</h2>
+    <div class="id">${esc(n.id)}</div>
+    <div class="value">${n.value ? md(n.value) : "<p class=\"empty\">No body text.</p>"}</div>
+    ${n.subdefinitions.length ? `<h3>Sub-definitions</h3>${n.subdefinitions.map((s) => `<div class="subdef"><div class="src">${esc(s.source)}</div>${md(s.text)}</div>`).join("")}` : ""}
+    ${n.sources.length ? `<h3>Sources</h3><ul class="list">${n.sources.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
+    <h3>Builds on</h3>${list(outE, "out")}
+    <h3>Used by</h3>${list(inE, "in")}
+    ${n.tags.length ? `<h3>Tags</h3><div class="tags">${n.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>` : ""}
+    <div class="path">${esc(n.path)}</div>`;
+}
+
+/* ---- pan and zoom ---- */
+const view = { k: 1, x: 0, y: 0 };
+function applyView() { $("view").setAttribute("transform", `translate(${view.x},${view.y}) scale(${view.k})`); }
+function fit() {
+  const c = $("canvas").getBoundingClientRect();
+  const pad = 40;
+  const k = Math.min(1.4, Math.min((c.width - pad) / bounds.w, (c.height - pad - 60) / bounds.h));
+  view.k = k > 0 && isFinite(k) ? k : 1;
+  view.x = (c.width - bounds.w * view.k) / 2 - bounds.x * view.k;
+  view.y = (c.height - 50 - bounds.h * view.k) / 2 - bounds.y * view.k + 10;
+  applyView();
+}
+(() => {
+  const svg = $("svg");
+  let drag = null;
+  // Remember the pressed node here: with pointer capture, pointerup targets the svg.
+  svg.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y, moved: false, node: e.target.closest?.(".node") }; svg.setPointerCapture(e.pointerId); });
+  svg.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) { drag.moved = true; svg.classList.add("dragging"); }
+    view.x = drag.vx + dx; view.y = drag.vy + dy; applyView();
+  });
+  const end = (e) => {
+    if (!drag) return;
+    const { moved, node } = drag; drag = null; svg.classList.remove("dragging");
+    if (!moved) select(node ? node.dataset.id : null);
+  };
+  svg.addEventListener("pointerup", end);
+  svg.addEventListener("pointercancel", () => { drag = null; svg.classList.remove("dragging"); });
+  svg.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const r = svg.getBoundingClientRect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    const f = Math.exp(-e.deltaY * 0.0015);
+    const k = Math.min(4, Math.max(0.2, view.k * f));
+    view.x = mx - (mx - view.x) * (k / view.k); view.y = my - (my - view.y) * (k / view.k); view.k = k;
+    applyView();
+  }, { passive: false });
+  svg.addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("node")) { e.preventDefault(); select(e.target.dataset.id); } });
+})();
+
+function select(id) {
+  state.selected = id;
+  state.showProblems = false;
+  render();
+}
+
+/* ---- wiring ---- */
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("a.ref");
+  if (a) { e.preventDefault(); select(a.dataset.ref); }
+});
+for (const id of ["f-def", "f-claim", "f-ext"]) $(id).addEventListener("change", () => { render(); fit(); });
+$("q").addEventListener("input", (e) => { state.query = e.target.value.trim().toLowerCase(); render(); });
+$("problems-btn").addEventListener("click", () => { state.showProblems = !state.showProblems; render(); });
+$("reload").addEventListener("click", load);
+$("fit").addEventListener("click", fit);
+window.addEventListener("resize", fit);
+
+// First frame from the sample so the page is never blank, then the project.
+state.graph = parseCollection(SAMPLE);
+state.source = "sample";
+render();
+fit();
+load();
+</script>
