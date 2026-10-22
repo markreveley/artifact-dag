@@ -101,3 +101,25 @@ test("examples parse cleanly", async () => {
   assert.deepEqual(g.problems.filter((p) => p.level === "error"), []);
   assert.deepEqual(g.external, ["claim:simpsons-paradox-example"]);
 });
+
+test("document, section and order are read; a bad order is a problem", () => {
+  const ok = parseFile("c.md", `---
+id: claim:x
+type: claim
+title: X
+document: repo/doc.md
+section: "2. Keys"
+order: 7
+---
+Body.`);
+  assert.equal(ok.node.document, "repo/doc.md");
+  assert.equal(ok.node.section, "2. Keys");
+  assert.equal(ok.node.order, 7);
+  assert.deepEqual(ok.problems, []);
+  const bad = parseFile("c.md", "---\nid: claim:y\ntype: claim\ntitle: Y\norder: second\n---\n");
+  assert.equal(bad.node.order, null);
+  assert.equal(bad.problems[0].code, "bad_order");
+  const none = parseFile("d.md", "---\nid: def:z\ntype: definition\ntitle: Z\n---\n");
+  assert.equal(none.node.document, "");
+  assert.equal(none.node.order, null);
+});

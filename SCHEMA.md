@@ -112,6 +112,25 @@ The body is the claim's **value**: one atomic statement, elaborated as needed.
 likely to follow are `observation`, `hypothesis` and `norm`. `subject` names
 the node the claim is about, and adds an `about` edge.
 
+## Documents
+
+A claim usually comes from a document that argues it in order. Three
+optional fields let the viewer show that document decomposed, claim by claim,
+in its reading order:
+
+```yaml
+document: identikey-dev/tutorials/identikey-from-the-ground-up.md
+section: "9. The XID"
+order: 31
+```
+
+`document` names the source, conventionally `<repo>/<path>`; every node with
+the same value belongs to one document. `section` is the heading the claim
+comes from. `order` is a whole number giving its place in the document;
+numbers only need to sort, not be consecutive. The fields are allowed on
+definitions too, but a definition used by many documents is better tagged
+than given one `document`.
+
 ## Frontmatter syntax
 
 The parser understands a deliberate subset of YAML so that it can run with no
@@ -132,6 +151,7 @@ Nested mappings are not supported. Keep frontmatter flat.
 ```js
 {
   nodes: [{ id, type, subtype, title, aliases, tags, sources, subject,
+            document, section, order,
             value, subdefinitions: [{ source, text }], path }],
   edges: [{ from, to, kind }],          // kind: uses | depends_on | ...
   problems: [{ level, code, path, message }]
@@ -139,5 +159,5 @@ Nested mappings are not supported. Keep frontmatter flat.
 ```
 
 Problem codes: `missing_field`, `bad_id`, `prefix_mismatch`, `duplicate_id`,
-`unknown_type`, `cycle`. External links are reported as `external` at level
+`unknown_type`, `cycle`, `bad_order`. External links are reported as `external` at level
 `info` so a viewer can count them without treating them as errors.
