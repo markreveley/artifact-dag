@@ -49,6 +49,11 @@ npm run bundle -- examples/dag    # write examples/dag/_bundle.json
    ```sh
    npm run build -- --project chan_XXXX --title "My graph" > viewer.html
    ```
+   A project's repo keeps these options in `dag-viewer/config.json`
+   (`{"project": "chan_XXXX", "root": "dag", "title": "My graph"}`) and
+   builds with `npm run build -- --config <repo>/dag-viewer/config.json`.
+   The built page is not committed anywhere; the artifact's versions record
+   what was published.
 3. Publish `viewer.html` as a Claude artifact declaring the `files`
    capability for the same project: `capabilities: {files: {project: "chan_XXXX"}}`.
    Only a member of the project can publish that declaration.
