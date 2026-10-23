@@ -15,8 +15,9 @@ Some projects keep the folder elsewhere in their files, for example
 `/mnt/project-files/<repo>/dag/` when the Library mirrors each repo's
 layout. The project's instructions or the mirroring repo's `CLAUDE.md` say
 so. Then use that folder wherever this skill says `/mnt/project-files/dag/`,
-and build the viewer with `--root <repo>/dag` (the path inside the project's
-files), or it will look for a top-level `dag/` and show the example.
+and set `"root": "<repo>/dag"` (the path inside the project's files) in its
+`dag-viewer/config.json`, or the viewer will look for a top-level `dag/`
+and show the example.
 
 ## Rules
 
@@ -98,14 +99,17 @@ Plain-language requests that mean one of these get the same treatment.
 
 1. If `dag/` doesn't exist, offer to copy `examples/dag/definitions` and
    `examples/dag/claims` into it as a starter, or create it empty.
-2. Build with this project's id (the `chan_...` id of the current project):
+2. Build from the project's `dag-viewer/config.json` (beside `dag/`, or in
+   the DAG folder's repo, as that project's rules say). If it doesn't exist,
+   create it with this project's id (the `chan_...` id of the current
+   project): `{"project": "chan_XXXX", "root": "dag", "title": "<project name> DAG"}`.
    ```sh
-   node <repo>/bin/build-viewer.js --project chan_XXXX --title "<project name> DAG" > <scratch>/viewer.html
+   node <repo>/bin/build-viewer.js --config <path>/dag-viewer/config.json > <scratch>/viewer.html
    ```
 3. Publish `viewer.html` with the Artifact tool, declaring
    `capabilities: {files: {project: "chan_XXXX"}}` with the same id, and
-   `icon: "graph"`. Keep a copy at `/mnt/project-files/dag-viewer/viewer.html`
-   (or beside the DAG folder's repo, as that project's rules say).
+   `icon: "graph"`. Don't keep a copy of the built page; it is rebuilt from
+   this repo and the config each time.
 4. Post the link. Tell the user the page will ask once for permission to
    read the project's files, and that an outside viewer sees the example.
 

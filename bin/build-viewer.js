@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 // Build one instance of the viewer for one project.
 //   build-viewer --project chan_... [--root dag] [--title "Name"] > viewer.html
+//   build-viewer --config dag-viewer/config.json > viewer.html
 //   build-viewer --project chan_... --federation --slug dag --name "DAG" [--title ...]
 // --federation adds the bundles other projects pushed to the artifact's
 // database (see bin/push-plan.js); --slug and --name label this project.
+// --config reads the same options from a JSON file kept in the project's
+// repo ({project, root, title, federation, slug, name}); flags override it.
 // Inlines src/ into viewer/template.html along with the example collection,
 // which the page shows whenever the project's files can't be read.
 
@@ -12,14 +15,16 @@ import { join, relative } from "node:path";
 
 const here = new URL("..", import.meta.url).pathname;
 const args = process.argv.slice(2);
-const opt = (name, dflt) => { const i = args.indexOf("--" + name); return i >= 0 ? args[i + 1] : dflt; };
+const flag = (name) => { const i = args.indexOf("--" + name); return i >= 0 ? args[i + 1] : undefined; };
+const file = flag("config") ? JSON.parse(await readFile(flag("config"), "utf8")) : {};
+const opt = (name, dflt) => flag(name) ?? file[name] ?? dflt;
 
 const project = opt("project");
 if (!project) {
-  console.error('usage: build-viewer --project chan_... [--root dag] [--title "Name"]');
+  console.error('usage: build-viewer (--project chan_... [--root dag] [--title "Name"] | --config file.json)');
   process.exit(2);
 }
-const federation = args.includes("--federation");
+const federation = args.includes("--federation") || file.federation === true;
 const config = { project, root: opt("root", "dag"), federation,
   slug: opt("slug", "this"), name: opt("name", "This project") };
 const title = opt("title", "Definitions and claims");
