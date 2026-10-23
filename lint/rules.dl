@@ -6,8 +6,10 @@
 def(D) :- node(D, "definition").
 claim(C) :- node(C, "claim").
 
-% A has an edge of any kind to B.
+% A has an edge of any kind to B, or to a narrower sense of B: a node that
+% links "Capability grant" has settled the word "grant".
 linked(A, B) :- edge(A, B, _).
+linked(A, B) :- edge(A, M, _), edge(M, B, "refines").
 
 claim_kind("depends_on").
 claim_kind("supports").
