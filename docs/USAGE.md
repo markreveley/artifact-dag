@@ -92,6 +92,13 @@ on the same files, so its problems button shows the same findings without
 asking. Use `dag check` when you want the report in the thread, for example
 before a batch of edits, or to get the graph as JSON.
 
+`dag lint` adds the linter: rules that look for missing links rather than
+broken files. It reports, for example, a definition whose text names another
+term without linking it, a claim with no edge to any other claim, or a
+claim that depends on one later in its document. It only reports; each
+finding is decided by adding the link or by noting in the node that the word
+means something else (`not_links`, see `SCHEMA.md`), and then it stays quiet.
+
 ## Commands
 
 These are conventions for talking to Claude in a project thread, not a
@@ -103,6 +110,7 @@ request is unambiguous.
 |-----------------------------------------|--------------------------------------------------------------------|
 | `dag check`                             | runs the validator on `dag/` and posts the report                  |
 | `dag check --json`                      | same, and attaches the parsed graph as `graph.json`                |
+| `dag lint`                              | runs the link linter on `dag/` and posts its findings              |
 | `dag list`                              | lists every node id with its title, grouped by type                |
 | `dag show <id>`                         | posts the node's file contents                                     |
 | `dag add def <term>`                    | creates `dag/definitions/<slug>.md` and asks for or drafts the text |

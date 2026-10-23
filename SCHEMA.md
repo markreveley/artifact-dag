@@ -112,6 +112,33 @@ The body is the claim's **value**: one atomic statement, elaborated as needed.
 likely to follow are `observation`, `hypothesis` and `norm`. `subject` names
 the node the claim is about, and adds an `about` edge.
 
+## Recording link decisions: not_links
+
+```yaml
+not_links: [def:grant]   # this node's text uses "grant" in another sense
+```
+
+An optional list of definition ids on any node. It says the node's text uses
+that term's word in a different sense, so no edge belongs there. The linter
+(`dagcheck --lint`) stops reporting `unlinked_term` and `narrower_unlinked`
+for that pair, and on a claim it also silences `untagged_use` for that
+definition. It adds no edge. Keep it for real decisions: a reviewer sees each
+entry in the diff.
+
+## Scales
+
+Tag a definition `scale` when it names an ordered set of other definitions
+(`custody-ladder`: C0 to C4). Each member `refines` the scale, and the
+scale's text wikilinks every member, in order. The linter reports a member
+the scale's text does not link as `scale_member`, an error.
+
+## Pervasive terms
+
+Tag a definition `pervasive` when nearly every node names it and a link from
+each would only make it a hub: a collection's own subject (`def:identikey`
+in the IdentiKey project), or a citation marker. `unlinked_term` never
+reports it. Nodes can still link it where the link means something.
+
 ## Documents
 
 A claim usually comes from a document that argues it in order. Three
@@ -161,3 +188,36 @@ Nested mappings are not supported. Keep frontmatter flat.
 Problem codes: `missing_field`, `bad_id`, `prefix_mismatch`, `duplicate_id`,
 `unknown_type`, `cycle`, `bad_order`. External links are reported as `external` at level
 `info` so a viewer can count them without treating them as errors.
+`notLinks` on a node is its `not_links` list.
+
+## Lint findings
+
+`dagcheck <folder> --lint` derives findings from the parsed graph with the
+Datalog rules in `lint/rules.dl`, then any rules in `<folder>/lint.dl`. A
+rule derives `finding(Code, Level, Node, Target)`; the facts it can read are
+listed at the top of `src/facts.js`. Matching words in text is done in
+JavaScript before the rules run: whole words, case-insensitive, with a
+plural `s` or `es`, a space in a term also matching a hyphen; the longest term wins where two overlap ("access token"
+names Access token, not Token); a title's trailing parenthetical is dropped
+when what remains is no other title ("C2 (managed)" is named by "C2"); a
+title or alias of three characters or fewer counts only in capitals
+("OP", "XID"). Wikilinks, Markdown link targets and code spans are not
+scanned. Only a node's value is scanned, not its sub-definitions.
+
+| code | level | reported when |
+|---|---|---|
+| `unlinked_term` | warn | a node's text names a definition it has no edge to and no `not_links` entry for, unless that definition is tagged `pervasive` |
+| `narrower_unlinked` | warn | a definition's title ends with another definition's title ("Access token", Token) and it has no edge to it |
+| `scale_member` | error | a definition refines a `scale` whose text does not link it |
+| `isolated_claim` | warn | a claim with a `document` and `order` has no `depends_on`, `supports`, `contradicts` or `refines` edge to or from another claim |
+| `forward_dependency` | error | a claim `depends_on` a claim later in the same document |
+| `untagged_use` | warn | a claim tagged `doc-X` `uses` a definition not tagged `doc-X` |
+| `unused_doc_term` | warn | a definition tagged `doc-X` is linked by no claim tagged `doc-X`, when that document has claims |
+| `dead_end_definition` | info | a definition has no outgoing edge |
+
+`--json` with `--lint` prints `{ problems, findings }`, each finding
+`{ level, code, node, target, path, message }`. `--baseline <file>` reports
+only warn and info findings not listed in the file (errors always show), and
+writes the file from the current findings when it does not exist, so rules
+can be switched on before every old warning is fixed. The linter never
+writes edges.

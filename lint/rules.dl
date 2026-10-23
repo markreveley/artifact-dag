@@ -1,0 +1,60 @@
+% Default lint rules for dagcheck --lint. Each rule derives
+%   finding(Code, Level, Node, Target)
+% from the facts listed in src/facts.js. Target is "" when a finding has none.
+% A collection can add rules in its own dag/lint.dl, loaded after these.
+
+def(D) :- node(D, "definition").
+claim(C) :- node(C, "claim").
+
+% A has an edge of any kind to B.
+linked(A, B) :- edge(A, B, _).
+
+claim_kind("depends_on").
+claim_kind("supports").
+claim_kind("contradicts").
+claim_kind("refines").
+claim_link(A) :- claim(A), claim(B), edge(A, B, K), claim_kind(K), A != B.
+claim_link(B) :- claim(A), claim(B), edge(A, B, K), claim_kind(K), A != B.
+
+% unlinked_term: a node's text names a definition it has no edge to and no
+% not_links entry for. A definition tagged pervasive (the collection's own
+% subject, a citation marker) is never required.
+finding("unlinked_term", "warn", N, T) :-
+  names(N, T, _), def(T), not linked(N, T), not not_link(N, T), not tag(T, "pervasive"), N != T.
+
+% narrower_unlinked: a definition's title ends with another definition's
+% title ("Access token" ends with "Token") and has no edge to it. The head
+% noun of an English compound is its last word, so "Agent loop" is not a
+% narrower Agent.
+finding("narrower_unlinked", "warn", D, T) :-
+  title_contains(D, T, "end"), def(D), def(T), not linked(D, T), not not_link(D, T).
+
+% scale_member: a definition refines a definition tagged scale, but the
+% scale's text does not link it. Members refine the scale and the scale's text
+% wikilinks each one.
+finding("scale_member", "error", M, S) :-
+  tag(S, "scale"), edge(M, S, "refines"), not edge(S, M, "mentions").
+
+% isolated_claim: a claim in a document with no claim edge to or from another
+% claim.
+finding("isolated_claim", "warn", C, "") :-
+  claim(C), in_doc(C, _, _), not claim_link(C).
+
+% forward_dependency: a claim depends on a claim later in the same document.
+finding("forward_dependency", "error", A, B) :-
+  edge(A, B, "depends_on"), in_doc(A, Doc, OA), in_doc(B, Doc, OB), OA < OB.
+
+% untagged_use: a claim tagged doc-X uses a definition not tagged doc-X.
+finding("untagged_use", "warn", C, D) :-
+  claim(C), doc_tag(C, X), edge(C, D, "uses"), def(D), not tag(D, X), not not_link(C, D).
+
+% unused_doc_term: a definition tagged doc-X that no claim tagged doc-X links,
+% when that document has claims.
+doc_has_claims(X) :- claim(C), doc_tag(C, X).
+doc_uses(D, X) :- claim(C), doc_tag(C, X), edge(C, D, _).
+finding("unused_doc_term", "warn", D, X) :-
+  def(D), doc_tag(D, X), doc_has_claims(X), not doc_uses(D, X).
+
+% dead_end_definition: a definition with no outgoing edge.
+has_out(D) :- edge(D, _, _).
+finding("dead_end_definition", "info", D, "") :- def(D), not has_out(D).

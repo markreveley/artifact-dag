@@ -20,7 +20,10 @@ this file is for someone working on the code.
 | `SCHEMA.md`        | the node format: frontmatter, ids, edges, body layout       |
 | `src/parse.js`     | files in, `{nodes, edges, problems}` out; runs in Node and the browser |
 | `src/frontmatter.js` | the small YAML subset the schema allows                   |
-| `bin/dagcheck.js`  | CLI validator and JSON export                               |
+| `bin/dagcheck.js`  | CLI validator and JSON export; `--lint` runs the link rules |
+| `src/datalog.js`   | a small Datalog evaluator (semi-naive, stratified negation) |
+| `src/facts.js`, `src/lint.js` | graph to Datalog facts, and rules to findings     |
+| `lint/rules.dl`    | the default lint rules, one per finding code                |
 | `examples/dag/`    | an example collection (epistemics) to copy into a project   |
 | `viewer/template.html` | the viewer page, with placeholders for the parser and config |
 | `bin/bundle.js`    | writes `_bundle.json`, every node in one file, so the viewer loads fast |
