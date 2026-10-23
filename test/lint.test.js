@@ -89,6 +89,16 @@ test("unlinked_term: plain-text names with no edge, unless not_links says so", (
   ]);
 });
 
+test("linking a narrower sense settles the general word", () => {
+  const mk = (id, title, value) => ({ id, type: "definition", title, aliases: [], tags: [], value, notLinks: [], path: id });
+  const g = {
+    nodes: [mk("def:grant", "Grant", "A permission."), mk("def:capability-grant", "Capability grant", "A grant as a token."),
+      mk("def:gate", "Gate", "Verifies grants.")],
+    edges: [{ from: "def:capability-grant", to: "def:grant", kind: "refines" }, { from: "def:gate", to: "def:capability-grant", kind: "mentions" }],
+  };
+  assert.deepEqual(lint(g, RULES).filter((f) => f.code === "unlinked_term").map((f) => f.node), []);
+});
+
 test("unlinked_term skips a definition tagged pervasive", () => {
   const mk = (id, title, value, tags = []) => ({ id, type: "definition", title, aliases: [], tags, value, notLinks: [], path: id });
   const g = { nodes: [mk("def:x", "X thing", "Built by Acme."), mk("def:acme", "Acme", "A company.", ["pervasive"])], edges: [] };
