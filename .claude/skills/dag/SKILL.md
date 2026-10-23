@@ -11,6 +11,13 @@ viewer artifact reads that folder directly. This repo (`artifact-dag`) holds
 the schema, parser and viewer template. Read `SCHEMA.md` before writing a
 node; `docs/USAGE.md` is the user-facing guide and defines the commands.
 
+Some projects keep the folder elsewhere in their files, for example
+`/mnt/project-files/<repo>/dag/` when the Library mirrors each repo's
+layout. The project's instructions or the mirroring repo's `CLAUDE.md` say
+so. Then use that folder wherever this skill says `/mnt/project-files/dag/`,
+and build the viewer with `--root <repo>/dag` (the path inside the project's
+files), or it will look for a top-level `dag/` and show the example.
+
 ## Rules
 
 - Node files are the source of truth. Never keep a parallel copy elsewhere.
@@ -97,7 +104,8 @@ Plain-language requests that mean one of these get the same treatment.
    ```
 3. Publish `viewer.html` with the Artifact tool, declaring
    `capabilities: {files: {project: "chan_XXXX"}}` with the same id, and
-   `icon: "graph"`. Keep a copy at `/mnt/project-files/dag-viewer/viewer.html`.
+   `icon: "graph"`. Keep a copy at `/mnt/project-files/dag-viewer/viewer.html`
+   (or beside the DAG folder's repo, as that project's rules say).
 4. Post the link. Tell the user the page will ask once for permission to
    read the project's files, and that an outside viewer sees the example.
 
