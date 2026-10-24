@@ -3,7 +3,7 @@
 
 const LIST_KEYS = new Set([
   "aliases", "tags", "sources", "not_links",
-  "uses", "depends_on", "supports", "contradicts", "refines",
+  "uses", "depends_on", "supports", "contradicts", "refines", "topics",
 ]);
 
 export function splitFrontmatter(text) {

@@ -97,7 +97,7 @@ test("examples parse cleanly", async () => {
   const files = await Promise.all((await walk(root)).map(async (p) =>
     ({ path: relative(root, p), text: await readFile(p, "utf8") })));
   const g = parseCollection(files);
-  assert.equal(g.nodes.length, 11);
+  assert.equal(g.nodes.length, 13);
   assert.deepEqual(g.problems.filter((p) => p.level === "error"), []);
   assert.deepEqual(g.external, ["claim:simpsons-paradox-example"]);
 });
@@ -123,3 +123,31 @@ Body.`);
   assert.equal(none.node.document, "");
   assert.equal(none.node.order, null);
 });
+
+test("resource: url and hacker_news fields, topics edges, url required", () => {
+  const { node, edges, problems } = parseFile("r.md", `---
+id: res:sandboxing-basics
+type: resource
+title: Software sandboxing basics
+url: https://blog.example.com/sandboxing
+hacker_news: https://news.ycombinator.com/item?id=1
+topics: [def:sandboxing, def:security]
+---
+An overview.
+`);
+  assert.deepEqual(problems, []);
+  assert.equal(node.url, "https://blog.example.com/sandboxing");
+  assert.equal(node.hackerNews, "https://news.ycombinator.com/item?id=1");
+  assert.equal(node.value, "An overview.");
+  assert.deepEqual(edges, [
+    { from: "res:sandboxing-basics", to: "def:sandboxing", kind: "topics" },
+    { from: "res:sandboxing-basics", to: "def:security", kind: "topics" },
+  ]);
+  const r = parseFile("r.md", "---\nid: res:x\ntype: resource\ntitle: X\n---\n");
+  assert.deepEqual(r.problems.map((p) => p.code), ["missing_field"]);
+  const one = parseFile("r.md", "---\nid: res:y\ntype: resource\ntitle: Y\nurl: https://y\ntopics: def:solo\n---\n");
+  assert.deepEqual(one.edges, [{ from: "res:y", to: "def:solo", kind: "topics" }]);
+  const r2 = parseFile("r.md", "---\nid: def:x\ntype: resource\ntitle: X\nurl: https://x\n---\n");
+  assert.deepEqual(r2.problems.map((p) => p.code), ["prefix_mismatch"]);
+});
+

@@ -24,20 +24,22 @@ so loading slows down, but stays correct, if the bundle falls behind.
 
 ## Reading the graph
 
-- Pills are definitions, boxes are claims. The small label above a title is
-  the type or, for a claim, its subtype.
+- Pills are definitions, boxes are claims, square boxes are resources (outside
+  pages: articles, repos, papers). The small label above a title is the type
+  or, for a claim, its subtype.
 - Arrows point from a node to what it builds on: a claim points at the
   definitions it `uses`, a definition points at the narrower term it
-  `refines`. Green is `supports`, red dashed is `contradicts`, faint lines
+  `refines`, a resource points at the definitions it is filed under through
+  `topics`. Green is `supports`, red dashed is `contradicts`, faint lines
   are `mentions` and `about`.
 - A dashed outline is an **external** node: something linked from this
   project but not defined in it. It may live in another project's `dag/`,
   or still need writing.
 - Click a node to read it in full: the meta-definition or claim text, the
-  attributed sub-definitions, sources, and every edge in and out. Links in
-  the text jump to that node.
+  attributed sub-definitions, sources, a resource's URL and Hacker News
+  thread, and every edge in and out. Links in the text jump to that node.
 - Filters hide a type; search dims everything that doesn't match on id,
-  title, alias or tag. Scroll to zoom, drag to pan, **Fit** to reset.
+  title, alias, tag or URL. Scroll to zoom, drag to pan, **Fit** to reset.
 - The **document** picker (shown once any claim has a `document` field)
   narrows the graph to one document's claims and what they build on, and
   lists those claims in reading order, grouped by section. A claim from a

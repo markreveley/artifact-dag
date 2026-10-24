@@ -6,11 +6,12 @@ import { splitFrontmatter, parseFrontmatter } from "./frontmatter.js";
 export const TYPES = {
   definition: { prefix: "def" },
   claim: { prefix: "claim" },
+  resource: { prefix: "res", required: ["url"] },
 };
 
-export const EDGE_FIELDS = ["uses", "depends_on", "supports", "contradicts", "refines"];
+export const EDGE_FIELDS = ["uses", "depends_on", "supports", "contradicts", "refines", "topics"];
 // Edge kinds that are required to be acyclic.
-export const DAG_KINDS = new Set(["uses", "depends_on", "supports", "refines"]);
+export const DAG_KINDS = new Set(["uses", "depends_on", "supports", "refines", "topics"]);
 
 const ID_RE = /^([a-z]+):([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const WIKILINK_RE = /\[\[([^\]|]+?)(?:\|[^\]]*)?\]\]/g;
@@ -56,8 +57,8 @@ export function parseFile(path, text) {
     problems.push({ level, code, path, message });
 
   const typeDef = TYPES[fm.type];
-  if (!typeDef) problem("unknown_type", `type "${fm.type}" is not definition or claim`);
-  for (const f of ["id", "title"]) if (!fm[f]) problem("missing_field", `missing "${f}"`);
+  if (!typeDef) problem("unknown_type", `type "${fm.type}" is not ${Object.keys(TYPES).join(", ")}`);
+  for (const f of ["id", "title", ...(typeDef?.required || [])]) if (!fm[f]) problem("missing_field", `missing "${f}"`);
   const pid = parseId(fm.id);
   if (fm.id && !pid) problem("bad_id", `id "${fm.id}" is not <prefix>:<slug>`);
   if (fm.order !== undefined && !/^\d+$/.test(fm.order))
@@ -80,6 +81,8 @@ export function parseFile(path, text) {
     document: fm.document || "",
     section: fm.section || "",
     order: /^\d+$/.test(fm.order || "") ? Number(fm.order) : null,
+    url: fm.url || "",
+    hackerNews: fm.hacker_news || "",
     value,
     subdefinitions: subSection ? parseSubdefinitions(subSection) : [],
     notLinks: fm.not_links || [],

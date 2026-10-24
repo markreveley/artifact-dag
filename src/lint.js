@@ -15,6 +15,8 @@ const MESSAGES = {
   untagged_use: (f, _, tag) => `uses ${f.target}, which is not tagged ${tag}`,
   unused_doc_term: (f) => `is tagged ${f.target} but no claim tagged ${f.target} uses it`,
   dead_end_definition: () => "has no outgoing edge",
+  topic_not_definition: (f) => `lists ${f.target} in topics, which is not a definition`,
+  untopiced_resource: () => "has no topics",
 };
 
 // `rules` is one Datalog program text (defaults plus any collection rules).

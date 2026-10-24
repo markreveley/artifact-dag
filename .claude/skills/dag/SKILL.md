@@ -1,6 +1,6 @@
 ---
 name: dag
-description: Maintain a project's DAG of definition and claim nodes (Markdown files under dag/ in the project's files) and its viewer artifact. Use when the user says "dag ..." or asks to add, edit, link, check, list or publish definitions, claims or the graph viewer.
+description: Maintain a project's DAG of definition, claim and resource nodes (Markdown files under dag/ in the project's files) and its viewer artifact. Use when the user says "dag ..." or asks to add, edit, link, check, list or publish definitions, claims, resources (saved links) or the graph viewer.
 ---
 
 # DAG nodes and viewer
@@ -22,11 +22,12 @@ and show the example.
 ## Rules
 
 - Node files are the source of truth. Never keep a parallel copy elsewhere.
-- Ids are global: `def:<slug>` and `claim:<slug>`, lowercase, hyphenated.
+- Ids are global: `def:<slug>`, `claim:<slug>` and `res:<slug>`, lowercase, hyphenated.
   Reuse an id that exists in another project when it means the same thing.
 - A link to an id not present in this project is fine (an external node).
 - Keep frontmatter flat; the parser handles only the subset in SCHEMA.md.
 - Definitions: `dag/definitions/<slug>.md`. Claims: `dag/claims/<slug>.md`.
+  Resources: `dag/resources/<slug>.md`.
 - After any change, run the validator and report errors to the user.
 - Project files are a network mount: write, then re-read about ten seconds
   later before building on it. Other threads may write too, so read a file
@@ -85,7 +86,8 @@ If the project mirrors `dag/` in a repo, copy `_bundle.json` there too.
 | `dag show <id>`               | post the file's contents                                                            |
 | `dag add def <term>`          | write a definition; draft the meta-definition from the request or ask for it         |
 | `dag add claim <statement>`   | write a claim, `subtype: proposition` unless told otherwise; set `subject` if clear  |
-| `dag link A <kind> B`         | add B to A's `<kind>` list (`uses`, `depends_on`, `supports`, `contradicts`, `refines`) |
+| `dag add res <url>`           | write a resource with `url`; draft a short overview; file it under `topics` definitions |
+| `dag link A <kind> B`         | add B to A's `<kind>` list (`uses`, `depends_on`, `supports`, `contradicts`, `refines`, `topics`) |
 | `dag unlink A <kind> B`       | remove it                                                                           |
 | `dag rename <id> <new-id>`    | rename the file and id, and rewrite every reference in `dag/`                       |
 | `dag externals`               | the validator's `external` notes                                                    |
