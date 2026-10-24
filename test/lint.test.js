@@ -134,6 +134,19 @@ test("dead_end_definition: no outgoing edge", () => {
   assert.deepEqual(got("dead_end_definition").sort(), [["def:access-token", ""], ["def:identity", ""], ["def:party", ""]]);
 });
 
+test("resources: topics must name definitions, and a resource needs one", () => {
+  const res = (slug, topics) => ({ path: `${slug}.md`, text: `---\nid: res:${slug}\ntype: resource\ntitle: ${slug}\nurl: https://example.com/${slug}\n${topics ? `topics: [${topics}]\n` : ""}---\n` });
+  const g = parseCollection([
+    { path: "a.md", text: "---\nid: def:agents\ntype: definition\ntitle: Agents\n---\nSoftware that acts." },
+    { path: "c.md", text: "---\nid: claim:c\ntype: claim\ntitle: C\n---\nA claim." },
+    res("good", "def:agents"), res("bad", "claim:c"), res("loose"),
+  ]);
+  const fs = lint(g, RULES);
+  const of = (code) => fs.filter((f) => f.code === code).map((f) => [f.node, f.target]);
+  assert.deepEqual(of("topic_not_definition"), [["res:bad", "claim:c"]]);
+  assert.deepEqual(of("untopiced_resource"), [["res:loose", ""]]);
+});
+
 test("findings sort errors first", () => {
   assert.deepEqual([...new Set(findings.map((f) => f.level))], ["error", "warn", "info"]);
 });

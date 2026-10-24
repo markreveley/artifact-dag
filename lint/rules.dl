@@ -5,6 +5,7 @@
 
 def(D) :- node(D, "definition").
 claim(C) :- node(C, "claim").
+resource(R) :- node(R, "resource").
 
 % A has an edge of any kind to B, or to a narrower sense of B: a node that
 % links "Capability grant" has settled the word "grant".
@@ -60,3 +61,12 @@ finding("unused_doc_term", "warn", D, X) :-
 % dead_end_definition: a definition with no outgoing edge.
 has_out(D) :- edge(D, _, _).
 finding("dead_end_definition", "info", D, "") :- def(D), not has_out(D).
+
+% topic_not_definition: a resource's topics entry names a node in the
+% collection that is not a definition.
+finding("topic_not_definition", "warn", R, T) :-
+  resource(R), edge(R, T, "topics"), node(T, K), K != "definition".
+
+% untopiced_resource: a resource with no topics, so it floats unattached.
+has_topic(R) :- edge(R, _, "topics").
+finding("untopiced_resource", "info", R, "") :- resource(R), not has_topic(R).

@@ -1,7 +1,7 @@
 # Node schema
 
-A node is one Markdown file with YAML-style frontmatter. Two node types exist
-today: **definition** and **claim**. Files without a `type` field are ignored,
+A node is one Markdown file with YAML-style frontmatter. Three node types
+exist today: **definition**, **claim** and **resource**. Files without a `type` field are ignored,
 so a collection folder can hold ordinary notes alongside nodes.
 
 ## Where nodes live
@@ -19,6 +19,7 @@ Every node has a globally unique `id` of the form `<prefix>:<slug>`:
 |------------|---------|-------------------------------|
 | definition | `def`   | `def:entropy`                 |
 | claim      | `claim` | `claim:entropy-never-decreases` |
+| resource   | `res`   | `res:shannon-1948`            |
 
 Slugs are lowercase ASCII letters, digits and hyphens. Ids are global across
 projects on purpose: a `def:entropy` in one project and a `def:entropy` in
@@ -31,7 +32,7 @@ it renders as an *external* node.
 ```yaml
 ---
 id: def:entropy          # required
-type: definition         # required: definition | claim
+type: definition         # required: definition | claim | resource
 title: Entropy           # required
 tags: [thermodynamics]   # optional
 sources:                 # optional, attributions for the node as a whole
@@ -52,12 +53,13 @@ Explicit edges come from these frontmatter fields, each a list of ids:
 | `supports`   | this claim is evidence for that claim                |
 | `contradicts`| this claim is evidence against that claim            |
 | `refines`    | this node is a narrower version of that node         |
+| `topics`     | this resource is about that definition               |
 
 Inline wikilinks in the body, `[[def:entropy]]`, add a `mentions` edge. The
 display text form `[[def:entropy|the entropy]]` is also accepted.
 
-`uses`, `depends_on`, `supports` and `refines` are expected to form a DAG;
-the validator reports cycles over those four. `contradicts` and `mentions`
+`uses`, `depends_on`, `supports`, `refines` and `topics` are expected to form
+a DAG; the validator reports cycles over those five. `contradicts` and `mentions`
 are allowed to cycle.
 
 ## Definition
@@ -111,6 +113,33 @@ The body is the claim's **value**: one atomic statement, elaborated as needed.
 `subtype` is a free label; `proposition` is the first one in use. Others
 likely to follow are `observation`, `hypothesis` and `norm`. `subject` names
 the node the claim is about, and adds an `about` edge.
+
+## Resource
+
+```yaml
+---
+id: res:software-sandboxing-basics
+type: resource
+title: "Software sandboxing: The basics"
+url: https://blog.emilua.org/2025/01/12/software-sandboxing-basics/
+hacker_news: https://news.ycombinator.com/item?id=49778670
+tags: [security]
+topics: [def:sandboxing]
+---
+A short overview of what the page is and why it was kept.
+```
+
+A resource is an outside page worth keeping: an article, a repo, a paper, a
+video. `url` is required and is the page itself. `hacker_news` is optional,
+the discussion thread that led to it; for a post with no outside link (an
+Ask HN), `url` and `hacker_news` are the same thread. The body is the
+resource's **value**, an overview in the collection's own words.
+
+`topics` lists the definitions the resource is about. A topic is an ordinary
+definition (`def:sandboxing`), so topics can `refine` broader topics, and the
+viewer shows each resource hanging off the terms it is filed under. Other
+fields a collection finds useful (`added`, `status`) are allowed; the parser
+keeps only the ones listed under Parsed shape.
 
 ## Recording link decisions: not_links
 
@@ -178,9 +207,9 @@ Nested mappings are not supported. Keep frontmatter flat.
 ```js
 {
   nodes: [{ id, type, subtype, title, aliases, tags, sources, subject,
-            document, section, order,
+            document, section, order, url, hackerNews,
             value, subdefinitions: [{ source, text }], path }],
-  edges: [{ from, to, kind }],          // kind: uses | depends_on | ...
+  edges: [{ from, to, kind }],          // kind: uses | depends_on | topics | ...
   problems: [{ level, code, path, message }]
 }
 ```
@@ -214,6 +243,8 @@ scanned. Only a node's value is scanned, not its sub-definitions.
 | `untagged_use` | warn | a claim tagged `doc-X` `uses` a definition not tagged `doc-X` |
 | `unused_doc_term` | warn | a definition tagged `doc-X` is linked by no claim tagged `doc-X`, when that document has claims |
 | `dead_end_definition` | info | a definition has no outgoing edge |
+| `topic_not_definition` | warn | a resource's `topics` names a node in the collection that is not a definition |
+| `untopiced_resource` | info | a resource has no `topics` |
 
 `--json` with `--lint` prints `{ problems, findings }`, each finding
 `{ level, code, node, target, path, message }`. `--baseline <file>` reports

@@ -15,6 +15,8 @@
     --def-soft: #dcecf1;
     --claim: #b2641a;     /* claims: ochre */
     --claim-soft: #f6e6d3;
+    --res: #6b4c9a;       /* resources: plum */
+    --res-soft: #ebe4f4;
     --ext: #8a94a3;       /* external nodes */
     --good: #2f7d4f;
     --bad: #b03a2e;
@@ -27,12 +29,14 @@
     :root:not([data-theme="light"]) {
       --bg: #151920; --panel: #1d222b; --fg: #e6e9ee; --muted: #9aa4b2; --line: #2f3641;
       --def: #6fb7d0; --def-soft: #1d3540; --claim: #e0a060; --claim-soft: #3d2d1c;
+      --res: #b59ae0; --res-soft: #2b2340;
       --ext: #7a8494; --good: #6fc08f; --bad: #e07a6e; --focus: #e6e9ee; color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
     --bg: #151920; --panel: #1d222b; --fg: #e6e9ee; --muted: #9aa4b2; --line: #2f3641;
     --def: #6fb7d0; --def-soft: #1d3540; --claim: #e0a060; --claim-soft: #3d2d1c;
+      --res: #b59ae0; --res-soft: #2b2340;
     --ext: #7a8494; --good: #6fc08f; --bad: #e07a6e; --focus: #e6e9ee; color-scheme: dark;
   }
   html, body { height: 100%; }
@@ -65,6 +69,7 @@
   .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
   .swatch.def { background: var(--def); }
   .swatch.claim { background: var(--claim); }
+  .swatch.res { background: var(--res); }
   .swatch.ext { border: 1.5px dashed var(--ext); }
 
   .notice {
@@ -98,6 +103,7 @@
   .node rect { fill: var(--panel); stroke-width: 1.5; }
   .node.definition rect { stroke: var(--def); fill: var(--def-soft); }
   .node.claim rect { stroke: var(--claim); fill: var(--claim-soft); }
+  .node.resource rect { stroke: var(--res); fill: var(--res-soft); }
   .node.external rect { stroke: var(--ext); stroke-dasharray: 4 3; fill: var(--panel); }
   .node text { font-family: var(--body); font-size: 12px; fill: var(--fg); pointer-events: none; }
   .node .kind { font-family: var(--mono); font-size: 9.5px; fill: var(--muted); letter-spacing: 0.04em; }
@@ -108,6 +114,7 @@
   .edge.supports { stroke: var(--good); }
   .edge.contradicts { stroke: var(--bad); stroke-dasharray: 6 4; }
   .edge.refines { stroke-dasharray: 2 3; }
+  .edge.topics { stroke: var(--res); opacity: 0.6; }
   .edge.mentions, .edge.about { opacity: 0.4; }
   .edge.dim { opacity: 0.08; }
   .edge.hi { stroke-width: 3; opacity: 1; }
@@ -126,6 +133,7 @@
   .eyebrow .pill { display: inline-block; padding: 1px 7px; border-radius: 999px; color: var(--panel); margin-right: 6px; text-transform: none; letter-spacing: 0; }
   .pill.definition { background: var(--def); }
   .pill.claim { background: var(--claim); }
+  .pill.resource { background: var(--res); }
   .pill.external { background: var(--ext); }
   aside h2 { font-family: var(--display); font-weight: 500; font-size: 24px; line-height: 1.2; margin: 6px 0 2px; text-wrap: balance; }
   .id { font-family: var(--mono); font-size: 12px; color: var(--muted); word-break: break-all; }
@@ -140,6 +148,8 @@
   .list .kind { font-family: var(--mono); font-size: 11px; color: var(--muted); flex: 0 0 90px; }
   a.ref { color: var(--def); text-decoration: none; border-bottom: 1px solid var(--line); cursor: pointer; }
   a.ref.claim { color: var(--claim); }
+  a.ref.resource { color: var(--res); }
+  a.out { color: var(--res); word-break: break-all; }
   a.ref:hover { border-bottom-color: currentColor; }
   .tags { display: flex; flex-wrap: wrap; gap: 6px; }
   .tags span { background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 1px 7px; font-size: 12px; }
@@ -165,10 +175,11 @@
   <div class="tools">
     <label class="chk"><input type="checkbox" id="f-def" checked><span class="swatch def"></span>definitions</label>
     <label class="chk"><input type="checkbox" id="f-claim" checked><span class="swatch claim"></span>claims</label>
+    <label class="chk"><input type="checkbox" id="f-res" checked><span class="swatch res"></span>resources</label>
     <label class="chk"><input type="checkbox" id="f-ext" checked><span class="swatch ext"></span>external</label>
     <select id="proj" aria-label="Show one project" hidden><option value="">All projects</option></select>
     <select id="doc" aria-label="Show one document"><option value="">All nodes</option></select>
-    <input type="search" id="q" placeholder="Find a term or claim" aria-label="Find a node">
+    <input type="search" id="q" placeholder="Find a term, claim or resource" aria-label="Find a node">
     <button class="btn" id="problems-btn" aria-pressed="false">0 problems</button>
     <button class="btn" id="reload">Reload</button>
   </div>
@@ -176,7 +187,7 @@
 <div class="notice" id="notice" hidden></div>
 <main>
   <div id="canvas">
-    <svg id="svg" role="img" aria-label="Graph of definitions and claims">
+    <svg id="svg" role="img" aria-label="Graph of definitions, claims and resources">
       <defs>
         <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"></path></marker>
         <marker id="arrow-good" class="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"></path></marker>
@@ -187,7 +198,7 @@
     <div class="legend">
       <span><i></i>uses</span><span><i style="border-top-width:3px"></i>depends on</span>
       <span><i class="good"></i>supports</span><span><i class="bad dashed"></i>contradicts</span>
-      <span><i class="dotted"></i>refines</span><span><i class="faint"></i>mentions / about</span>
+      <span><i class="dotted"></i>refines</span><span><i style="border-color:var(--res)"></i>topics</span><span><i class="faint"></i>mentions / about</span>
     </div>
     <button class="btn fit" id="fit">Fit</button>
   </div>
@@ -402,7 +413,7 @@ function fillDocs() {
 /* ---- graph helpers ---- */
 function nodeById(id) { return state.graph.nodes.find((n) => n.id === id) || (state.graph.external.includes(id) ? { id, type: "external", title: id, external: true } : null); }
 function visibleTypes() {
-  return { definition: $("f-def").checked, claim: $("f-claim").checked, external: $("f-ext").checked };
+  return { definition: $("f-def").checked, claim: $("f-claim").checked, resource: $("f-res").checked, external: $("f-ext").checked };
 }
 function allNodes() {
   const g = state.graph;
@@ -410,7 +421,7 @@ function allNodes() {
 }
 function matches(n, q) {
   if (!q) return true;
-  const hay = [n.id, n.title, ...(n.aliases || []), ...(n.tags || [])].join(" ").toLowerCase();
+  const hay = [n.id, n.title, n.url || "", ...(n.aliases || []), ...(n.tags || [])].join(" ").toLowerCase();
   return hay.includes(q);
 }
 
@@ -540,7 +551,7 @@ function render() {
     if (dim) cls.push("dim");
     const kind = n.external ? "external" : (n.subtype || n.type);
     parts.push(`<g class="${cls.join(" ")}" data-id="${esc(n.id)}" transform="translate(${p.x - p.w / 2},${p.y - p.h / 2})" tabindex="0" role="button" aria-label="${esc(n.title)}">
-      <rect width="${p.w}" height="${p.h}" rx="${n.type === "definition" ? p.h / 2 : 5}"></rect>
+      <rect width="${p.w}" height="${p.h}" rx="${n.type === "definition" ? p.h / 2 : n.type === "resource" ? 0 : 5}"></rect>
       <text x="${p.w / 2}" y="${p.h / 2 + 1}" text-anchor="middle" class="kind" dy="-7">${esc(kind)}</text>
       <text x="${p.w / 2}" y="${p.h / 2 + 1}" text-anchor="middle" dy="7">${esc(labelOf(n))}</text>
     </g>`);
@@ -552,7 +563,8 @@ function render() {
 
   const defs = g.nodes.filter((n) => n.type === "definition").length;
   const claims = g.nodes.filter((n) => n.type === "claim").length;
-  $("counts").textContent = `${defs} definitions · ${claims} claims · ${g.edges.length} edges · ${g.external.length} external` +
+  const resources = g.nodes.filter((n) => n.type === "resource").length;
+  $("counts").textContent = `${defs} definitions · ${claims} claims · ${resources ? `${resources} resources · ` : ""}${g.edges.length} edges · ${g.external.length} external` +
     (state.projects.length > 1 ? ` · ${state.projects.length} projects` : "");
   const errs = g.problems.filter((p) => p.level === "error").length;
   const pb = $("problems-btn");
@@ -605,7 +617,7 @@ function renderPane() {
   if (!n) {
     pane.innerHTML = `<div class="empty"><div class="eyebrow">${state.source === "project" ? "Project files" : "Example collection"}</div>
       <h2>Pick a node to read it</h2>
-      <p>Pills are definitions, boxes are claims, dashed outlines are nodes linked from here but defined elsewhere. Arrows point from a node to what it builds on. Scroll to zoom, drag to pan.</p>
+      <p>Pills are definitions, boxes are claims, square boxes are resources, dashed outlines are nodes linked from here but defined elsewhere. Arrows point from a node to what it builds on. Scroll to zoom, drag to pan.</p>
       <p>Nodes are Markdown files under <code>${esc(CONFIG.root)}/</code> in this project's files. Edit a file and press Reload.</p></div>`;
     return;
   }
@@ -623,6 +635,7 @@ function renderPane() {
     <h2>${esc(n.title)}</h2>
     <div class="id">${esc(n.id)}</div>
     ${docNav(n, ref, esc)}
+    ${links(n, esc)}
     <div class="value">${n.value ? md(n.value) : "<p class=\"empty\">No body text.</p>"}</div>
     ${n.subdefinitions.length ? `<h3>Sub-definitions</h3>${n.subdefinitions.map((s) => `<div class="subdef"><div class="src">${esc(s.source)}</div>${md(s.text)}</div>`).join("")}` : ""}
     ${n.sources.length ? `<h3>Sources</h3><ul class="list">${n.sources.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
@@ -631,6 +644,15 @@ function renderPane() {
     ${n.tags.length ? `<h3>Tags</h3><div class="tags">${n.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>` : ""}
     ${n.project ? `<h3>Project</h3><p>${esc(projectName(n.project))}${n.alsoIn ? ` <span class="empty">(also defined in ${n.alsoIn.map((s) => esc(projectName(s))).join(", ")})</span>` : ""}</p>` : ""}
     <div class="path">${esc(n.path)}</div>`;
+}
+
+// A resource's outbound links. Only http(s) URLs become links, so a file
+// cannot smuggle a javascript: URL into the page.
+function links(n, esc) {
+  const safe = (u) => /^https?:\/\//i.test(u || "");
+  const a = (label, u) => `<li><span class="kind">${label}</span><a class="out" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(u)}</a></li>`;
+  const items = [safe(n.url) && a("url", n.url), safe(n.hackerNews) && a("hacker news", n.hackerNews)].filter(Boolean);
+  return items.length ? `<h3>Links</h3><ul class="list">${items.join("")}</ul>` : "";
 }
 
 function docNav(n, ref, esc) {
@@ -696,7 +718,7 @@ document.addEventListener("click", (e) => {
   if (a && a.dataset.doc) { e.preventDefault(); setDoc(a.dataset.doc); return; }
   if (a) { e.preventDefault(); select(a.dataset.ref); }
 });
-for (const id of ["f-def", "f-claim", "f-ext"]) $(id).addEventListener("change", () => { render(); fit(); });
+for (const id of ["f-def", "f-claim", "f-res", "f-ext"]) $(id).addEventListener("change", () => { render(); fit(); });
 function setDoc(d) {
   state.doc = d;
   $("doc").value = d;

@@ -1,6 +1,7 @@
 # artifact-dag
 
-A directed graph of **definitions** and **claims**, kept as plain Markdown
+A directed graph of **definitions**, **claims** and **resources** (outside
+pages filed under the definitions they are about), kept as plain Markdown
 files in a Claude project's files and viewed as a Claude artifact that reads
 those files directly. No build, no sync: edit a file, reload the viewer.
 
