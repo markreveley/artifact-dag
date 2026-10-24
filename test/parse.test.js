@@ -145,6 +145,8 @@ An overview.
   ]);
   const r = parseFile("r.md", "---\nid: res:x\ntype: resource\ntitle: X\n---\n");
   assert.deepEqual(r.problems.map((p) => p.code), ["missing_field"]);
+  const one = parseFile("r.md", "---\nid: res:y\ntype: resource\ntitle: Y\nurl: https://y\ntopics: def:solo\n---\n");
+  assert.deepEqual(one.edges, [{ from: "res:y", to: "def:solo", kind: "topics" }]);
   const r2 = parseFile("r.md", "---\nid: def:x\ntype: resource\ntitle: X\nurl: https://x\n---\n");
   assert.deepEqual(r2.problems.map((p) => p.code), ["prefix_mismatch"]);
 });
