@@ -30,6 +30,8 @@ this file is for someone working on the code.
 | `bin/push-plan.js` | plans the database writes that push a project's nodes to the federation view |
 | `federation.json`  | the federation artifact's URL and home project |
 | `bin/build-viewer.js` | stamps one project's id into the template, inlining `src/` |
+| `bin/dag-to-glossary.js` | writes each document's `## Glossary` (and an optional master glossary) from the definitions, per a project's `glossary.config.json`; can draw terms from other projects' DAGs |
+| `tutorial/`        | the builder, runtime, styles, crypto bundle and shared widgets for tutorial web editions (`tutorial/README.md`) |
 | `docs/USAGE.md`    | the user guide, written for the Claude project view          |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests in a project that has this repo |
 
