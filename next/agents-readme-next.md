@@ -9,11 +9,11 @@ updated: 2026-11-01
 Read with [`operator-readme-next.md`](operator-readme-next.md). Rewrite both at the end of each thread; delete finished steps.
 
 ## State
-- `main` at `a5c4b30` (PR #15 merged: federation push docs). `next/` handoff files committed (operator chose to keep them in the repo).
+- `main` has PR #15 (federation push docs) and PR #16 (these `next/` files; the operator chose to commit them). PR #17 brings the README Plan up to date.
 - Cleaned up 2026-11-01: no other worktrees, no local or remote branches besides `main`. PRs #1–#15 are all merged.
 - Verified 2026-11-01: `npm test` passes 43/43. `npm run check -- examples/dag` reports 13 nodes, 30 edges, 1 expected external (`claim:simpsons-paradox-example`).
 - Built so far, per git history: schema and parser, viewer, `dag` skill and user guide, lint (Datalog rules), bundle, federation view and `dag push`, resource nodes, `build-viewer --config`, and the tutorial builder and glossary generator.
-- The README "Plan" section (`README.md:206`) is out of date: step 1 still says "(this)", and federation (step 4) has shipped. The repo doesn't say whether step 3 (a second viewer instance in another project) is done.
+- All four README Plan steps are done. Step 3, the second instance, is the "Identikey DAG" artifact (slug `2ebe86e8-782b-4ca7-becf-ec5ef42ed536`, published 2026-10-23, built from `viewer/template.html`). The home viewer is "DAG definitions and claims" (`59e0283c-41ba-4c4b-a987-cf783e8644aa`), and the federation view is "DAG federation" (`ae552cb1-2c01-4a3e-9968-71cd993e82af`).
 - The tutorial builder (`tutorial/build.py`) has not been run this thread.
 
 ## Environment facts
@@ -24,9 +24,7 @@ Read with [`operator-readme-next.md`](operator-readme-next.md). Rewrite both at 
 - Worktrees go under `.claude/worktrees/`. Work is merged to `main` through a PR on GitHub (`markreveley/artifact-dag`).
 
 ## Next, in order
-1. (blocked on operator) Find out what this thread should work on. See the operator file, Questions.
-2. Once step 3's status is known, bring the README "Plan" section up to date.
+1. (blocked on operator) Find out what to work on next. See the operator file, Questions.
 
 ## Pending operator decisions
-- What to work on next.
-- Is Plan step 3 (a second viewer instance) done?
+- What to work on next. The original plan is finished, and the repo records no further roadmap.
