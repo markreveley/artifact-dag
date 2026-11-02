@@ -1,3 +1,5 @@
 % formalizes: claim:lib-4a
+% claim: A loan records which copy, which member and when it is due
+% says: A loan records three things: which copy, which member, and when it is due.
 % fidelity: yes
 loan(L) :- loan_copy(L, _), loan_member(L, _), loan_due(L, _).

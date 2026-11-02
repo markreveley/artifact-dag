@@ -1,3 +1,5 @@
 % formalizes: claim:ethics-a5
+% claim: Axiom V: things with nothing in common cannot be understood through each other
+% says: Things which have nothing in common cannot be understood, the one by means of the other; the conception of one does not involve the conception of the other.
 bottom :- nothing_in_common(X, Y), conception_involves(X, Y).
 bottom :- nothing_in_common(X, Y), conception_involves(Y, X).

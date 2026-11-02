@@ -1,3 +1,5 @@
 % formalizes: claim:ethics-b8
+% claim: Bridge 8: what is not produced by anything external to itself is its own cause
+% says: What is not produced by anything external to itself is its own cause.
 externally_caused(X) :- produced_by(X, Y), X != Y.
 self_caused(X) :- thing(X), not externally_caused(X).

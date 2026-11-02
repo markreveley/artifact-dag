@@ -1,3 +1,5 @@
 % formalizes: def:title
+% definition: Title
+% says: A work listed in the catalogue: a particular novel, a particular edition of a dictionary.
 % fidelity: yes
 title(T) :- copy_of(_, T).

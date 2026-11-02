@@ -1,2 +1,4 @@
 % formalizes: claim:ethics-b7
+% claim: Bridge 7: nothing is conceived both through itself and through another
+% says: Nothing is conceived both through itself and through another.
 bottom :- conceived_through_itself(X), conceived_through_other(X).

@@ -1,3 +1,5 @@
 % formalizes: claim:lib-7b
+% claim: From the due date a fine accrues per day until the copy is returned
+% says: From that day a fine accrues, a small fixed amount per day, until the copy is returned.
 % fidelity: strained — "a fixed amount per day" is arithmetic; "until the copy is returned" holds because an overdue loan is an open one.
 fine_accrues(L) :- overdue(L).

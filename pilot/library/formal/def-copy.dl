@@ -1,4 +1,6 @@
 % formalizes: def:copy
+% definition: Copy
+% says: A physical instance of a title: what sits on the shelf, and what is lent.
 % fidelity: yes
 % copy_of(C, T): C is a copy of the title T.
 copy(C) :- copy_of(C, _).

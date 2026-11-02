@@ -1,4 +1,6 @@
 % formalizes: def:mode
+% definition: Mode
+% says: By mode, I mean the modifications of substance, or that which exists in, and is conceived through, something other than itself.
 mode(M) :- in_other(M), conceived_through_other(M).
 in_other(M) :- mode(M).
 conceived_through_other(M) :- mode(M).

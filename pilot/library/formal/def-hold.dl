@@ -1,4 +1,6 @@
 % formalizes: def:hold
+% definition: Hold
+% says: A member's request for a title that has no copy available, queued in the order placed.
 % fidelity: yes
 % hold_member(H, M), hold_title(H, T), placed_on(H, D): the parts of a hold.
 hold(H) :- hold_member(H, _), hold_title(H, _).

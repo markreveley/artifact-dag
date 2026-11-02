@@ -1,2 +1,4 @@
 % formalizes: claim:ethics-b1
+% claim: Bridge 1: what is conceived through itself is by nature prior to what is conceived through another
+% says: What is conceived through itself is by nature prior to what is conceived through another.
 prior(X, Y) :- conceived_through_itself(X), conceived_through_other(Y).

@@ -1,2 +1,4 @@
 % formalizes: claim:ethics-a7
+% claim: Axiom VII: if a thing can be conceived as not existing, its essence does not involve existence
+% says: If a thing can be conceived as non-existing, its essence does not involve existence.
 bottom :- conceivable_as_non_existing(X), essence_involves_existence(X).

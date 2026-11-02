@@ -1,2 +1,4 @@
 % formalizes: claim:ethics-p7
+% claim: Prop. VII: existence belongs to the nature of substances
+% says: Existence belongs to the nature of substances.
 essence_involves_existence(X) :- substance(X).

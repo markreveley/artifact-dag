@@ -1,2 +1,4 @@
 % formalizes: claim:lib-1b
+% claim: Every other rule exists to make sure items come back
+% says: Everything else, cards, due dates, fines and holds, exists to make sure of the second: that the items come back.
 % fidelity: no — a statement of purpose ("exists to make sure"); Datalog has no notion of what a rule is for.

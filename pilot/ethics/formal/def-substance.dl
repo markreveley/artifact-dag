@@ -1,4 +1,6 @@
 % formalizes: def:substance
+% definition: Substance
+% says: By substance, I mean that which is in itself, and is conceived through itself: in other words, that of which a conception can be formed independently of any other conception.
 substance(X) :- in_itself(X), conceived_through_itself(X).
 in_itself(X) :- substance(X).
 conceived_through_itself(X) :- substance(X).

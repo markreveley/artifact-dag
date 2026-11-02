@@ -1,3 +1,5 @@
 % formalizes: claim:lib-3c
+% claim: Two members can read the same title at once on two copies, but not the same copy
+% says: Two members can be reading the same title at the same time, on two copies; they cannot both have the same copy.
 % fidelity: strained — "can be reading the same title at once" is a permission; the rule is the second half, that one copy is not on two open loans.
 bottom :- loan_copy(L1, C), loan_copy(L2, C), open(L1), open(L2), L1 != L2.

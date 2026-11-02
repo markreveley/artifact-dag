@@ -1,4 +1,6 @@
 % formalizes: claim:lib-2b
+% claim: The desk recognises a member by the card
+% says: The card is how the desk recognises a member.
 % fidelity: strained — "recognises by the card" is a process at the desk; read as: the desk accepts a member only through a working card.
 % used_by(C, P): the card C is presented at the desk by the person P and accepted.
 bottom :- used_by(C, P), not works(C).

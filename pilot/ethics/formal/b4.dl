@@ -1,2 +1,4 @@
 % formalizes: claim:ethics-b4
+% claim: Bridge 4: two things that are not one are distinct
+% says: Two things that are not one and the same are distinct from each other.
 distinct(X, Y) :- thing(X), thing(Y), X != Y.

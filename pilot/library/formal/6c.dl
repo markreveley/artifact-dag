@@ -1,4 +1,6 @@
 % formalizes: claim:lib-6c
+% claim: A returned copy of a held title is set aside for the first hold, and the member has a week to collect it
+% says: When a copy of that title comes back, it does not go to the shelf: it is set aside for the member at the front of the queue, who has a week to collect it.
 % fidelity: strained — "a week to collect" is a deadline in time; one_week_after is a given relation, and the rule says only that a collection after the deadline does not count.
 earlier_pending(H) :- placed_before(H0, H), pending(H0).
 first_pending(H, T) :- hold_title(H, T), pending(H), not earlier_pending(H).
