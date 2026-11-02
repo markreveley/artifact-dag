@@ -1,0 +1,3 @@
+% formalizes: claim:lib-4b
+% fidelity: yes
+bottom :- loan_copy(L1, C), loan_copy(L2, C), open(L1), open(L2), L1 != L2.

@@ -1,0 +1,3 @@
+% formalizes: claim:lib-4a
+% fidelity: yes
+loan(L) :- loan_copy(L, _), loan_member(L, _), loan_due(L, _).

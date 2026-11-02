@@ -1,0 +1,4 @@
+% formalizes: def:copy
+% fidelity: yes
+% copy_of(C, T): C is a copy of the title T.
+copy(C) :- copy_of(C, _).

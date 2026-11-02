@@ -1,0 +1,3 @@
+% formalizes: claim:lib-7b
+% fidelity: strained — "a fixed amount per day" is arithmetic; "until the copy is returned" holds because an overdue loan is an open one.
+fine_accrues(L) :- overdue(L).

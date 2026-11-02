@@ -1,0 +1,4 @@
+% formalizes: claim:lib-3b
+% fidelity: yes
+bottom :- loan_copy(_, X), title(X).
+copy(C) :- loan_copy(_, C).

@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-p2
+nothing_in_common(X, Y) :- substance(X), substance(Y), X != Y, different_attributes(X, Y).

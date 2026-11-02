@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-b2a
+bottom :- conceived_through_itself(X), conception_involves(X, Y), X != Y.

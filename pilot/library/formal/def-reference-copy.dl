@@ -1,0 +1,5 @@
+% formalizes: def:reference-copy
+% fidelity: yes
+copy(C) :- reference(C).
+stays_in_building(C) :- reference(C).
+lending_copy(C) :- copy(C), not reference(C).

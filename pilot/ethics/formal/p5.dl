@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-p5
+bottom :- substance(X), substance(Y), X != Y, same_attribute(X, Y).

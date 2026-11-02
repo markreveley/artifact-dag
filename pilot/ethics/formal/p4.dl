@@ -1,0 +1,5 @@
+% formalizes: claim:ethics-p4
+% "Distinguished either by attributes or by modifications": read as a
+% constraint, since Datalog derives no disjunction. distinct(X, Y): X and Y
+% are two things, not one.
+bottom :- distinct(X, Y), not distinguished_by_attribute(X, Y), not distinguished_by_mode(X, Y).

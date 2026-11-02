@@ -1,0 +1,4 @@
+% formalizes: def:fine
+% fidelity: strained — "a fixed amount per day" is arithmetic over days; only that a fine accrues, and to whom, is stated.
+fine_accrues(L) :- overdue(L).
+owes_fine(M, L) :- fine_accrues(L), loan_member(L, M).

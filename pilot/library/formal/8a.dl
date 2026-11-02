@@ -1,0 +1,3 @@
+% formalizes: claim:lib-8a
+% fidelity: yes
+bottom :- reference(C), loan_copy(_, C).

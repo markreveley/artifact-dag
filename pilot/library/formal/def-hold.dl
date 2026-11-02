@@ -1,0 +1,8 @@
+% formalizes: def:hold
+% fidelity: yes
+% hold_member(H, M), hold_title(H, T), placed_on(H, D): the parts of a hold.
+hold(H) :- hold_member(H, _), hold_title(H, _).
+member(M) :- hold_member(_, M).
+title(T) :- hold_title(_, T).
+placed_before(H1, H2) :- hold_title(H1, T), hold_title(H2, T), placed_on(H1, D1), placed_on(H2, D2), D1 < D2.
+pending(H) :- hold(H), not collected(H), not lapsed(H).

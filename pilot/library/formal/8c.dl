@@ -1,0 +1,3 @@
+% formalizes: claim:lib-8c
+% fidelity: yes
+bottom :- set_aside(C, _), reference(C).

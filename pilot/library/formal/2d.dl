@@ -1,0 +1,4 @@
+% formalizes: claim:lib-2d
+% fidelity: yes
+bottom :- replaced(C), works(C).
+bottom :- replaced(C), used_by(C, P).

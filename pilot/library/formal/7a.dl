@@ -1,0 +1,3 @@
+% formalizes: claim:lib-7a
+% fidelity: yes
+overdue(L) :- open(L), loan_due(L, D), today(N), D < N.

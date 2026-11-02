@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-b4
+distinct(X, Y) :- thing(X), thing(Y), X != Y.

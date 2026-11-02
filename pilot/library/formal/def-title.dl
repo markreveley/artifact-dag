@@ -1,0 +1,3 @@
+% formalizes: def:title
+% fidelity: yes
+title(T) :- copy_of(_, T).

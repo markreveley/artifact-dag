@@ -1,0 +1,10 @@
+% formalizes: def:loan
+% fidelity: yes
+% loan_copy(L, C), loan_member(L, M), loan_due(L, D): the three parts of the record.
+% Dates are day numbers, so that "<" compares them.
+loan(L) :- loan_copy(L, _), loan_member(L, _), loan_due(L, _).
+copy(C) :- loan_copy(_, C).
+member(M) :- loan_member(_, M).
+% A loan is open until returned or declared lost; a copy is on loan while a loan of it is open.
+open(L) :- loan(L), not returned(L), not lost(L).
+on_loan(C) :- loan_copy(L, C), open(L).

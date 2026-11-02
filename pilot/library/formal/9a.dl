@@ -1,0 +1,3 @@
+% formalizes: claim:lib-9a
+% fidelity: yes — with "six weeks after" a given relation between day numbers. "Still out" is read as not returned rather than open, because open is defined as not lost and the rule would otherwise go round in a circle.
+declared_lost(L) :- loan(L), not returned(L), loan_due(L, D), six_weeks_after(D, D6), today(N), D6 < N.

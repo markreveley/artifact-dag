@@ -1,0 +1,3 @@
+% formalizes: def:due-date
+% fidelity: yes
+must_return_by(C, D) :- loan_copy(L, C), loan_due(L, D), open(L).

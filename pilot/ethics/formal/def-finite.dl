@@ -1,0 +1,5 @@
+% formalizes: def:finite
+% Finite after its kind: limited by another thing of the same nature. The
+% converse, "a finite thing is limited by some other thing", needs an
+% existential in the head, which Datalog cannot state.
+finite(X) :- limited_by(X, Y), same_nature(X, Y), X != Y.

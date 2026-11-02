@@ -1,0 +1,3 @@
+% formalizes: claim:lib-3a
+% fidelity: strained — "may have several copies" is a permission that the vocabulary allows (copy_of is many to one); only "a copy is a copy of one title" is a rule.
+bottom :- copy_of(C, T1), copy_of(C, T2), T1 != T2.

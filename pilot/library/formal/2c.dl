@@ -1,0 +1,3 @@
+% formalizes: claim:lib-2c
+% fidelity: strained — a statement about what identifies a member; read as: a member whose card was replaced is still a member, and their loans and holds are unchanged (which Datalog gives for free, since nothing retracts them).
+member(M) :- card_of(C, M), replaced(C).
