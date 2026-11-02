@@ -1,2 +1,4 @@
 % formalizes: claim:ethics-b6
+% claim: Bridge 6: a thing whose conception involves another's is conceived through that other
+% says: A thing whose conception involves the conception of another thing is conceived through that other thing.
 conceived_through_other(X) :- conception_involves(X, Y), X != Y.

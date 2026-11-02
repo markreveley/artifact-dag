@@ -1,4 +1,6 @@
 % formalizes: claim:ethics-p4
+% claim: Prop. IV: distinct things are distinguished by their substances' attributes or by their modifications
+% says: Two or more distinct things are distinguished one from the other, either by the difference of the attributes of the substances, or by the difference of their modifications.
 % "Distinguished either by attributes or by modifications": read as a
 % constraint, since Datalog derives no disjunction. distinct(X, Y): X and Y
 % are two things, not one.

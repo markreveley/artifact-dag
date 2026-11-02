@@ -127,9 +127,11 @@ negation as failure; the known gap not found by the check.
 ### Corpus B: the library
 
 Thirty-six claims. Fidelity, on the agent's reading: **13 yes, 15
-strained, 8 no**. The operator ratifies by editing the `% fidelity:` line
-of each `library/formal/*.dl`; `check.mjs` recounts. What made a claim
-strained or no:
+strained, 8 no**. The operator ratifies in `library/formal/*.dl`: each
+file shows the claim's statement (`% says:`), the agent's reading
+(`% fidelity:`) and the Datalog; changing the word on the fidelity line is
+the ratification, and `check.mjs` recounts. What made a claim strained or
+no:
 
 | cause | claims |
 |---|---|
@@ -183,8 +185,13 @@ operator's.
    the 13 rule-like claims run as a program, not entailment. A narrower
    proposal: formal text only for claims of subtype `norm`, a scenario
    runner, no entailment check. The trigger: a project whose claims
-   describe a policy that also ships as code in a Datalog dialect; the
-   formal node is then the shipped policy, checked against the prose.
+   describe a policy that also ships as code in a Datalog dialect (an
+   authorization policy, for instance). The formal node is then the
+   policy text taken from the code, not a paraphrase written for the
+   node, so fidelity becomes the question "does the code's rule say what
+   the prose says", and the scenario runner evaluates the real policy
+   over example facts. That is the bridge from prose to code with nothing
+   in the middle, and it is the only form of this idea the pilot supports.
 2. **A language, or conventions, for time and retraction.** Day numbers
    and "current" predicates got half way; replaced due dates, lapsing
    holds and cancelled charges did not fit.

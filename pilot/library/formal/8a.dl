@@ -1,3 +1,5 @@
 % formalizes: claim:lib-8a
+% claim: A reference copy is never lent; it stays in the building to be consulted
+% says: A reference copy is never lent: it stays in the building so that it is always there to consult.
 % fidelity: yes
 bottom :- reference(C), loan_copy(_, C).

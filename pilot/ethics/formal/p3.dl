@@ -1,3 +1,5 @@
 % formalizes: claim:ethics-p3
+% claim: Prop. III: things with nothing in common cannot be one the cause of the other
+% says: Things which have nothing in common cannot be one the cause of the other.
 bottom :- nothing_in_common(X, Y), cause_of(X, Y).
 bottom :- nothing_in_common(X, Y), cause_of(Y, X).

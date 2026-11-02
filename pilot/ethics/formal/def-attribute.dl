@@ -1,4 +1,6 @@
 % formalizes: def:attribute
+% definition: Attribute
+% says: By attribute, I mean that which the intellect perceives as constituting the essence of substance.
 % attribute(A, S): the intellect perceives A as constituting the essence of
 % the substance S.
 constitutes_essence(A, S) :- attribute(A, S).

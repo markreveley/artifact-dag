@@ -1,4 +1,6 @@
 % formalizes: def:loan
+% definition: Loan
+% says: A record of a copy, a member and a due date.
 % fidelity: yes
 % loan_copy(L, C), loan_member(L, M), loan_due(L, D): the three parts of the record.
 % Dates are day numbers, so that "<" compares them.

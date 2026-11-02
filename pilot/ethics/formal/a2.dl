@@ -1,2 +1,4 @@
 % formalizes: claim:ethics-a2
+% claim: Axiom II: what cannot be conceived through anything else is conceived through itself
+% says: That which cannot be conceived through anything else must be conceived through itself.
 conceived_through_itself(X) :- thing(X), not conceived_through_other(X).

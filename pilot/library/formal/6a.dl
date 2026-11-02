@@ -1,4 +1,6 @@
 % formalizes: claim:lib-6a
+% claim: When every copy of a title is out, a member may place a hold on it
+% says: When every copy of a title is out, a member may place a hold on it.
 % fidelity: strained — a permission, read as the condition under which a hold may be placed; "out" is read as on loan, and reference copies are not counted (section 8).
 lendable_copy_in(T) :- copy_of(C, T), lending_copy(C), not on_loan(C).
 may_place_hold(M, T) :- member(M), title(T), not lendable_copy_in(T).

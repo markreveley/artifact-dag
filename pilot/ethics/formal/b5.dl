@@ -1,2 +1,4 @@
 % formalizes: claim:ethics-b5
+% claim: Bridge 5: to be produced by a thing is to have that thing as a cause
+% says: To be produced by a thing is to have that thing as a cause.
 cause_of(Y, X) :- produced_by(X, Y).

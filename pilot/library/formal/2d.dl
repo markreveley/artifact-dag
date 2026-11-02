@@ -1,4 +1,6 @@
 % formalizes: claim:lib-2d
+% claim: A replaced card no longer works, so a found card cannot be used by its finder
+% says: A card that has been replaced no longer works, so a found card cannot be used by whoever found it.
 % fidelity: yes
 bottom :- replaced(C), works(C).
 bottom :- replaced(C), used_by(C, P).

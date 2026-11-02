@@ -1,4 +1,6 @@
 % formalizes: claim:lib-7d
+% claim: A member whose fines exceed the limit may not borrow until paid, but may return items and keep holds
+% says: A member whose fines exceed the limit may not borrow until they have paid; they may still return items and keep their holds.
 % fidelity: strained — "fines exceed the limit" is a sum; over_limit(M) is given. "May still return items and keep their holds" is read as: being over the limit cancels no hold.
 may_borrow(M) :- member(M), not over_limit(M).
 bottom :- over_limit(M), hold_member(H, M), cancelled_for_fines(H).

@@ -1,4 +1,6 @@
 % formalizes: def:reference-copy
+% definition: Reference copy
+% says: A copy marked to stay in the building, so that it is always there to consult.
 % fidelity: yes
 copy(C) :- reference(C).
 stays_in_building(C) :- reference(C).

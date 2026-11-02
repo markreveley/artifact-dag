@@ -1,4 +1,6 @@
 % formalizes: claim:lib-10a
+% claim: Availability is a question about the copy; permission to borrow is a question about the member
+% says: Because what is lent is a copy, "is this available" and "may this person take it" are separate questions, one about the copy and one about the member.
 % fidelity: strained — the claim is about the shape of the rules (two independent questions); the shape is the rule below, whose two conditions share no variable.
 available(C) :- lending_copy(C), not on_loan(C), not set_aside(C, _).
 may_lend(C, M) :- available(C), may_borrow(M), not at_cap(M).

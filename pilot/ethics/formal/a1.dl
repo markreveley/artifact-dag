@@ -1,4 +1,6 @@
 % formalizes: claim:ethics-a1
+% claim: Axiom I: everything exists either in itself or in something else
+% says: Everything which exists, exists either in itself or in something else.
 % "Either in itself or in something else." Datalog derives no disjunction,
 % so this reads: a thing that is not in itself is in something else. Adding
 % the other direction too would make the program unstratifiable.

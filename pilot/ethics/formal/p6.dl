@@ -1,2 +1,4 @@
 % formalizes: claim:ethics-p6
+% claim: Prop. VI: one substance cannot be produced by another substance
+% says: One substance cannot be produced by another substance.
 bottom :- substance(X), substance(Y), X != Y, produced_by(X, Y).

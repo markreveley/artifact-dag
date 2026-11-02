@@ -1,2 +1,4 @@
 % formalizes: claim:ethics-p2
+% claim: Prop. II: two substances whose attributes differ have nothing in common
+% says: Two substances, whose attributes are different, have nothing in common.
 nothing_in_common(X, Y) :- substance(X), substance(Y), X != Y, different_attributes(X, Y).

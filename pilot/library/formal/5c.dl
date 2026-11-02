@@ -1,3 +1,5 @@
 % formalizes: claim:lib-5c
+% claim: A loan may be renewed at most twice
+% says: A loan may be renewed at most twice.
 % fidelity: yes
 bottom :- renewal(R1, L), renewal(R2, L), renewal(R3, L), R1 != R2, R1 != R3, R2 != R3.
