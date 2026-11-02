@@ -24,10 +24,10 @@ Read with [`operator-readme-next.md`](operator-readme-next.md). Rewrite both at 
 
 ## Next, in order
 1. (blocked on operator) Fidelity ratification for the pilot. The operator edits the `% fidelity:` lines in `pilot/library/formal/*.dl`; then run `node pilot/check.mjs pilot/library` and read its last line. 18 or more "yes" of 36 reopens the question, and the proposal to make then is the narrow one in `pilot/README.md` ("What would reopen it", item 1): formal text on `norm` claims plus a scenario runner, not a general `formal` type. Fewer confirms the stop; nothing to do.
-2. (blocked on operator) The tutorial move's merge order: the two downstream PRs, then #20. Once #20 is merged, delete the local branches `move-tutorial` and `tutorial-split` (`git branch -d`) and the remote `move-tutorial` if GitHub kept it.
-3. (blocked on operator) The DAG viewer discussion, carried over from the last thread: where and how it is published. See the operator file.
-4. When a downstream project's claims start describing a policy that also ships as Datalog, reopen the pilot on that corpus: formal text for its `norm` claims, `pilot/scenario.mjs` over real facts, the shipped policy text as the formal node. That is the trigger `pilot/README.md` names.
+2. The tutorial move: #20 merges once the downstream project with CI has merged its repoint PR (its `site` check must be green; the tutorial repo went public on 2 Nov 2026, so no token is involved). After #20: `git branch -d move-tutorial tutorial-split` locally, and the remote `move-tutorial` if GitHub kept it.
+3. When a downstream project's claims start describing a policy that also ships as Datalog, reopen the pilot on that corpus: formal text for its `norm` claims, `pilot/scenario.mjs` over real facts, the shipped policy text as the formal node. That is the trigger `pilot/README.md` names.
+
+Settled 2 Nov 2026, so not a step: the viewer stays in this repo and each project builds and publishes its own page (README, "The viewer").
 
 ## Pending operator decisions
 - Fidelity ratification (step 1).
-- The viewer's direction (step 3).

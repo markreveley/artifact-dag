@@ -19,11 +19,10 @@ The pilot (`pilot/README.md`) stopped on the agent's reading of which library-tu
 
 ## 2. Finish the tutorial move
 
-In this order. `LOCAL.md` (git-ignored, on your Mac) names the projects and the PR numbers.
+`LOCAL.md` (git-ignored, on your Mac) names the projects and the PR numbers. The tutorial repo is public, so no token is involved.
 
-1. In the downstream project that has CI: create the fine-grained token and the `TUTORIAL_TEMPLATE_TOKEN` secret as its own `next/operator-readme-next.md` says (step 0), then merge its PR and check that the `site` workflow is green on `main`.
-2. In the other downstream project: merge its PR.
-3. Here: merge PR #20, "Move tutorial/ to its own repo". If GitHub leaves the remote branch `move-tutorial`, delete it on the PR page.
+1. In the downstream project that has CI: merge its repoint PR once its `site` check is green, and check the workflow is green on `main` afterwards.
+2. Here: merge PR #20, "Move tutorial/ to its own repo". If GitHub leaves the remote branch `move-tutorial`, delete it on the PR page.
 
 ## Questions
-- The DAG viewer: should CI publish it (every node becomes public), or does it stay a page each person builds locally?
+- None. The viewer question is settled: it stays here; each project builds and publishes its own page.
