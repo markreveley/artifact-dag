@@ -1,23 +1,17 @@
 ---
 name: dag
-description: Maintain a project's DAG of definition, claim and resource nodes (Markdown files under dag/ in the project's files) and its viewer artifact. Use when the user says "dag ..." or asks to add, edit, link, check, list or publish definitions, claims, resources (saved links) or the graph viewer.
+description: Maintain a project's DAG of definition, claim and resource nodes (Markdown files under dag/ in the project's repo) and build its viewer. Use when the user says "dag ..." or asks to add, edit, link, check, list or view definitions, claims, resources (saved links) or the graph.
 ---
 
 # DAG nodes and viewer
 
-The project keeps a graph of **definitions** and **claims** as Markdown
-files under `dag/` in its project files (`/mnt/project-files/dag/`). A
-viewer artifact reads that folder directly. This repo (`artifact-dag`) holds
-the schema, parser and viewer template. Read `SCHEMA.md` before writing a
-node; `docs/USAGE.md` is the user-facing guide and defines the commands.
-
-Some projects keep the folder elsewhere in their files, for example
-`/mnt/project-files/<repo>/dag/` when the Library mirrors each repo's
-layout. The project's instructions or the mirroring repo's `CLAUDE.md` say
-so. Then use that folder wherever this skill says `/mnt/project-files/dag/`,
-and set `"root": "<repo>/dag"` (the path inside the project's files) in its
-`dag-viewer/config.json`, or the viewer will look for a top-level `dag/`
-and show the example.
+The project keeps a graph of **definitions**, **claims** and **resources**
+as Markdown files under `dag/` in its repo. This repo (`artifact-dag`,
+called `<repo>` below) holds the schema, parser, validator and viewer. Read
+`SCHEMA.md` before writing a node; `docs/USAGE.md` is the user-facing guide
+and defines the commands. The project's `AGENTS.md` (or `CLAUDE.md`) says
+where `<repo>` is checked out and what else to run after a change (for
+example regenerating glossaries); follow it.
 
 ## Rules
 
@@ -29,11 +23,8 @@ and show the example.
 - Definitions: `dag/definitions/<slug>.md`. Claims: `dag/claims/<slug>.md`.
   Resources: `dag/resources/<slug>.md`.
 - After any change, run the validator and report errors to the user.
-- Project files are a network mount: write, then re-read about ten seconds
-  later before building on it. Other threads may write too, so read a file
-  immediately before changing it.
-- Project files have no editor in the app, so a request to "edit" a node
-  means you edit the file. Don't suggest converting nodes to Claude Docs.
+- Changes reach the project's main branch through a PR, unless the project's
+  rules say otherwise.
 
 ## Claims from a document
 
@@ -46,10 +37,10 @@ Documents). Link each claim to the definitions it `uses` and to the claims it
 ## Validator
 
 ```sh
-node <repo>/bin/dagcheck.js /mnt/project-files/dag/          # report
-node <repo>/bin/dagcheck.js /mnt/project-files/dag/ --json   # graph JSON
-node <repo>/bin/dagcheck.js /mnt/project-files/dag/ --lint   # also link findings
-node <repo>/bin/dagcheck.js /mnt/project-files/dag/ --lint --json
+node <repo>/bin/dagcheck.js dag/          # report
+node <repo>/bin/dagcheck.js dag/ --json   # graph JSON
+node <repo>/bin/dagcheck.js dag/ --lint   # also link findings
+node <repo>/bin/dagcheck.js dag/ --lint --json
 ```
 
 Exit code 1 means at least one error. External links are `info`.
@@ -62,25 +53,11 @@ definition, `uses` in a claim), or record that the word is meant in another
 sense with `not_links: [def:…]`. Do not add edges from word matches without
 reading them; put the decisions in a PR so they are reviewed as a diff.
 
-## Bundle
-
-After every change under `dag/`, rebuild the bundle the viewer loads from:
-
-```sh
-node <repo>/bin/bundle.js /mnt/project-files/dag/
-```
-
-It writes `dag/_bundle.json` (every `.md` file's path, byte size and text).
-The viewer uses an entry only while the file's listed size matches, and reads
-other files one by one, so a stale bundle only slows loading. An edit that
-keeps a file's exact size would show the old text until the next rebuild.
-If the project mirrors `dag/` in a repo, copy `_bundle.json` there too.
-
 ## Commands (from docs/USAGE.md)
 
 | user says                     | do                                                                                  |
 |-------------------------------|-------------------------------------------------------------------------------------|
-| `dag check [--json]`          | run the validator; post the report (attach `graph.json` for `--json`)               |
+| `dag check [--json]`          | run the validator; post the report (write `graph.json` for `--json`)                |
 | `dag lint [--json]`           | run `dagcheck --lint`; post the counts by code and the warnings for what changed     |
 | `dag list`                    | ids and titles grouped by type, from the validator's JSON                           |
 | `dag show <id>`               | post the file's contents                                                            |
@@ -91,85 +68,19 @@ If the project mirrors `dag/` in a repo, copy `_bundle.json` there too.
 | `dag unlink A <kind> B`       | remove it                                                                           |
 | `dag rename <id> <new-id>`    | rename the file and id, and rewrite every reference in `dag/`                       |
 | `dag externals`               | the validator's `external` notes                                                    |
-| `dag publish`                 | see below                                                                           |
-| `dag republish`               | rebuild and publish to the project's existing viewer URL                            |
-| `dag push`                    | push this project's nodes to the federation view; see below                         |
+| `dag view`                    | see below                                                                           |
 
 Plain-language requests that mean one of these get the same treatment.
 
-## Publishing the viewer
+## Viewing the graph
 
-1. If `dag/` doesn't exist, offer to copy `examples/dag/definitions` and
-   `examples/dag/claims` into it as a starter, or create it empty.
-2. Build from the project's `dag-viewer/config.json` (beside `dag/`, or in
-   the DAG folder's repo, as that project's rules say). If it doesn't exist,
-   create it with this project's id (the `chan_...` id of the current
-   project): `{"project": "chan_XXXX", "root": "dag", "title": "<project name> DAG"}`.
+1. If `dag-viewer/config.json` doesn't exist, create it:
+   `{"dag": "../dag", "title": "<project name> DAG"}` (paths are relative to
+   the config file).
+2. Build outside the repo and open it:
    ```sh
-   node <repo>/bin/build-viewer.js --config <path>/dag-viewer/config.json > <scratch>/viewer.html
+   node <repo>/bin/build-viewer.js --config dag-viewer/config.json > <scratch>/dag.html
+   open <scratch>/dag.html
    ```
-3. Publish `viewer.html` with the Artifact tool, declaring
-   `capabilities: {files: {project: "chan_XXXX"}}` with the same id, and
-   `icon: "graph"`. Don't keep a copy of the built page; it is rebuilt from
-   this repo and the config each time.
-4. Post the link. Tell the user the page will ask once for permission to
-   read the project's files, and that an outside viewer sees the example.
-
-For `dag republish`, publish to the existing artifact's URL (find it with
-the Artifact tool's list action if this thread didn't publish it).
-
-## Pushing to the federation view
-
-The federation artifact (URL in `<repo>/federation.json`) shows its home
-project's `dag/` live plus every bundle other projects push into its
-database, joined on ids. One artifact cannot read several projects' files
-(see `docs/platform/README.md`), so this push is how a project joins.
-
-`dag push`, in any project with this repo attached. `<dag>` is
-`/mnt/project-files/dag/` in a project thread, or a local copy of the
-project's `dag/` when the push runs from Claude Code on the user's machine
-(see "When the write is blocked").
-
-1. Validate: `node <repo>/bin/dagcheck.js <dag>`. Stop and show any
-   problems.
-2. Pick the slug: the project's name in lowercase with hyphens
-   (`identikey`). `list` collection `projects` on the federation URL with
-   the ArtifactData tool. If a document there already has this project's
-   `project` id, reuse its slug. Write only under `projects/<slug>`, and
-   never touch other projects' documents.
-3. Read what's there: `get` collection `projects`, doc `<slug>` (note its
-   `version`), and `list` collection `projects/<slug>/chunks` (note each
-   chunk's `version`). Both are absent on a first push.
-4. Plan the writes:
-   ```sh
-   node <repo>/bin/push-plan.js <dag> --slug <slug> \
-     --project chan_XXXX --name "<project name>" --out <scratch>/push \
-     --versions '{"meta": <v>, "c0": <v>, ...}'
-   ```
-   Leave out `--versions` on a first push. With it, every write to an
-   existing document is pinned to that version (`if_version`), and chunks
-   that the new plan no longer uses get delete writes. The planner prints
-   `files` (node files plus `README.md`), `chunks` and `batches`.
-5. Send each batch, in order, as one ArtifactData `batch` call, with the
-   writes exactly as printed, `file_path` included. The meta document is in
-   the last batch.
-6. If a pinned write fails on a version mismatch, someone pushed in
-   between: go back to step 3 and plan again. Never force it.
-7. Confirm: `get` `projects`/`<slug>` and check that `files` and `chunks`
-   match the plan. Report how many nodes were pushed, link the federation
-   view, and give the versions the next push will need (each write's
-   result shows them).
-
-### When the write is blocked
-
-In a cloud thread in auto mode, the safety check can block the database
-write, because the write publishes the project's nodes to everyone the
-federation view is shared with. Steps 1–4 still work. Hand the push to a
-Claude Code session on the user's machine, where the user approves the
-prompt. That session needs a local `dag/` that matches the project: the
-project's GitHub mirror (for example `identikey-dev`), pulled. Check that
-`dagcheck` gives the same node count there as in the project before
-pushing.
-
-Pushing from the home project is unnecessary; the view reads it live.
-After `dag push` was used once, push again after each batch of node edits.
+   Never commit a built page. For a joined view of several projects, pass
+   `--dag <folder>` once per project instead of `--config`.
