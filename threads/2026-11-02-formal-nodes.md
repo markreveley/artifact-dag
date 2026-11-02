@@ -407,4 +407,37 @@ what are "downstream branches"? like of artifact-dag, but related to the tutoria
 any reason not to merge the prs?
 summarize the implications of the pilot from a high level perspective
 
-*[The assistant's reply, and the rest of the thread, are appended when the thread ends.]*
+**Assistant:** Transcript is in: PR #23, names redacted (one branch name slipped through the first pass and is fixed). Your questions:
+
+**"Downstream branches."** Not branches of artifact-dag. They are branches in the two tutorial projects' own repos, one each, that repoint those projects' tutorial builds from `artifact-dag/tutorial/` to the new tutorial repo. "Downstream" because those projects consume this repo's code; a change here flows down to them. They belong where they are. Each one is committed locally in a worktree and not pushed; the operator step for the first project's CI token is written into its operator file on that branch.
+
+**Merging.** No reason not to merge #21 (scrub), #22 (pilot) and #23 (threads) now, in any order; they touch different files. Hold **#20** (the move) until the two downstream branches are pushed and merged, because the first project's CI checks out this repo's `main` and runs the builder from `tutorial/`; merging #20 first breaks that CI and both local builds. And the first project's CI needs the `TUTORIAL_TEMPLATE_TOKEN` secret before its own PR can go green (its step 0). So: say "push", I open those two PRs; you create the token and secret, merge them, then merge #20.
+
+**What the pilot implies, from altitude**
+
+1. **The value sits at the seam, not in the checker.** Writing the formula is where things were found: eight unstated premises in nine propositions, the Leibniz gap, "out" settled only two sections later, "still out" having to mean "not returned". The derivation step found less, and some of what it found was an artefact. If you build this, the ratification moment is the product; the check is a tool for it.
+
+2. **Datalog fits norms, not arguments.** A tutorial's `depends_on` is "rests on", so entailment has nothing to say about it. But the 13 rule-like claims ran as a program over a day's facts and named the rules a scenario broke. That is the NL-to-code bridge you were after, and it exists for one kind of claim: rules with a subject and a condition. Purposes, permissions, time, sums and counterfactuals (23 of 36 claims) don't fit this language.
+
+3. **The spectrum needs more than one language, as you suspected.** Datalog cannot say "or" or "there exists", and negation as failure made the deductive check unsound. For an argument like the Ethics you'd want a prover; for a policy, Datalog; for a schedule, something with time. That argues for your design: plain claims, with separate formal nodes per language, each carrying its own fidelity judgment.
+
+4. **Decomposition alone generated new context.** Bridges are nodes the prose never had; forward references and vocabulary gaps are questions the prose never asked. That part of the thesis held even where the check was empty.
+
+5. **The cost is the human read.** One session formalized 36 claims by hand. A model will draft them; you judge each `% fidelity:` line. That judgment is also what decides this pilot: 13 "yes" stops it, 13 plus most of the 15 "strained" reopens it.
+
+Recommendation: no general `formal` type. The narrow thing worth building, when a project has rules that also ship as Datalog policy, is formal text on `norm` claims plus the scenario runner, with the policy text itself as the node.
+
+Next from me, when you say so: push the downstream branches, then `/end`.
+
+---
+
+**User:** so, merge the branches? proceed
+re: pilot: ok. how should this be documented, and what should next steps be?
+
+**Assistant:** Done. Merged here: #21 (scrub), #22 (pilot), #23 (this transcript). Opened and not merged: the two downstream PRs, one in each tutorial project, and #20 here, in that order, because the first project's CI needs the `TUTORIAL_TEMPLATE_TOKEN` secret before its PR can pass; the steps are in its operator file and in this repo's `next/operator-readme-next.md`.
+
+**Documentation.** `pilot/README.md` is the record: question, design, fixed measures, stopping rule, both corpora, results, the language's limits, what would reopen it. The README's Pieces table now points to `pilot/` and `threads/`; `SCHEMA.md` says under Claim that a `formal` type was piloted and not adopted, with the link; `threads/` holds this exchange. `next/` holds only what comes next.
+
+**Next steps.** 1. Yours: ratify the fidelity readings by editing the `% fidelity:` lines and rerunning the check; 18 or more "yes" reopens the question. 2. Yours: the token and secret, the two downstream merges, then #20. 3. Carried over: the viewer discussion. 4. The trigger that reopens the pilot on its own: a project whose claims describe a policy that ships as Datalog; then formal text on its `norm` claims, the scenario runner over real facts, and the shipped policy as the node.
+
+*[End of thread. The final handoff was PR #24.]*

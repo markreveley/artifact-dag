@@ -114,6 +114,11 @@ The body is the claim's **value**: one atomic statement, elaborated as needed.
 likely to follow are `observation`, `hypothesis` and `norm`. `subject` names
 the node the claim is about, and adds an `about` edge.
 
+A `formal` node type, a claim's expression in Datalog joined to it by a
+`formalizes` edge and checked for entailment along `depends_on`, was piloted
+in November 2026 and not adopted. `pilot/README.md` has the results and what
+would reopen it.
+
 ## Resource
 
 ```yaml
