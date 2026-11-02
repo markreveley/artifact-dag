@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-b6
+conceived_through_other(X) :- conception_involves(X, Y), X != Y.

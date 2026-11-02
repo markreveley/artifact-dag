@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-a2
+conceived_through_itself(X) :- thing(X), not conceived_through_other(X).

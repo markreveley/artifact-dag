@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-b1
+prior(X, Y) :- conceived_through_itself(X), conceived_through_other(Y).

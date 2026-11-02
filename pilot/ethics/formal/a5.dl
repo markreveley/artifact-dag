@@ -1,0 +1,3 @@
+% formalizes: claim:ethics-a5
+bottom :- nothing_in_common(X, Y), conception_involves(X, Y).
+bottom :- nothing_in_common(X, Y), conception_involves(Y, X).

@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-b5
+cause_of(Y, X) :- produced_by(X, Y).

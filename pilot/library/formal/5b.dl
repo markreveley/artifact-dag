@@ -1,0 +1,4 @@
+% formalizes: claim:lib-5b
+% fidelity: strained — a permission ("may renew") read as a prohibition on its opposite, and a replacement of the due date that Datalog can only record beside the old one.
+bottom :- renewal(R, L), renewal_on(R, N), loan_due(L, D), D < N.
+due_after_renewal(L, D2) :- renewal(R, L), renewal_on(R, D1), three_weeks_after(D1, D2).

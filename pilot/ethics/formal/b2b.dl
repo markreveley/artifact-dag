@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-b2b
+nothing_in_common(X, Y) :- thing(X), thing(Y), X != Y, not conception_involves(X, Y), not conception_involves(Y, X).

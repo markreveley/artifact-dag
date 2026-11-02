@@ -1,0 +1,3 @@
+% formalizes: claim:ethics-p3
+bottom :- nothing_in_common(X, Y), cause_of(X, Y).
+bottom :- nothing_in_common(X, Y), cause_of(Y, X).

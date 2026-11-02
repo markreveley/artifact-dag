@@ -1,0 +1,10 @@
+% formalizes: def:mode
+mode(M) :- in_other(M), conceived_through_other(M).
+in_other(M) :- mode(M).
+conceived_through_other(M) :- mode(M).
+% A mode is a thing, in the sense of Axiom I's "everything which exists".
+thing(M) :- mode(M).
+% mode_of(M, S): M is a modification of the substance S.
+mode(M) :- mode_of(M, _).
+distinguished_by_mode(X, Y) :- mode_of(M, X), substance(Y), not mode_of(M, Y), X != Y.
+distinguished_by_mode(X, Y) :- mode_of(M, Y), substance(X), not mode_of(M, X), X != Y.

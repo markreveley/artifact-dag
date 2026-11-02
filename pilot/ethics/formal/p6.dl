@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-p6
+bottom :- substance(X), substance(Y), X != Y, produced_by(X, Y).

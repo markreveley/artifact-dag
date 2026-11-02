@@ -1,0 +1,6 @@
+% formalizes: claim:lib-6c
+% fidelity: strained — "a week to collect" is a deadline in time; one_week_after is a given relation, and the rule says only that a collection after the deadline does not count.
+earlier_pending(H) :- placed_before(H0, H), pending(H0).
+first_pending(H, T) :- hold_title(H, T), pending(H), not earlier_pending(H).
+set_aside(C, H) :- returned_copy(C), copy_of(C, T), first_pending(H, T).
+bottom :- set_aside_on(C, H, D1), one_week_after(D1, D0), collected_on(H, D2), D0 < D2.

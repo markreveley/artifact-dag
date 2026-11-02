@@ -1,0 +1,3 @@
+% formalizes: def:lost
+% fidelity: yes
+lost(L) :- declared_lost(L).

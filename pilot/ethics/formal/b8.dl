@@ -1,0 +1,3 @@
+% formalizes: claim:ethics-b8
+externally_caused(X) :- produced_by(X, Y), X != Y.
+self_caused(X) :- thing(X), not externally_caused(X).

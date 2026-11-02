@@ -1,0 +1,4 @@
+% formalizes: def:member
+% fidelity: yes
+member(M) :- registered(M).
+registered(M) :- member(M).

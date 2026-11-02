@@ -1,0 +1,3 @@
+% formalizes: claim:lib-6d
+% fidelity: strained — a change of state over time (the hold lapses, the copy passes on); stated as what holds once the week is up.
+lapsed(H) :- set_aside_on(_, H, D1), one_week_after(D1, D0), today(N), D0 < N, not collected(H).

@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-a7
+bottom :- conceivable_as_non_existing(X), essence_involves_existence(X).

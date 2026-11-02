@@ -1,0 +1,2 @@
+% formalizes: claim:ethics-p8
+bottom :- substance(X), finite(X).

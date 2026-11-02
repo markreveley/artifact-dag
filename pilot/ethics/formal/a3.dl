@@ -1,0 +1,5 @@
+% formalizes: claim:ethics-a3
+% The first half, "from a definite cause an effect necessarily follows",
+% needs an existential in the head. The second half: an effect has a cause.
+has_cause(E) :- cause_of(_, E).
+bottom :- effect(E), not has_cause(E).

@@ -1,0 +1,6 @@
+% formalizes: def:substance
+substance(X) :- in_itself(X), conceived_through_itself(X).
+in_itself(X) :- substance(X).
+conceived_through_itself(X) :- substance(X).
+% A substance is a thing, in the sense of Axiom I's "everything which exists".
+thing(X) :- substance(X).

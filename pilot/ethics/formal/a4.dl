@@ -1,0 +1,4 @@
+% formalizes: claim:ethics-a4
+% conception_involves(E, C): the knowledge of E depends on and involves the
+% knowledge of C.
+conception_involves(E, C) :- cause_of(C, E).

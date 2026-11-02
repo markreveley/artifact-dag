@@ -1,0 +1,3 @@
+% formalizes: claim:ethics-p1
+% prior(S, M): S is by nature prior to M.
+prior(S, M) :- substance(S), mode_of(M, S).

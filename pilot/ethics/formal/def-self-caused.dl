@@ -1,0 +1,3 @@
+% formalizes: def:self-caused
+essence_involves_existence(X) :- self_caused(X).
+self_caused(X) :- essence_involves_existence(X).

@@ -1,0 +1,5 @@
+% formalizes: def:library
+% fidelity: strained — the definition names a practice; the formal text only fixes vocabulary.
+% lent(C): the copy C has been lent at some time; returned_copy(C): a loan of C was returned.
+lent(C) :- loan_copy(_, C).
+returned_copy(C) :- loan_copy(L, C), returned(L).
