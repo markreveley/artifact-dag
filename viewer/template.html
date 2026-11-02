@@ -213,6 +213,8 @@
 /* ---- instance configuration ---- */
 const CONFIG = __CONFIG__;
 const SAMPLE = __SAMPLE__;
+// Local mode (build-viewer --dag): the nodes are inlined here; no project.
+const LOCAL = __LOCAL__;
 
 /* ---- state ---- */
 const state = { graph: null, selected: null, showProblems: false, query: "", source: "", doc: "", proj: "", projects: [] };
@@ -351,7 +353,7 @@ function mergeSources(sources) {
 
 async function load() {
   $("counts").textContent = "loading";
-  const { files, reason } = await loadFromProject();
+  const { files, reason } = LOCAL ? { files: LOCAL, reason: "" } : await loadFromProject();
   state.source = files ? "project" : "sample";
   const reasons = [reason];
   if (CONFIG.federation) {
@@ -615,7 +617,7 @@ function renderPane() {
     return;
   }
   if (!n) {
-    pane.innerHTML = `<div class="empty"><div class="eyebrow">${state.source === "project" ? "Project files" : "Example collection"}</div>
+    pane.innerHTML = `<div class="empty"><div class="eyebrow">${state.source === "sample" ? "Example collection" : LOCAL ? "Local files" : "Project files"}</div>
       <h2>Pick a node to read it</h2>
       <p>Pills are definitions, boxes are claims, square boxes are resources, dashed outlines are nodes linked from here but defined elsewhere. Arrows point from a node to what it builds on. Scroll to zoom, drag to pan.</p>
       <p>Nodes are Markdown files under <code>${esc(CONFIG.root)}/</code> in this project's files. Edit a file and press Reload.</p></div>`;
@@ -742,8 +744,10 @@ $("fit").addEventListener("click", fit);
 window.addEventListener("resize", fit);
 
 // First frame from the sample so the page is never blank, then the project.
-state.graph = parseCollection(SAMPLE);
-state.source = "sample";
+// A local page has its nodes already and nothing to reload.
+state.graph = parseCollection(LOCAL || SAMPLE);
+state.source = LOCAL ? "project" : "sample";
+$("reload").hidden = Boolean(LOCAL);
 fillDocs();
 render();
 fit();

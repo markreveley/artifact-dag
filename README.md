@@ -30,7 +30,7 @@ this file is for someone working on the code.
 | `bin/bundle.js`    | writes `_bundle.json`, every node in one file, so the viewer loads fast |
 | `bin/push-plan.js` | plans the database writes that push a project's nodes to the federation view |
 | `federation.json`  | the federation artifact's URL and home project |
-| `bin/build-viewer.js` | stamps one project's id into the template, inlining `src/` |
+| `bin/build-viewer.js` | builds the viewer page, inlining `src/`, for one Claude project or (`--dag`) one local folder of nodes |
 | `bin/dag-to-glossary.js` | writes each document's `## Glossary` (and an optional master glossary) from the definitions, per a project's `glossary.config.json`; can draw terms from other projects' DAGs |
 | `tutorial/`        | the builder, runtime, styles, crypto bundle and shared widgets for tutorial web editions (`tutorial/README.md`) |
 | `docs/USAGE.md`    | the user guide, written for the Claude project view          |
@@ -44,6 +44,20 @@ npm run check -- examples/dag     # validate a collection
 npm run check -- examples/dag --json > graph.json
 npm run bundle -- examples/dag    # write examples/dag/_bundle.json
 ```
+
+## View a collection locally
+
+```sh
+npm run build -- --dag <repo>/dag --title "My graph" > viewer.html
+```
+
+`--dag` inlines the folder's node files into the page, so it needs no Claude
+project: open `viewer.html` in a browser, or serve it from any static host.
+It shows the nodes as they were when it was built; rebuild after editing. A
+project's repo can keep `{"dag": "../dag", "title": "My graph"}` in
+`dag-viewer/config.json` (the path is relative to that file) and build with
+`npm run build -- --config <repo>/dag-viewer/config.json`. The page loads
+dagre from cdnjs, so it needs a network connection.
 
 ## Publish a viewer for a project
 
