@@ -26,7 +26,6 @@ and view the graph. The rest of this file is for someone working on the code.
 | `viewer/template.html` | the viewer page, with placeholders for the parser and the nodes |
 | `bin/build-viewer.js` | builds the viewer page from one or more `dag/` folders  |
 | `bin/dag-to-glossary.js` | writes each document's `## Glossary` (and an optional master glossary) from the definitions, per a project's `glossary.config.json`; can draw terms from other projects' DAGs |
-| `tutorial/`        | the builder, runtime, styles, crypto bundle and shared widgets for tutorial web editions (`tutorial/README.md`) |
 | `docs/USAGE.md`    | the user guide                                              |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
 
@@ -78,3 +77,7 @@ runtime, with a "federation" artifact that joined projects through its
 database (`bin/push-plan.js`) and a `_bundle.json` cache (`bin/bundle.js`) to
 cut file reads. All of that was retired once every project kept its DAG in a
 repo; it is in git history before the commit that removed it.
+
+Until November 2026 this repo also held `tutorial/`, a builder for the web
+editions of tutorials. It is tooling for tutorials, not for the DAG, and
+moved to its own repo with its history.
