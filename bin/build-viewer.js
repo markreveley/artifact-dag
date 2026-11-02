@@ -5,7 +5,7 @@
 // The page inlines the nodes as they are now, so it needs no server: open it
 // as a file or put it on any static host, and rebuild it after editing.
 // Several folders become one graph joined on ids. Each is labelled with the
-// name of the directory that holds it (identikey-dev/dag: "identikey-dev").
+// name of the directory that holds it (ethics/dag: "ethics").
 // The config file holds {"dag": <entry> or [<entry>, ...], "title": "Name"},
 // where an entry is a path or {"path": ..., "name": ...}; paths are relative
 // to the config file. Flags override it.

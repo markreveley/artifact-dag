@@ -8,7 +8,7 @@ claim(C) :- node(C, "claim").
 resource(R) :- node(R, "resource").
 
 % A has an edge of any kind to B, or to a narrower sense of B: a node that
-% links "Capability grant" has settled the word "grant".
+% links "Sufficient ground" has settled the word "ground".
 linked(A, B) :- edge(A, B, _).
 linked(A, B) :- edge(A, M, _), edge(M, B, "refines").
 
@@ -26,9 +26,9 @@ finding("unlinked_term", "warn", N, T) :-
   names(N, T, _), def(T), not linked(N, T), not not_link(N, T), not tag(T, "pervasive"), N != T.
 
 % narrower_unlinked: a definition's title ends with another definition's
-% title ("Access token" ends with "Token") and has no edge to it. The head
-% noun of an English compound is its last word, so "Agent loop" is not a
-% narrower Agent.
+% title ("Prior credence" ends with "Credence") and has no edge to it. The
+% head noun of an English compound is its last word, so "Argument form" is
+% not a narrower Argument.
 finding("narrower_unlinked", "warn", D, T) :-
   title_contains(D, T, "end"), def(D), def(T), not linked(D, T), not not_link(D, T).
 

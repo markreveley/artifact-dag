@@ -144,7 +144,7 @@ keeps only the ones listed under Parsed shape.
 ## Recording link decisions: not_links
 
 ```yaml
-not_links: [def:grant]   # this node's text uses "grant" in another sense
+not_links: [def:ground]   # this node's text uses "ground" in another sense
 ```
 
 An optional list of definition ids on any node. It says the node's text uses
@@ -157,15 +157,15 @@ entry in the diff.
 ## Scales
 
 Tag a definition `scale` when it names an ordered set of other definitions
-(`custody-ladder`: C0 to C4). Each member `refines` the scale, and the
+(`assent`: doubt, then conviction). Each member `refines` the scale, and the
 scale's text wikilinks every member, in order. The linter reports a member
 the scale's text does not link as `scale_member`, an error.
 
 ## Pervasive terms
 
 Tag a definition `pervasive` when nearly every node names it and a link from
-each would only make it a hub: a collection's own subject (`def:identikey`
-in the IdentiKey project), or a citation marker. `unlinked_term` never
+each would only make it a hub: a collection's own subject (`def:ethics` in
+a collection about the Ethics), or a citation marker. `unlinked_term` never
 reports it. Nodes can still link it where the link means something.
 
 ## Documents
@@ -175,8 +175,8 @@ optional fields let the viewer show that document decomposed, claim by claim,
 in its reading order:
 
 ```yaml
-document: identikey-dev/tutorials/identikey-from-the-ground-up.md
-section: "9. The XID"
+document: ethics/part-one.md
+section: "Prop. V"
 order: 31
 ```
 
@@ -226,17 +226,17 @@ Datalog rules in `lint/rules.dl`, then any rules in `<folder>/lint.dl`. A
 rule derives `finding(Code, Level, Node, Target)`; the facts it can read are
 listed at the top of `src/facts.js`. Matching words in text is done in
 JavaScript before the rules run: whole words, case-insensitive, with a
-plural `s` or `es`, a space in a term also matching a hyphen; the longest term wins where two overlap ("access token"
-names Access token, not Token); a title's trailing parenthetical is dropped
-when what remains is no other title ("C2 (managed)" is named by "C2"); a
-title or alias of three characters or fewer counts only in capitals
-("OP", "XID"). Wikilinks, Markdown link targets and code spans are not
+plural `s` or `es`, a space in a term also matching a hyphen; the longest term wins where two overlap ("prior credence"
+names Prior credence, not Credence); a title's trailing parenthetical is
+dropped when what remains is no other title ("Necessity (logical)" is named
+by "Necessity"); a title or alias of three characters or fewer counts only
+in capitals ("PSR", "QED"). Wikilinks, Markdown link targets and code spans are not
 scanned. Only a node's value is scanned, not its sub-definitions.
 
 | code | level | reported when |
 |---|---|---|
 | `unlinked_term` | warn | a node's text names a definition it has no edge to (directly, or through a definition that refines it) and no `not_links` entry for, unless that definition is tagged `pervasive` |
-| `narrower_unlinked` | warn | a definition's title ends with another definition's title ("Access token", Token) and it has no edge to it, directly or through a definition that refines it |
+| `narrower_unlinked` | warn | a definition's title ends with another definition's title ("Prior credence", Credence) and it has no edge to it, directly or through a definition that refines it |
 | `scale_member` | error | a definition refines a `scale` whose text does not link it |
 | `isolated_claim` | warn | a claim with a `document` and `order` has no `depends_on`, `supports`, `contradicts` or `refines` edge to or from another claim |
 | `forward_dependency` | error | a claim `depends_on` a claim later in the same document |

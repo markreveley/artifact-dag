@@ -14,7 +14,7 @@
 //
 //   { "dag": "dag",
 //     "master": "glossary/glossary.md",
-//     "external": ["~/dev/repos/identikey/identikey-dev/dag"],
+//     "external": ["~/dev/repos/other-project/dag"],
 //     "script_label": "scripts/dag-to-glossary.mjs",   (how the master glossary names its builder)
 //     "docs": [["doc-tutorial", "Title", "tutorials/tutorial.md"], ...] }
 //

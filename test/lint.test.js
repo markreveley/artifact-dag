@@ -30,29 +30,29 @@ const def = (id, title, extra = "") => ({ id, type: "definition", title, aliases
 // ---------- word matching ----------
 
 test("matching is whole word, case-insensitive, with simple plurals", () => {
-  const forms = termForms([def("def:token", "Token"), def("def:hash", "Hash")]);
+  const forms = termForms([def("def:belief", "Belief"), def("def:proof", "Proof")]);
   const ids = (text) => findTerms(text, forms).map((h) => `${h.id}=${h.word}`);
-  assert.deepEqual(ids("Tokens and hashes, a TOKEN."), ["def:token=Tokens", "def:hash=hashes", "def:token=TOKEN"]);
-  assert.deepEqual(ids("tokenizer rehash"), []);
+  assert.deepEqual(ids("Beliefs and proofs, a BELIEF."), ["def:belief=Beliefs", "def:proof=proofs", "def:belief=BELIEF"]);
+  assert.deepEqual(ids("disbelief reproof"), []);
 });
 
 test("a longer term wins over the shorter term inside it", () => {
-  const forms = termForms([def("def:token", "Token"), def("def:access-token", "Access token")]);
-  assert.deepEqual(findTerms("send the access  token", forms).map((h) => h.id), ["def:access-token"]);
-  assert.deepEqual(findTerms("the access-token risk", forms).map((h) => h.id), ["def:access-token"]);
+  const forms = termForms([def("def:credence", "Credence"), def("def:prior-credence", "Prior credence")]);
+  assert.deepEqual(findTerms("hold the prior  credence", forms).map((h) => h.id), ["def:prior-credence"]);
+  assert.deepEqual(findTerms("the prior-credence problem", forms).map((h) => h.id), ["def:prior-credence"]);
 });
 
 test("short terms match only in capitals, and then case-sensitively", () => {
-  const forms = termForms([def("def:op", "OP"), def("def:sub", "sub"), def("def:xid", "XID")]);
-  assert.deepEqual(findTerms("the OP and an op; sub; XIDs", forms).map((h) => h.word), ["OP", "XIDs"]);
+  const forms = termForms([def("def:psr", "PSR"), def("def:sub", "sub"), def("def:qed", "QED")]);
+  assert.deepEqual(findTerms("the PSR and a psr; sub; QEDs", forms).map((h) => h.word), ["PSR", "QEDs"]);
 });
 
 test("a trailing parenthetical is dropped only when the rest is unique", () => {
-  const forms = termForms([def("def:c2", "C2 (managed)"), def("def:agent", "Agent"), def("def:agent-product", "Agent (product)")]);
+  const forms = termForms([def("def:necessity", "Necessity (logical)"), def("def:mode", "Mode"), def("def:mode-finite", "Mode (finite)")]);
   const hits = (text) => findTerms(text, forms).map((h) => h.id);
-  assert.deepEqual(hits("C2 holds it"), ["def:c2"]);
-  assert.deepEqual(hits("an agent"), ["def:agent"]);
-  assert.deepEqual(hits("Agent (product) is a product"), ["def:agent-product"]);
+  assert.deepEqual(hits("Necessity holds"), ["def:necessity"]);
+  assert.deepEqual(hits("a mode"), ["def:mode"]);
+  assert.deepEqual(hits("Mode (finite) is finite"), ["def:mode-finite"]);
 });
 
 test("aliases count; wikilinks, link targets and code are not scanned", () => {
@@ -61,17 +61,17 @@ id: def:x
 type: definition
 title: X thing
 ---
-See [[def:token|the token]], [a page](https://example.com/token), \`token\` and a degree of belief.`).node;
-  const graph = { nodes: [n, def("def:token", "Token"), def("def:credence", "Credence", { aliases: ["degree of belief"] })], edges: [] };
+See [[def:belief|the belief]], [a page](https://example.com/belief), \`belief\` and a degree of belief.`).node;
+  const graph = { nodes: [n, def("def:belief", "Belief"), def("def:credence", "Credence", { aliases: ["degree of belief"] })], edges: [] };
   assert.deepEqual(toFacts(graph).names, [["def:x", "def:credence", "degree of belief"]]);
 });
 
 test("title_contains says where the other title sits", () => {
-  const graph = { nodes: [def("def:token", "Token"), def("def:agent", "Agent"), def("def:access-token", "Access token"),
-    def("def:agent-loop", "Agent loop"), def("def:c1", "C1 (custodial)"), def("def:custody", "Custody")], edges: [] };
+  const graph = { nodes: [def("def:credence", "Credence"), def("def:argument", "Argument"), def("def:prior-credence", "Prior credence"),
+    def("def:argument-form", "Argument form"), def("def:mode-finite", "Mode (finite)"), def("def:finitude", "Finitude")], edges: [] };
   assert.deepEqual(toFacts(graph).title_contains.sort(), [
-    ["def:access-token", "def:token", "end"],
-    ["def:agent-loop", "def:agent", "start"],
+    ["def:argument-form", "def:argument", "start"],
+    ["def:prior-credence", "def:credence", "end"],
   ]);
 });
 
@@ -83,34 +83,34 @@ const got = (code) => findings.filter((f) => f.code === code).map((f) => [f.node
 
 test("unlinked_term: plain-text names with no edge, unless not_links says so", () => {
   assert.deepEqual(got("unlinked_term").sort(), [
-    ["claim:fifth", "def:c2"],
-    ["def:identity", "def:party"],
-    ["def:ladder", "def:step-two"],
+    ["claim:fifth", "def:necessity"],
+    ["def:assent", "def:conviction"],
+    ["def:belief", "def:proposition"],
   ]);
 });
 
 test("linking a narrower sense settles the general word", () => {
   const mk = (id, title, value) => ({ id, type: "definition", title, aliases: [], tags: [], value, notLinks: [], path: id });
   const g = {
-    nodes: [mk("def:grant", "Grant", "A permission."), mk("def:capability-grant", "Capability grant", "A grant as a token."),
-      mk("def:gate", "Gate", "Verifies grants.")],
-    edges: [{ from: "def:capability-grant", to: "def:grant", kind: "refines" }, { from: "def:gate", to: "def:capability-grant", kind: "mentions" }],
+    nodes: [mk("def:ground", "Ground", "A reason."), mk("def:sufficient-ground", "Sufficient ground", "A ground that settles the matter."),
+      mk("def:axiom", "Axiom", "Rests on grounds.")],
+    edges: [{ from: "def:sufficient-ground", to: "def:ground", kind: "refines" }, { from: "def:axiom", to: "def:sufficient-ground", kind: "mentions" }],
   };
   assert.deepEqual(lint(g, RULES).filter((f) => f.code === "unlinked_term").map((f) => f.node), []);
 });
 
 test("unlinked_term skips a definition tagged pervasive", () => {
   const mk = (id, title, value, tags = []) => ({ id, type: "definition", title, aliases: [], tags, value, notLinks: [], path: id });
-  const g = { nodes: [mk("def:x", "X thing", "Built by Acme."), mk("def:acme", "Acme", "A company.", ["pervasive"])], edges: [] };
+  const g = { nodes: [mk("def:x", "X thing", "Stated by Euclid."), mk("def:euclid", "Euclid", "A geometer.", ["pervasive"])], edges: [] };
   assert.deepEqual(lint(g, RULES).filter((f) => f.code === "unlinked_term"), []);
 });
 
 test("narrower_unlinked: title ending in another title, with no edge", () => {
-  assert.deepEqual(got("narrower_unlinked"), [["def:access-token", "def:token"]]);
+  assert.deepEqual(got("narrower_unlinked"), [["def:prior-credence", "def:credence"]]);
 });
 
 test("scale_member: a refining member the scale's text does not link", () => {
-  assert.deepEqual(got("scale_member"), [["def:step-two", "def:ladder"]]);
+  assert.deepEqual(got("scale_member"), [["def:conviction", "def:assent"]]);
 });
 
 test("isolated_claim: no claim edge either way", () => {
@@ -131,15 +131,15 @@ test("unused_doc_term: a doc definition no doc claim uses", () => {
 });
 
 test("dead_end_definition: no outgoing edge", () => {
-  assert.deepEqual(got("dead_end_definition").sort(), [["def:access-token", ""], ["def:identity", ""], ["def:party", ""]]);
+  assert.deepEqual(got("dead_end_definition").sort(), [["def:belief", ""], ["def:prior-credence", ""], ["def:proposition", ""]]);
 });
 
 test("resources: topics must name definitions, and a resource needs one", () => {
   const res = (slug, topics) => ({ path: `${slug}.md`, text: `---\nid: res:${slug}\ntype: resource\ntitle: ${slug}\nurl: https://example.com/${slug}\n${topics ? `topics: [${topics}]\n` : ""}---\n` });
   const g = parseCollection([
-    { path: "a.md", text: "---\nid: def:agents\ntype: definition\ntitle: Agents\n---\nSoftware that acts." },
+    { path: "a.md", text: "---\nid: def:axioms\ntype: definition\ntitle: Axioms\n---\nStatements taken as true." },
     { path: "c.md", text: "---\nid: claim:c\ntype: claim\ntitle: C\n---\nA claim." },
-    res("good", "def:agents"), res("bad", "claim:c"), res("loose"),
+    res("good", "def:axioms"), res("bad", "claim:c"), res("loose"),
   ]);
   const fs = lint(g, RULES);
   const of = (code) => fs.filter((f) => f.code === code).map((f) => [f.node, f.target]);

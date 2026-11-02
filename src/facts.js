@@ -20,7 +20,7 @@ const PAREN_RE = /^(.*?)\s*\(([^)]*)\)\s*$/;
 const fold = (s) => s.trim().replace(/\s+/g, " ").toLowerCase();
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-// A short form only counts when written in capitals ("XID", "OP", "C2"), and
+// A short form only counts when written in capitals ("PSR", "QED"), and
 // then only in capitals.
 function isUpper(s) {
   return /\p{L}/u.test(s) && s === s.toUpperCase();

@@ -3,6 +3,6 @@ id: def:unused
 type: definition
 title: Unused term
 tags: [doc-t]
-uses: [def:party]
+uses: [def:proposition]
 ---
-No tutorial claim uses this.
+No claim of the document uses this.
