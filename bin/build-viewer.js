@@ -1,38 +1,37 @@
 #!/usr/bin/env node
-// Build one instance of the viewer for one project.
-//   build-viewer --project chan_... [--root dag] [--title "Name"] > viewer.html
+// Build the viewer page for one or more folders of nodes.
+//   build-viewer --dag <folder> [--dag <folder> ...] [--title "Name"] > viewer.html
 //   build-viewer --config dag-viewer/config.json > viewer.html
-//   build-viewer --project chan_... --federation --slug dag --name "DAG" [--title ...]
-//   build-viewer --dag path/to/dag [--title "Name"] > viewer.html
-// --federation adds the bundles other projects pushed to the artifact's
-// database (see bin/push-plan.js); --slug and --name label this project.
-// --config reads the same options from a JSON file kept in the project's
-// repo ({project, root, title, federation, slug, name, dag}); flags override it.
-// --dag is local mode: the page shows that folder's nodes, inlined at build
-// time, and needs no Claude project; open it as a file or serve it anywhere.
-// A `dag` path in the config file is relative to the config file.
-// Inlines src/ into viewer/template.html along with the example collection,
-// which the page shows whenever the project's files can't be read.
+// The page inlines the nodes as they are now, so it needs no server: open it
+// as a file or put it on any static host, and rebuild it after editing.
+// Several folders become one graph joined on ids. Each is labelled with the
+// name of the directory that holds it (identikey-dev/dag: "identikey-dev").
+// The config file holds {"dag": <entry> or [<entry>, ...], "title": "Name"},
+// where an entry is a path or {"path": ..., "name": ...}; paths are relative
+// to the config file. Flags override it.
 
 import { readdir, readFile } from "node:fs/promises";
-import { dirname, join, relative, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve } from "node:path";
 
 const here = new URL("..", import.meta.url).pathname;
 const args = process.argv.slice(2);
 const flag = (name) => { const i = args.indexOf("--" + name); return i >= 0 ? args[i + 1] : undefined; };
-const file = flag("config") ? JSON.parse(await readFile(flag("config"), "utf8")) : {};
-const opt = (name, dflt) => flag(name) ?? file[name] ?? dflt;
+const flags = (name) => args.flatMap((a, i) => (a === "--" + name && i + 1 < args.length ? [args[i + 1]] : []));
+const configPath = flag("config");
+const file = configPath ? JSON.parse(await readFile(configPath, "utf8")) : {};
 
-const dag = flag("dag") ?? (file.dag && resolve(dirname(flag("config")), file.dag));
-const project = opt("project");
-if (!project && !dag) {
-  console.error('usage: build-viewer (--project chan_... [--root dag] | --dag <folder> | --config file.json) [--title "Name"]');
+const entry = (e, base) => {
+  const path = resolve(base, typeof e === "string" ? e : e.path);
+  return { path, name: (typeof e === "object" && e.name) || basename(dirname(path)) };
+};
+const folders = flags("dag").length
+  ? flags("dag").map((p) => entry(p, "."))
+  : [file.dag ?? []].flat().map((e) => entry(e, dirname(configPath)));
+if (!folders.length) {
+  console.error('usage: build-viewer (--dag <folder> [--dag <folder> ...] | --config file.json) [--title "Name"]');
   process.exit(2);
 }
-const federation = !dag && (args.includes("--federation") || file.federation === true);
-const config = { project: dag ? null : project, root: opt("root", "dag"), federation, local: Boolean(dag),
-  slug: opt("slug", "this"), name: opt("name", "This project") };
-const title = opt("title", "Definitions and claims");
+const title = flag("title") ?? file.title ?? "Definitions and claims";
 
 // ESM modules become one inline script: drop imports, strip `export`.
 const inline = (src) => src.replace(/^import .*$/gm, "").replace(/^export /gm, "");
@@ -50,11 +49,16 @@ async function walk(dir) {
   }
   return out;
 }
-// Paths take the form the project's files give them: `<root>/<relative>`.
-const collect = async (dir) => Promise.all((await walk(dir)).sort().map(async (p) =>
-  ({ path: [config.root, ...relative(dir, p).split(/[\\/]/)].join("/"), text: await readFile(p, "utf8") })));
-const sample = await collect(join(here, "examples/dag"));
-const local = dag ? await collect(dag) : null;
+const slugs = new Set();
+const sources = [];
+for (const { path, name } of folders) {
+  let slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "dag";
+  while (slugs.has(slug)) slug += "-2";
+  slugs.add(slug);
+  const files = await Promise.all((await walk(path)).sort().map(async (p) =>
+    ({ path: relative(path, p).split(/[\\/]/).join("/"), text: await readFile(p, "utf8") })));
+  sources.push({ slug, name, files });
+}
 
 // `</script` inside JSON would end the inline script early.
 const json = (v) => JSON.stringify(v).replace(/<\//g, "<\\/");
@@ -62,7 +66,5 @@ const json = (v) => JSON.stringify(v).replace(/<\//g, "<\\/");
 const html = (await readFile(join(here, "viewer/template.html"), "utf8"))
   .replace(/__TITLE__/g, title.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])))
   .replace("/*__PARSER__*/", () => parser)
-  .replace("__CONFIG__", () => json(config))
-  .replace("__SAMPLE__", () => json(sample))
-  .replace("__LOCAL__", () => json(local));
+  .replace("__SOURCES__", () => json(sources));
 process.stdout.write(html);

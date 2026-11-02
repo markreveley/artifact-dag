@@ -1,14 +1,13 @@
 {
   "name": "artifact-dag",
   "version": "0.1.0",
-  "description": "A DAG of definitions and claims kept as Markdown files, viewed in a Claude artifact",
+  "description": "A DAG of definitions and claims kept as Markdown files, with a static viewer",
   "type": "module",
   "license": "MIT",
-  "bin": { "dagcheck": "bin/dagcheck.js", "dag-bundle": "bin/bundle.js" },
+  "bin": { "dagcheck": "bin/dagcheck.js" },
   "scripts": {
     "test": "node --test test/*.test.js",
     "check": "node bin/dagcheck.js",
-    "build": "node bin/build-viewer.js",
-    "bundle": "node bin/bundle.js"
+    "build": "node bin/build-viewer.js"
   }
 }

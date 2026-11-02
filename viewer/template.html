@@ -1,5 +1,4 @@
 <title>__TITLE__</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   /* Layout: a toolbar, then a graph canvas beside a reading pane; on phones the
@@ -71,12 +70,6 @@
   .swatch.claim { background: var(--claim); }
   .swatch.res { background: var(--res); }
   .swatch.ext { border: 1.5px dashed var(--ext); }
-
-  .notice {
-    padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px));
-    padding-right: max(16px, env(safe-area-inset-right, 0px));
-    background: var(--claim-soft); color: var(--fg); border-bottom: 1px solid var(--line); font-size: 13px;
-  }
 
   main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr minmax(300px, 380px); }
   @media (max-width: 760px) {
@@ -181,10 +174,8 @@
     <select id="doc" aria-label="Show one document"><option value="">All nodes</option></select>
     <input type="search" id="q" placeholder="Find a term, claim or resource" aria-label="Find a node">
     <button class="btn" id="problems-btn" aria-pressed="false">0 problems</button>
-    <button class="btn" id="reload">Reload</button>
   </div>
 </header>
-<div class="notice" id="notice" hidden></div>
 <main>
   <div id="canvas">
     <svg id="svg" role="img" aria-label="Graph of definitions, claims and resources">
@@ -210,113 +201,18 @@
 /* ---- parser (inlined from src/ at build time) ---- */
 /*__PARSER__*/
 
-/* ---- instance configuration ---- */
-const CONFIG = __CONFIG__;
-const SAMPLE = __SAMPLE__;
-// Local mode (build-viewer --dag): the nodes are inlined here; no project.
-const LOCAL = __LOCAL__;
+/* ---- the collection (inlined by bin/build-viewer.js) ---- */
+// One entry per folder: {slug, name, files: [{path, text}]}, paths relative
+// to the folder.
+const SOURCES = __SOURCES__;
 
 /* ---- state ---- */
-const state = { graph: null, selected: null, showProblems: false, query: "", source: "", doc: "", proj: "", projects: [] };
+const state = { graph: null, selected: null, showProblems: false, query: "", doc: "", proj: "", projects: [] };
 const $ = (id) => document.getElementById(id);
 
-/* ---- loading ---- */
-async function loadFromProject() {
-  const files = await window.claude?.use?.("files");
-  if (!files) return { files: null, reason: "Project files aren't available in this view, so this is the built-in example collection." };
-  // One call at a time. The capability answers `rate_limited` to bursts and
-  // while its permission prompt is open, so wait and retry those quietly.
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  const call = async (fn) => {
-    for (let attempt = 0; ; attempt++) {
-      try { return await fn(); }
-      catch (err) {
-        const code = err?.code;
-        if (code === "rate_limited" && attempt < 8) { await sleep(err.retryAfterMs || 1500); continue; }
-        if (code === "changed" && attempt < 2) { await sleep(500); continue; }
-        throw err;
-      }
-    }
-  };
-  try {
-    const listed = [];
-    let cursor;
-    do {
-      const page = await call(() => files.list({ path: CONFIG.root, recursive: true, cursor }));
-      for (const e of page.entries) if (!e.isDirectory && /\.md$/i.test(e.path)) listed.push(e);
-      cursor = page.cursor;
-    } while (cursor);
-    const dec = new TextDecoder();
-    // `_bundle.json` (written by `bin/bundle.js`) holds every file's text in
-    // one read. Use an entry while its file is listed with the same size;
-    // read the rest one by one. No bundle just means reading them all.
-    const bundled = new Map();
-    try {
-      const r = await call(() => files.read(`${CONFIG.root}/_bundle.json`));
-      for (const f of JSON.parse(dec.decode(r.bytes)).files || []) bundled.set(f.path, f);
-    } catch (err) {
-      if (err?.code === "not_granted") throw err;
-    }
-    const rel = (p) => (p.startsWith(CONFIG.root + "/") ? p.slice(CONFIG.root.length + 1) : p);
-    const texts = [];
-    const todo = [];
-    for (const e of listed) {
-      const b = bundled.get(rel(e.path));
-      if (b && b.size === e.size) texts.push({ path: e.path, text: b.text });
-      else todo.push(e.path);
-    }
-    let done = 0, next = 0;
-    const readOne = async (i) => {
-      const r = await call(() => files.read(todo[i]));
-      texts.push({ path: todo[i], text: dec.decode(r.bytes) });
-      $("counts").textContent = `reading ${++done} of ${todo.length}`;
-    };
-    // The first read alone (it may wait on a permission prompt), then a few
-    // at a time; bursts beyond that come back rate_limited and are retried.
-    if (todo.length && !bundled.size) await readOne(next++);
-    const worker = async () => { while (next < todo.length) await readOne(next++); };
-    await Promise.all([worker(), worker(), worker(), worker()]);
-    texts.sort((a, b) => a.path.localeCompare(b.path));
-    return { files: texts, reason: "" };
-  } catch (err) {
-    const code = err?.code || "unavailable";
-    const why = {
-      not_found: `No "${CONFIG.root}/" folder was found in this project's files, or you can't open them. Showing the built-in example instead.`,
-      not_granted: "Access to the project's files was declined, so this is the built-in example collection.",
-      rate_limited: "The project's files kept answering \"busy\" after several tries. Press Reload. Showing the built-in example meanwhile.",
-    }[code] || "The project's files couldn't be read right now. Try Reload. Showing the built-in example meanwhile.";
-    return { files: null, reason: why };
-  }
-}
-
-/* ---- federation: bundles other projects pushed to this artifact's database ---- */
-// Layout (written by bin/push-plan.js through a Claude thread):
-//   projects/<slug>                 {slug, project, name, builtAt, files, chunks: ["c0", ...]}
-//   projects/<slug>/chunks/<id>     {files: [{path, text}]}
-async function loadPushed() {
-  const db = await window.claude?.use?.("db");
-  if (!db) return { sources: [], reason: "This view can't open the pushed bundles, so only this project's own nodes are shown." };
-  try {
-    const metas = await db.collection("projects").limit(1000).get();
-    const sources = [];
-    for (const m of metas.docs) {
-      const meta = m.data();
-      if (!meta || meta.project === CONFIG.project) continue; // this project is read live
-      const files = [];
-      for (const id of meta.chunks || []) {
-        const c = await db.doc(`projects/${m.id}/chunks/${id}`).get();
-        if (c.exists) files.push(...(c.data().files || []));
-      }
-      sources.push({ slug: m.id, name: meta.name || m.id, builtAt: meta.builtAt || "", files });
-    }
-    return { sources, reason: "" };
-  } catch (err) {
-    return { sources: [], reason: `The pushed bundles couldn't be read (${err?.code || "unavailable"}). Showing this project's own nodes. Try Reload.` };
-  }
-}
-
+/* ---- several folders: one graph ---- */
 // Parse each project separately, then join on id. The first definition of an
-// id wins (this project first, then pushed bundles by name); later ones are
+// id wins (folders in the order given); later ones are
 // noted. Externals and cycles are recomputed over the joined graph, so a link
 // that is external in one project resolves when another project defines it.
 function mergeSources(sources) {
@@ -351,26 +247,9 @@ function mergeSources(sources) {
   return { nodes, edges, problems, external };
 }
 
-async function load() {
-  $("counts").textContent = "loading";
-  const { files, reason } = LOCAL ? { files: LOCAL, reason: "" } : await loadFromProject();
-  state.source = files ? "project" : "sample";
-  const reasons = [reason];
-  if (CONFIG.federation) {
-    const own = { slug: CONFIG.slug, name: CONFIG.name, builtAt: "live", files: (files || SAMPLE).map((f) => ({ path: f.path.replace(/^[^/]+\//, ""), text: f.text })) };
-    const pushed = await loadPushed();
-    reasons.push(pushed.reason);
-    pushed.sources.sort((a, b) => a.name.localeCompare(b.name));
-    state.projects = [own, ...pushed.sources];
-    state.graph = mergeSources(state.projects);
-  } else {
-    state.graph = parseCollection(files || SAMPLE);
-  }
-  const n = $("notice");
-  const text = reasons.filter(Boolean).join(" ");
-  n.hidden = !text;
-  n.textContent = text;
-  if (!state.selected || !nodeById(state.selected)) state.selected = null;
+function load() {
+  state.projects = SOURCES.length > 1 ? SOURCES : [];
+  state.graph = SOURCES.length > 1 ? mergeSources(SOURCES) : parseCollection(SOURCES[0].files);
   fillDocs();
   fillProjects();
   render();
@@ -617,10 +496,10 @@ function renderPane() {
     return;
   }
   if (!n) {
-    pane.innerHTML = `<div class="empty"><div class="eyebrow">${state.source === "sample" ? "Example collection" : LOCAL ? "Local files" : "Project files"}</div>
+    pane.innerHTML = `<div class="empty"><div class="eyebrow">${state.projects.length ? `${state.projects.length} collections` : "Collection"}</div>
       <h2>Pick a node to read it</h2>
       <p>Pills are definitions, boxes are claims, square boxes are resources, dashed outlines are nodes linked from here but defined elsewhere. Arrows point from a node to what it builds on. Scroll to zoom, drag to pan.</p>
-      <p>Nodes are Markdown files under <code>${esc(CONFIG.root)}/</code> in this project's files. Edit a file and press Reload.</p></div>`;
+      <p>Nodes are Markdown files in a <code>dag/</code> folder. This page shows them as they were when it was built; rebuild it after editing.</p></div>`;
     return;
   }
   if (n.external) {
@@ -739,17 +618,8 @@ $("proj").addEventListener("change", (e) => {
 });
 $("q").addEventListener("input", (e) => { state.query = e.target.value.trim().toLowerCase(); render(); });
 $("problems-btn").addEventListener("click", () => { state.showProblems = !state.showProblems; render(); });
-$("reload").addEventListener("click", load);
 $("fit").addEventListener("click", fit);
 window.addEventListener("resize", fit);
 
-// First frame from the sample so the page is never blank, then the project.
-// A local page has its nodes already and nothing to reload.
-state.graph = parseCollection(LOCAL || SAMPLE);
-state.source = LOCAL ? "project" : "sample";
-$("reload").hidden = Boolean(LOCAL);
-fillDocs();
-render();
-fit();
 load();
 </script>
