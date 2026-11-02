@@ -54,6 +54,11 @@ file with no server code: open it from disk or put it on any static host. It
 shows the nodes as they were when it was built, so rebuild it after editing.
 Never commit a built page.
 
+The viewer stays in this repo, because it is built on the same parser as
+`dagcheck`. What belongs to a project is its built page, which embeds that
+project's nodes: each project builds its own and decides whether to publish
+it, knowing that a published page makes every node in it public.
+
 ```sh
 npm run build -- --dag <repo>/dag --title "My graph" > viewer.html
 npm run build -- --config <repo>/dag-viewer/config.json > viewer.html
