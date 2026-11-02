@@ -205,11 +205,17 @@ same files the viewer reads. The page never talks to that container.
 
 ## Plan
 
-1. **Schema and parser** (this). Node format, parser, validator, examples.
+All four steps of the original plan are done. What comes next is tracked in
+`next/agents-readme-next.md`.
+
+1. **Schema and parser.** Node format, parser, validator, examples.
 2. **Viewer.** A single HTML artifact template that reads one project's
    `dag/` folder with the artifact `files` capability, parses it with
    `src/parse.js`, and draws the graph with node detail on click.
 3. **Second instance.** Attach the repo to another project and publish a
-   second viewer, to prove the template is reusable without edits.
-4. **Federation (optional).** A view that unions several projects' graphs,
-   possible because ids are global and cross-project links are allowed.
+   second viewer, to prove the template is reusable without edits. Done
+   with the Identikey project's viewer ("Identikey DAG").
+4. **Federation.** A view that unions several projects' graphs, possible
+   because ids are global and cross-project links are allowed. See
+   `federation.json` and "Seeing several projects together" in
+   `docs/USAGE.md`.
