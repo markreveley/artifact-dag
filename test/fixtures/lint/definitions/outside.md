@@ -2,6 +2,6 @@
 id: def:outside
 type: definition
 title: Outsider
-uses: [def:party]
+uses: [def:proposition]
 ---
 Defined for another document.

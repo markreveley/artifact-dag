@@ -30,6 +30,10 @@ and view the graph. The rest of this file is for someone working on the code.
 | `docs/USAGE.md`    | the user guide                                              |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
 
+A git-ignored `LOCAL.md` at the root may hold notes that stay on one machine,
+such as which projects run this code and which of them run it in CI. This
+repo is public, so nothing in it names those projects.
+
 ## Use
 
 ```sh
@@ -64,8 +68,8 @@ on id: the first definition of an id wins (folders in the order given), later
 ones are noted in the problems list, and externals and cycles are recomputed
 over the whole graph, so a link that is external in one project resolves when
 another defines it. A **project** menu narrows the graph to one collection.
-A folder is named after the directory that holds it (`identikey-dev/dag` is
-`identikey-dev`) unless the config gives a name.
+A folder is named after the directory that holds it (`ethics/dag` is
+`ethics`) unless the config gives a name.
 
 The page loads dagre from cdnjs and fonts from Google Fonts. Without a
 network it falls back to a simple layered layout and system fonts.

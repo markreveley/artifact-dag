@@ -5,6 +5,6 @@ title: First
 document: d
 order: 1
 tags: [doc-t]
-uses: [def:identity, def:party, def:access-token, def:refresh-token, def:agent, def:agent-loop, def:grant, def:biscuit, def:ladder, def:step-one, def:step-two, def:op, def:c2, def:token]
+uses: [def:belief, def:proposition, def:prior-credence, def:conditional-credence, def:argument, def:argument-form, def:ground, def:axiom, def:assent, def:doubt, def:conviction, def:psr, def:necessity, def:credence]
 ---
-An identity names a party.
+A belief takes a proposition to be true.
