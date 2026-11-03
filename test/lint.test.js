@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { fileURLToPath } from "node:url";
 import { readdir, readFile, writeFile, mkdtemp } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
@@ -8,7 +9,7 @@ import { parseCollection, parseFile } from "../src/parse.js";
 import { termForms, findTerms, toFacts } from "../src/facts.js";
 import { lint, findingKey } from "../src/lint.js";
 
-const FIXTURE = new URL("./fixtures/lint/", import.meta.url).pathname;
+const FIXTURE = fileURLToPath(new URL("./fixtures/lint/", import.meta.url));
 const RULES = await readFile(new URL("../lint/rules.dl", import.meta.url), "utf8");
 
 async function load(root) {
@@ -153,7 +154,7 @@ test("findings sort errors first", () => {
 
 // ---------- CLI ----------
 
-const CLI = new URL("../bin/dagcheck.js", import.meta.url).pathname;
+const CLI = fileURLToPath(new URL("../bin/dagcheck.js", import.meta.url));
 const runCli = (...args) => {
   try { return { code: 0, out: execFileSync("node", [CLI, ...args], { encoding: "utf8", stdio: "pipe" }) }; }
   catch (e) { return { code: e.status, out: e.stdout }; }
@@ -181,4 +182,25 @@ test("--baseline hides known warnings but never errors", async () => {
   await writeFile(file, JSON.stringify(keys.filter((k) => k !== findingKey({ code: "isolated_claim", node: "claim:fifth", target: "" }))));
   const { findings: fs } = JSON.parse(runCli(FIXTURE, "--lint", "--json", "--baseline", file).out);
   assert.deepEqual(fs.map((f) => f.code).sort(), ["forward_dependency", "isolated_claim", "scale_member"]);
+});
+
+test("--baseline refuses a baseline it cannot read, and leaves it alone", async () => {
+  const file = join(await mkdtemp(join(tmpdir(), "dagcheck-")), "baseline.json");
+  const conflicted = '<<<<<<< HEAD\n["isolated_claim claim:fifth "]\n=======\n[]\n>>>>>>> other\n';
+  await writeFile(file, conflicted);
+  const r = runCli(FIXTURE, "--lint", "--baseline", file);
+  assert.equal(r.code, 2);
+  assert.equal(await readFile(file, "utf8"), conflicted);
+  await writeFile(file, '{"not": "a list"}');
+  assert.equal(runCli(FIXTURE, "--lint", "--baseline", file).code, 2);
+});
+
+test("dagcheck reads files in sorted order, as the viewer does", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "dagcheck-"));
+  const node = (title) => `---\nid: def:same\ntype: definition\ntitle: ${title}\n---\nBody.\n`;
+  await writeFile(join(dir, "b.md"), node("B"));
+  await writeFile(join(dir, "a.md"), node("A"));
+  const g = JSON.parse(runCli(dir, "--json").out);
+  assert.deepEqual(g.nodes.map((n) => n.title), ["A"]);
+  assert.deepEqual(g.problems.map((p) => `${p.code} ${p.path}`), ["duplicate_id b.md"]);
 });

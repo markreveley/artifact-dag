@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { fileURLToPath } from "node:url";
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import { parseFrontmatter } from "../src/frontmatter.js";
@@ -84,7 +85,7 @@ test("findCycles ignores contradicts and mentions", () => {
 });
 
 test("examples parse cleanly", async () => {
-  const root = new URL("../examples/dag/", import.meta.url).pathname;
+  const root = fileURLToPath(new URL("../examples/dag/", import.meta.url));
   async function walk(dir) {
     const out = [];
     for (const e of await readdir(dir, { withFileTypes: true })) {
@@ -151,3 +152,47 @@ An overview.
   assert.deepEqual(r2.problems.map((p) => p.code), ["prefix_mismatch"]);
 });
 
+
+test("a link that is not a node id is a bad_link error, and no edge", () => {
+  const r = parseFile("c.md", "---\nid: claim:c\ntype: claim\ntitle: C\nsubject: Credence\nuses: [def:ok, Credence, def:Bad_Id, note:x]\n---\nSee [[foo:bar]] and [[def:fine]].");
+  assert.deepEqual(r.problems.map((p) => p.code), ["bad_link", "bad_link", "bad_link", "bad_link", "bad_link"]);
+  assert.ok(r.problems.every((p) => p.level === "error"));
+  assert.deepEqual(r.edges.map((e) => `${e.kind} ${e.to}`), ["uses def:ok", "mentions def:fine"]);
+});
+
+test("findCycles reports each cycle once, whatever the order of ids", () => {
+  const e = (from, to) => ({ from, to, kind: "uses" });
+  // a <-> b, then a -> x -> c, and c <-> d: x lies between two cycles.
+  const edges = [e("a", "b"), e("b", "a"), e("a", "x"), e("x", "c"), e("c", "d"), e("d", "c")];
+  const key = (cs) => cs.map((c) => [...c].sort().join("+")).sort();
+  for (const ids of [["a", "b", "x", "c", "d"], ["c", "d", "x", "a", "b"], ["x", "d", "b", "c", "a"]]) {
+    assert.deepEqual(key(findCycles(ids, edges)), ["a+b", "c+d"], ids.join());
+  }
+});
+
+test("examples pass the lint: no errors, no warnings", async () => {
+  const root = fileURLToPath(new URL("../examples/dag/", import.meta.url));
+  const { lint } = await import("../src/lint.js");
+  const files = [];
+  const walk = async (dir) => {
+    for (const e of await readdir(dir, { withFileTypes: true })) {
+      const p = join(dir, e.name);
+      if (e.isDirectory()) await walk(p);
+      else if (e.name.endsWith(".md")) files.push({ path: relative(root, p), text: await readFile(p, "utf8") });
+    }
+  };
+  await walk(root);
+  const rules = await readFile(new URL("../lint/rules.dl", import.meta.url), "utf8");
+  const found = lint(parseCollection(files), rules).filter((f) => f.level !== "info");
+  assert.deepEqual(found.map((f) => `${f.code} ${f.node} ${f.target}`), []);
+});
+
+test("SCHEMA.md's examples are the example collection's files, verbatim", async () => {
+  const schema = await readFile(new URL("../SCHEMA.md", import.meta.url), "utf8");
+  const quoted = [...schema.matchAll(/From `(examples\/dag\/[^`]+)`:\n\n```yaml\n([\s\S]*?)```/g)];
+  assert.equal(quoted.length, 3);
+  for (const [, path, block] of quoted) {
+    const file = await readFile(new URL(`../${path}`, import.meta.url), "utf8");
+    assert.equal(block.trimEnd(), file.trimEnd(), path);
+  }
+});

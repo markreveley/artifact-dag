@@ -12,8 +12,9 @@
 
 import { readdir, readFile } from "node:fs/promises";
 import { basename, dirname, join, relative, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const here = new URL("..", import.meta.url).pathname;
+const here = fileURLToPath(new URL("..", import.meta.url));
 const args = process.argv.slice(2);
 const flag = (name) => { const i = args.indexOf("--" + name); return i >= 0 ? args[i + 1] : undefined; };
 const flags = (name) => args.flatMap((a, i) => (a === "--" + name && i + 1 < args.length ? [args[i + 1]] : []));
@@ -35,10 +36,8 @@ const title = flag("title") ?? file.title ?? "Definitions and claims";
 
 // ESM modules become one inline script: drop imports, strip `export`.
 const inline = (src) => src.replace(/^import .*$/gm, "").replace(/^export /gm, "");
-const parser = [
-  inline(await readFile(join(here, "src/frontmatter.js"), "utf8")),
-  inline(await readFile(join(here, "src/parse.js"), "utf8")),
-].join("\n");
+const parser = (await Promise.all(["frontmatter.js", "parse.js", "merge.js", "markdown.js"]
+  .map((f) => readFile(join(here, "src", f), "utf8")))).map(inline).join("\n");
 
 async function walk(dir) {
   const out = [];
