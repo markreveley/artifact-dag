@@ -8,7 +8,8 @@ so a collection folder can hold ordinary notes alongside nodes.
 
 By convention nodes live under a `dag/` folder in a project's repo, at any
 depth. The validator and the viewer are given that folder and read every
-`.md` file under it; nothing else about the layout matters. File names are
+`.md` file under it except `README.md` files, which are notes about the
+folder; nothing else about the layout matters. File names are
 free, but `<id without prefix>.md` keeps things findable
 (`dag/definitions/entropy.md` for `def:entropy`).
 
@@ -114,8 +115,8 @@ An agent who plans to update by any rule other than conditionalization is vulner
 ```
 
 The body is the claim's **value**: one atomic statement, elaborated as needed.
-`subtype` is a free label; `proposition` is the first one in use. Others
-likely to follow are `observation`, `hypothesis` and `norm`. `subject` names
+`subtype` is a free label; `proposition` and `observation` are in use. Others
+likely to follow are `hypothesis` and `norm`. `subject` names
 the node the claim is about, and adds an `about` edge.
 
 Formal text on claims (a claim's expression in Datalog) is not part of the
@@ -207,9 +208,12 @@ dependencies both in Node and inside the viewer page:
 - `key: [a, b, c]` flow lists
 - block lists with `- item` lines under a key
 - quoted strings with `"..."` or `'...'`
-- comments starting with `#` outside quotes
+- comments starting with `#` outside quotes; a quote counts only where a
+  value starts, so an apostrophe inside a word is text
 
-Nested mappings are not supported. Keep frontmatter flat.
+Nested mappings are not supported. Keep frontmatter flat. A line the parser
+cannot read is reported as `bad_frontmatter`, and a list given to a field
+that takes one value (`title: [a, b]`) as `bad_field`.
 
 ## Parsed shape
 
@@ -229,9 +233,11 @@ Nested mappings are not supported. Keep frontmatter flat.
 `notLinks` on a node is its `not_links` list.
 
 Problem codes, all errors: `missing_field`, `bad_id`, `prefix_mismatch`,
-`duplicate_id`, `unknown_type`, `cycle`, `bad_order`, and `bad_link` (an
+`duplicate_id`, `unknown_type`, `cycle`, `bad_order`, `bad_field`,
+`bad_frontmatter`, and `bad_link` (an
 edge field, `subject` or wikilink names something that is not
-`<prefix>:<slug>` with a known prefix; no edge is drawn). External links are
+`<prefix>:<slug>` with a known prefix; no edge is drawn). A node with no
+`id` gets no edges. External links are
 reported as `external` at level `info`, so a viewer can count them without
 treating them as errors. A page joining several collections adds `shared`,
 also `info`, for an id defined in more than one; the first collection's
@@ -254,7 +260,7 @@ scanned. Only a node's value is scanned, not its sub-definitions.
 | code | level | reported when |
 |---|---|---|
 | `unlinked_term` | warn | a node's text names a definition it has no edge to (directly, or through a definition that refines it) and no `not_links` entry for, unless that definition is tagged `pervasive` |
-| `narrower_unlinked` | warn | a definition's title ends with another definition's title ("Prior credence", Credence) and it has no edge to it, directly or through a definition that refines it |
+| `narrower_unlinked` | warn | a definition's title ends with another definition's title or alias ("Prior credence", Credence) and it has no edge to it, directly or through a definition that refines it |
 | `scale_member` | error | a definition refines a `scale` whose text does not link it |
 | `isolated_claim` | warn | a claim with a `document` and `order` has no `depends_on`, `supports`, `contradicts` or `refines` edge to or from another claim |
 | `forward_dependency` | error | a claim `depends_on` a claim later in the same document |
@@ -268,5 +274,7 @@ scanned. Only a node's value is scanned, not its sub-definitions.
 `{ level, code, node, target, path, message }`. `--baseline <file>` reports
 only warn and info findings not listed in the file (errors always show), and
 writes the file from the current findings when it does not exist, so rules
-can be switched on before every old warning is fixed. The linter never
+can be switched on before every old warning is fixed. In CI (the `CI`
+environment variable set) a missing baseline is an error instead, so a wrong
+path cannot hide findings run after run. The linter never
 writes edges.

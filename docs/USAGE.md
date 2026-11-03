@@ -89,7 +89,7 @@ unambiguous.
 | say | Claude does |
 |---|---|
 | `dag check` | runs the validator on `dag/` and posts the report |
-| `dag check --json` | same, and writes the parsed graph as `graph.json` |
+| `dag check --json` | same, and writes the parsed graph as JSON to a scratch file outside the repo |
 | `dag lint [--json]` | runs `dagcheck --lint` on `dag/`; posts the counts by code and the warnings for what changed |
 | `dag list` | lists every node id with its title, grouped by type, from the validator's JSON |
 | `dag show <id>` | posts the node's file contents |
