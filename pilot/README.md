@@ -64,6 +64,6 @@ material keeps that material out of the repo.
 
 | folder | question | state |
 |---|---|---|
-| [`2026-11-02-formal-nodes/`](2026-11-02-formal-nodes/) | Is a `formal` node type, Datalog joined to claims and checked for entailment, worth adding? | round 1 stopped; its corpora removed; led to `PROCEDURE.md` |
+| [`2026-11-02-formal-nodes/`](2026-11-02-formal-nodes/) | Is a `formal` node type, Datalog joined to claims and checked for entailment, worth adding? | round 1 stopped on unratified readings, a decision the two below supersede; its corpora removed; led to `PROCEDURE.md`. The idea is paused, not rejected |
 | [`2026-11-02-registration-once/`](2026-11-02-registration-once/) | Does the procedure carry one claim from a sentence to ratified Datalog? | done: the reference example |
 | [`2026-11-02-spinoza-one-claim/`](2026-11-02-spinoza-one-claim/) | Does the procedure recover the meaning of a claim from a text no one in the loop wrote? | confirmed; not run |
