@@ -68,7 +68,11 @@ cannot echo the statement, and C cannot fit the examples to the rules.
    claims use, each with its predicate line, in the formal file of the
    term's definition. The ratifier accepts each predicate line once. Claims
    never define predicates; a claim that needs a new one sends it back to
-   this step.
+   this step. When several claims describe one event or object, the
+   predicates name it (`registration(R, M)`, `at_desk(R)`), so the claims
+   stay atomic and still meet in the vocabulary. A helper predicate defined
+   by a rule (`has_registration(M) :- registration(_, M).`) belongs to the
+   vocabulary too, with its own predicate line.
 
 3. **Formalize.** A writes the rules for one claim, using only the
    vocabulary. A script copies the claim's statement into the formal file
@@ -85,7 +89,17 @@ cannot echo the statement, and C cannot fit the examples to the rules.
    matched.
 
 6. **Compare.** The ratifier reads the statement against `states`, and
-   reads the example results. Then sets fidelity and writes the note:
+   reads the example results, asking four questions of the statement:
+   - **Domain:** whom or what does it apply to?
+   - **Modality:** is it a must, a may, or an is?
+   - **Subject:** which event or object is it about, and do neighbouring
+     claims share it?
+   - **Allocation:** what do the definitions or the context already supply,
+     and what does this claim add? What the context supplies is written
+     down, in a definition's formal file, never left implicit in a claim's
+     rules.
+
+   Then sets fidelity and writes the note:
    - **yes**: `states` says what the statement says, and every example
      passes.
    - **strained**: they differ, and the ratifier accepts the difference as

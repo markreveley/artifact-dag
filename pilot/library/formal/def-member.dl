@@ -6,3 +6,6 @@
 member(M) :- registered(M).
 registered(M) :- member(M).
 registered(M) :- registration(_, M).
+% predicate has_registration(M): the library has registered M on some occasion.
+has_registration(M) :- registration(_, M).
+bottom :- member(M), not has_registration(M).

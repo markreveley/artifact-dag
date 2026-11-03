@@ -2,4 +2,7 @@
 % statement:  Registration happens once.
 % states:     The library never registers the same M on two different occasions: for any M, there cannot be two distinct occasions R1 and R2 that are both occasions on which the library registered M.
 % examples:   3 of 3 pass
+% fidelity:   yes
+% note:       at most once; at least once for each member is what "member" means, and is stated in def:member.
+% ratified:   Mark Reveley, 2026-11-02
 bottom :- registration(R1, M), registration(R2, M), R1 != R2.
