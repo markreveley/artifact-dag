@@ -32,7 +32,7 @@ and view the graph. The rest of this file is for someone working on the code.
 | `test/`            | `npm test`; `test/fixtures/lint/` is a collection built to trip the lint rules (the two resource rules are tripped by nodes written in `test/lint.test.js`) |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
 | `pilot/`           | pilots: bounded tests of a method before it is built in. What a pilot is and how to run one (`pilot/README.md`), the procedure under test (`pilot/PROCEDURE.md`) and its tools, and one folder per pilot |
-| `next/`            | the handoff between working threads: next steps for the agent and for the operator, rewritten at the end of each thread |
+| `next-agents.md`, `next-operator.md` | the handoff between working threads: next steps for the agent and for the operator, rewritten at the end of each thread |
 | `threads/`         | the exchange of working threads, written at `/end` from the session transcript (user turns and assistant text, other projects' names redacted). The redaction map `threads/redact.json`, and raw `/export` files in `threads/raw/` if one is used, are git-ignored |
 
 A git-ignored `LOCAL.md` at the root may hold notes that stay on one machine,
