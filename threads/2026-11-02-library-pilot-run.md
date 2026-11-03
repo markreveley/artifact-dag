@@ -1,32 +1,27 @@
 ---
 type: thread
-date: 2026-11-02
+date: 2026-11-03
 source: Claude Code /export, filtered and redacted
 ---
 
 # Formal nodes, the procedure, and the reference pilot
 
-The exchange of the 2 November 2026 thread, taken from Claude Code's
-`/export` of the session. Kept: the user's turns and the assistant's text
-replies, as the export rendered them (Markdown formatting such as bold is
-lost in the export). Removed: tool calls, tool output, thinking, status
-lines and slash commands, and two replies a safety filter stopped before
-they were shown. The names of other repositories, projects and products
-are replaced by placeholders, because this repository is public:
+The exchange of a working session, from Claude Code's `/export`. Kept: the user's turns and the
+assistant's text replies, as the export rendered them (it drops Markdown formatting such as bold).
+Removed: tool calls, tool output, thinking, status lines and housekeeping slash commands.
+Names of other repositories, projects and products are replaced by placeholders:
 
-- **[project A]**, **[product A]**: a private project with a DAG of 564 nodes, and the product its tutorial describes
-- **[project B]**, **[product B]**: a second private project with a DAG, joined with A's in the viewer
+- **[project A]**: a private project with a DAG, and [product A] the product its tutorial describes
+- **[project B]**: a second private project with a DAG, joined with A's in the viewer; [product B] its product
 - **[repo C]**: a repo of threads kept as files, with a planned knowledge base
 - **[repo D]**: a repo and notation for typed statement graphs that a person ratifies
 - **[repo E]**: a repo of evaluation procedures
-- **[tutorial repo]**: the repo that `tutorial/` moved to during this thread
+- **[tutorial repo]**: the repo that `tutorial/` moved to
 - **[identifier type]**: [product A]'s identifier
 
 ---
-
 **User:**
 /start
-
 
 **Assistant:**
 Your turn first. next/operator-readme-next.md lists no steps, only one pending
@@ -42,10 +37,10 @@ Tell me which way you're leaning, or what you want to change about the viewer,
 and I'll start.
 
 ---
+
 **User:**
 does this use datalog in the payload of nodes? if so where is this
 documented?
-
 
 **Assistant:**
 No, node files don't contain Datalog. A node is a Markdown file with
@@ -72,12 +67,12 @@ lives only in that datalog.js header comment and the examples in
 lint/rules.dl.
 
 ---
+
 **User:**
 at one point there was a push to spec out using datalog as a dsl of sorts in
 the payload of nodes to express claims in a formal/semi-formal manner. let's
 discuss whether this is currently worth pursuing, or what would trigger it as
 useful to pursue
-
 
 **Assistant:**
 Found the earlier work in [project A] (a [check script] script
@@ -143,6 +138,7 @@ Was the original motivation one of these, or something else, like making
 claims checkable by agents?
 
 ---
+
 **User:**
 i am going to push back - but do not take this as a need to calibrate with
 me. stay loyal to what you determine to be the best course to take. you are
@@ -200,7 +196,6 @@ the original motivation is a desire to create a spectrum from NL expression
 (ie. the [product A] tutorial) to the code artifact. i also am thinking in
 terms of exploding prose into logical structures to create the ability to
 generate context in new ways. see the repo [repo C]
-
 
 **Assistant:**
 Reading [project A]'s notes on keeping prose, model and code in step, which
@@ -382,13 +377,13 @@ reopen it. Otherwise, add type: formal to SCHEMA.md and build a dagcheck
 Should I run the pilot?
 
 ---
+
 **User:**
 so are you saying that in a way [repo D] and artifact-dag are the same thing?
 agree ratification
 what is a .dl file?
 so you are proposing running test pilots before committing to a schema
 change?
-
 
 **Assistant:**
 Are [repo D] and artifact-dag the same thing? They share a core, but they
@@ -444,9 +439,9 @@ Designing the fields from six real claims is cheaper than changing them after
 two projects depend on them.
 
 ---
+
 **User:**
 should we run the pilot in a fresh thread or here
-
 
 **Assistant:**
 Here. This thread holds the design the pilot is testing: the formal node type,
@@ -467,13 +462,13 @@ the pilot and finish with /end.
 Shall I go ahead?
 
 ---
+
 **User:**
 decisions so far sounds like a record? next should only be for next. should
 it go there?
 i am wondering if we should have an "evals" folder, if this is indeed in some
 ways an eval. is it?
 discuss before proceeding
-
 
 **Assistant:**
 Where the decisions go. Agreed, they don't belong in next/. /end says the
@@ -513,10 +508,10 @@ If that placement works, I'll start with the write-up skeleton in
 [project A], then run the pilot into it.
 
 ---
+
 **User:**
 ok, issue being though this is not a product directly related to [product A].
 would rather keep it here in artifact-dag in a pilot directory
-
 
 **Assistant:**
 Fine with me. artifact-dag tests the method, so the pilot belongs here. One
@@ -546,13 +541,13 @@ Which one? Also, pilots/ (plural, with a dated subfolder) leaves room for
 later pilots. Tell me if you'd rather have a single pilot/.
 
 ---
+
 **User:**
 keep it in pilot. rewrite all example claims and pilot info to only use
 abstract philosphical/axiomatic demonstration content
 
 all references to any other repo should be scrubbed from the repo. however,
 let me know if at any point this will introduce an issue
-
 
 **Assistant:**
 Surveying every reference to other repos and every non-abstract example in the
@@ -619,6 +614,7 @@ tests will confirm the behaviour is unchanged. All of it goes on a branch,
 merged by PR.
 
 ---
+
 **User:**
 1 - created [tutorial repo], proceed with move, then lets fix where
 needed in the [project A] and [project B] tutorials
@@ -630,7 +626,6 @@ subject for the pilot as well
 one thing to add as well - lets create a threads/ directory, and copy this
 thread's transcript there verbatim - no tool calls or reasoning, just the
 exchange
-
 
 **Assistant:**
 Opus 5.5's safeguards stopped the response above · continuing once
@@ -654,6 +649,7 @@ Request ID: req_011CgekEhQxVcdgo6ncomWe8
 Message ID: msg_011CgekEhg63Fcm6q76oUUAg
 
 ---
+
 **User:**
 ❯ 1 - created [tutorial repo], proceed with move, then lets fix where
 needed in the [project A] and
@@ -668,7 +664,6 @@ arbitrary subject for the pilot as well
   one thing to add as well - lets create a threads/ directory, and copy this
 thread's transcript there verbatim - no
   tool calls or reasoning, just the exchange
-
 
 **Assistant:**
 Three points need the user's call before the move: whether to redact repo
@@ -754,13 +749,13 @@ Still waiting on you
 2. Push the two downstream branches?
 
 ---
+
 **User:**
 redact the names
 what are "downstream branches"? like of artifact-dag, but related to the
 tutorial projects? do they belong in different repos now?
 any reason not to merge the prs?
 summarize the implications of the pilot from a high level perspective
-
 
 **Assistant:**
 Transcript is in: PR #23, names redacted (one branch name slipped through the
@@ -818,10 +813,10 @@ claims plus the scenario runner, with the policy text itself as the node.
 Next from me, when you say so: push the downstream branches, then /end.
 
 ---
+
 **User:**
 so, merge the branches? proceed
 re: pilot: ok. how should this be documented, and what should next steps be?
-
 
 **Assistant:**
 Appending the thread's last turns to the transcript, then committing the
@@ -867,13 +862,13 @@ Next steps (also in next/):
    shipped policy, checked against the prose and run over real facts.
 
 ---
+
 **User:**
 1 - what are you asking me to do here exactly? go through each file and levy
 a judgement on what's written?
 2 - why am i creating a token? why am i merging (ie why don't you)?
 3 - what is this referring to?
 4 - clarify this high level? also, is this documented?
-
 
 **Assistant:**
 1. Ratification. Yes, in the literal form: 36 files, each with one line %
@@ -927,6 +922,7 @@ Documented: pilot/README.md, "What would reopen it", item 1 (generic terms);
 next/agents-readme-next.md, step 4; LOCAL.md with the concrete candidates.
 
 ---
+
 **User:**
 this does not shouw the text you are quoting here as the example
 
@@ -936,7 +932,6 @@ token? this already ran, the tutorial site is live via the ci
 3 - should the viewer be its own repo or part of this lib?
 
 4 - yes, is this conclusion documented?
-
 
 **Assistant:**
 PR #25 is up; now the answers.
@@ -994,6 +989,7 @@ Open for you to merge: #24 (handoff), #25 (this), then after the token
 question, [project A]#41, [project B]#8, and #20.
 
 ---
+
 **User:**
 1 - are the claim files in dag/?
 this is what i see in 6a.dl:
@@ -1010,7 +1006,6 @@ is % a comment marker in a dl file?
 3 - ok agreed
 
 proceed with merge unlees you require me to do it
-
 
 **Assistant:**
 Waiting on [project A]'s CI rerun (no token now), then merging #41 and #20.
@@ -1052,9 +1047,9 @@ it; 18 or more "yes" reopens the question on the narrow proposal, fewer
 confirms the stop. The transcript in threads/ runs through this exchange.
 
 ---
+
 **User:**
 why would i need to pull to see it locally?
-
 
 **Assistant:**
 You don't. I was wrong to say it: I merged on GitHub and then pulled main here
@@ -1064,9 +1059,9 @@ before #25 merged; if the editor still shows the old version, it has a stale
 buffer and reopening the file fixes it.
 
 ---
+
 **User:**
 ok, so which files do i need to go through again?
-
 
 **Assistant:**
 The 15 claim files marked strained, all in pilot/library/formal/:
@@ -1085,9 +1080,9 @@ def-renewal.dl, def-fine.dl), but definitions don't count toward the 36, so
 they can wait.
 
 ---
+
 **User:**
 ok, show me the 15 here as a table
-
 
 **Assistant:**
 How to read the Datalog column: :- is "if", a comma is "and", capitals are
@@ -1233,9 +1228,9 @@ Give me the ids to flip to yes (or no), and I'll edit the lines, rerun the
 count, and commit it as your ratification.
 
 ---
+
 **User:**
 lets step through them here one by one and discuss individually
-
 
 **Assistant:**
 2a. "Registration happens once, at the desk, and the library issues a card."
@@ -1270,6 +1265,7 @@ Your call:
 - (c) Leave it "strained".
 
 ---
+
 **User:**
   In words: a member never has two different registrations.
 - it seems part of the process was translating the initial statement to this
@@ -1279,7 +1275,6 @@ of? or did the translation process generate this statement (or something
 similar), discard it, then you just regenerated it now? it seems this is a
 necessary part of the ratification act - making any nl sentence restatements
 formal
-
 
 **Assistant:**
 It was generated just now. Nothing like it was recorded when I wrote the rule.
@@ -1326,12 +1321,12 @@ design as a required field next to formalizes.
 Shall I run it, or carry on with 2a as is?
 
 ---
+
 **User:**
 wouldn't, looking at the file now, "claim" be the initial statement and
 "says" be the "restatement"? also i don't see a "reason" or "rule" in here
 
 agree. spell out the exact sequence, and where should this be documented?
-
 
 **Assistant:**
 The labels are misleading, and they're backwards from how you read them:
@@ -1401,6 +1396,7 @@ Next, if you agree:
 All in one PR. Go?
 
 ---
+
 **User:**
 what about "states" instead of "reads"
 what are the "rules"? where would rules be found, and how derived/created?
@@ -1421,7 +1417,6 @@ datalog at any point?
 5 - what do these do?
 
 as you can imagine i am not following the weak point description
-
 
 **Assistant:**
 "States" is better. I'll use it.
@@ -1518,13 +1513,14 @@ pilot. The threshold stays the same.
 Shall I write PROCEDURE.md first, for you to read before anything is rerun?
 
 ---
+
 **User:**
 yes, write PROCEDURE.md first
 
 ---
+
 **User:**
 commit
-
 
 **Assistant:**
 I've written and committed pilot/PROCEDURE.md and opened PR #28. I haven't
@@ -1556,9 +1552,9 @@ Once you've read it, I'd build the three missing tools and run steps 3–6 on 2a
 as a dry run before doing the rest.
 
 ---
+
 **User:**
 merge it, then build the tools and dry run 2a
-
 
 **Assistant:**
 Building the tool: one script, pilot/procedure.mjs, with four commands
@@ -1651,6 +1647,7 @@ Still queued after this: ratifying the split, ratifying the five predicate
 lines, and A's two proposed new predicates (at_desk(R) and issued_at(C, R)).
 
 ---
+
 **User:**
 i don't know the context. but from what i can see, the entirety of this event
 occurs at the desk, and explains the registration process preceeding any
@@ -1661,7 +1658,6 @@ happppen ("at most"), but in the context of this closed expression, it must
 happen, and only once ("exactly"). this would be my judgement. what is your
 analysis of my judgement? is this the right way of thinking for this kind of
 work, whatever this kind of work is exactly?
-
 
 **Assistant:**
 Your judgment is right. It also points to where the "exactly" belongs, which
@@ -1739,6 +1735,7 @@ Agree? If so I'll record these and move to the next decision, the split
 itself.
 
 ---
+
 **User:**
 add line to precedure
 
@@ -1747,7 +1744,6 @@ agree, record them
 then lets review what just happened
 
 is the "split" part of the same .dl we are working through, or a new .dl?
-
 
 **Assistant:**
 I've recorded all four on PR #29 and pushed them:
@@ -1818,10 +1814,10 @@ Next decision, when you're ready: ratify the split. Are "at the desk" and
 proposed predicates, at_desk(R) and issued_at(C, R).
 
 ---
+
 **User:**
 meaning are "at the desk" and "issues a card" important aspects of the
 overall statement/claim?
-
 
 **Assistant:**
 A useful test for "important": does anything else in the document rest on it?
@@ -1865,10 +1861,10 @@ first step.
 Keep both, and add that line to step 1?
 
 ---
+
 **User:**
 what "document" are we talking about here exactly? where are these claims
 coming from?
-
 
 **Assistant:**
 The document is pilot/library/tutorial.md, "A lending library, from the ground
@@ -1909,6 +1905,7 @@ effort on the library. Keep going with the library's section 2 (the split,
 at_desk, issued_at), or switch to Spinoza for the next dry run?
 
 ---
+
 **User:**
 agree, records what the source asserts. keep it
 agree to decompositon principle, add this to step 1 and commit
@@ -1920,7 +1917,6 @@ any further with the library example
 lets harvest whatever high level leveragable insights we can, document what
 happened, and move on to using one single claim from Spinoza for the next
 test
-
 
 **Assistant:**
 Opus 5.5's safeguards stopped the response above · continuing once
@@ -1964,13 +1960,13 @@ Then
 Proceed with this list?
 
 ---
+
 **User:**
 make sure to differentiate between documentation describing the pilot
 procedure and the concerns relating to individual pilots. for example,
 pilot/readme should only list instruction related to what pilots are how to
 run them, not for example summaries of round 1 of an individual pilot that
 was run. that would belonng in the pilot instance folder itself
-
 
 **Assistant:**
 Understood. The split I'll use:
@@ -2027,9 +2023,9 @@ transcript until you confirm you still want it. Options:
 Then: merge #29, and the Spinoza pilot once you've confirmed its README.
 
 ---
+
 **User:**
 is it more efficient for me to run /export?
-
 
 **Assistant:**
 Yes. /export writes the conversation exactly as it happened. I'd otherwise
@@ -2051,3 +2047,223 @@ One limit: an export only covers what's in the session's context. The early
 part of this thread was compacted, so if the export starts mid-thread, I'll
 keep the existing redacted file up to the point where the export begins and
 append from there.
+
+---
+
+**User:**
+not seeing, is it in this worktree?
+
+**Assistant:**
+The export is in this worktree: /export took to threads/… as a path and made a
+folder named to threads at the root, and the 500 KB file inside holds the
+whole uncompacted thread. I'm checking its format so I can strip the tool
+calls.
+
+I'll filter the export by line type and write a redacted copy to the
+scratchpad to check before it goes into threads/.
+
+Made 1 scratchpad edit +55 (ctrl+o to expand)
+
+The exchange is clean: 33 user turns, my replies, nothing else. Now finding
+every name that needs redacting.
+
+The transcript is ready but not committed:
+threads/2026-11-02-library-pilot-run.md, about 2,050 lines. It covers the
+whole thread from /start, as the user's turns and my text replies only. Every
+project, product and repo name is replaced (the script found 103 occurrences,
+and a search finds none left). I moved the raw export out of the worktree into
+my scratchpad and removed the stray to threads folder, so the unredacted copy
+can't be committed by accident.
+
+Two decisions before I commit:
+
+1. The hand-made file. threads/2026-11-02-formal-nodes.md covers the first
+half of the same thread, and it includes the one entry I wrote ahead of time.
+Keeping both means two copies of the same exchange, one of them less accurate.
+I'd delete it and keep the export-based file. OK to delete?
+
+2. Private content beyond names. Redacting names doesn't cover everything. The
+early part of the thread quotes material from [project A]'s private repo:
+- the tutorial claim "Keys must rotate, and the post-quantum move will rotate
+  every key";
+- the ids of its rotation-chain claims;
+- a rule from its agent-identity model ("authority is the intersection of
+  chain, ceiling and task limit");
+- the outline of its formal-verification analysis.
+
+The file already merged in threads/ contains the same quotes, so they're
+public now. Even if they come out of the files, they stay in git history.
+Options:
+- (a) Accept it, as with "redact the names". I commit as is.
+- (b) Also replace those passages with bracketed summaries, in this file and
+  in the merged one. That stops them appearing in current files, but not in
+  history.
+
+Which do you want for each?
+
+---
+
+**User:**
+1 - yes
+2 - a
+should we consider a skill that would take /export and then apply the
+transformations you just did? or should i just run /export in future and that
+will be enough?
+
+**Assistant:**
+I deleted the hand-made transcript, committed the export-based one with the
+quoted material kept (your choice a), and repointed next/. It's all on PR #29.
+The permission classifier refused the merge ("merge without review"), so #29
+is yours to merge. It contains: the procedure tools, the one-claim reference,
+the new pilot layout, and the transcript.
+
+/export alone, or a skill? /export alone isn't enough for this repo, for two
+reasons:
+- It's noisy. About 80% of the export was tool calls and their output, which
+  you said shouldn't be in threads/.
+- It names your private projects. That's 103 occurrences in this thread, in a
+  public repo.
+
+So something has to transform it every time. My recommendation is a script in
+the repo, plus a git-ignored redaction map, not a skill (yet):
+- threads/from-export.mjs, the two Python scripts from this session rewritten
+  in Node to match the repo:
+  - filters the export down to the exchange;
+  - applies the map;
+  - fails if a known name survives;
+  - prints any line that quotes a private path or a claim id, for you to look
+    at.
+
+  Usage: node threads/from-export.mjs <export> <name>.
+- The map lives in a git-ignored file, for example a section of LOCAL.md. It
+  can't be committed: the map is a list of the private names.
+- Why not a skill: a skill can't run /export itself. You'd still type /export
+  first, so the skill would only save typing one command. It becomes worth it
+  if archiving a thread is part of every /end. Then the right place is a line
+  in your global /end skill, "if the repo has threads/from-export.mjs, ask for
+  an export and run it", not a new skill.
+
+One caveat about the export format: it's Claude Code's display rendering, not
+a stable file format, so the filter may break when Claude Code changes how it
+prints. The script should fail loudly when it finds no ❯ lines, rather than
+quietly writing an empty file.
+
+Want me to build the script and the map now, on a new branch, or after #29 is
+merged?
+
+---
+
+**User:**
+yes, it should live in /end
+
+**Assistant:**
+The archiving step goes into /end (I'm not running /end now). Since /end is
+global, the filter script belongs with the skill, so it works in any repo, and
+each repo keeps its own git-ignored redaction map. First, checking where the
+skill lives: if it's linked into your public dotfiles repo, the private names
+must stay out of it.
+
+The skill goes into the public dotfiles repo, generic and with no names, while
+each repo keeps its own git-ignored map. I'm leaving alone an uncommitted
+change to claude/.claude/settings.json in dotfiles, since it isn't mine.
+
+Skill updated. Fixing one cross-reference in it, then testing the script
+against this thread's raw export with an artifact-dag map.
+
+Both checks pass, and the script output matches the committed transcript apart
+from blank lines. I'm committing the repo side and keeping the map and raw
+export out of commits locally.
+
+Archiving threads is now step 4 of /end, and it already works: it's live
+through the symlinks.
+
+In /end (your dotfiles, claude/.claude/skills/end/)
+- SKILL.md, new step 4, "Archive the thread". It runs only in repos that have
+  a threads/ folder:
+  a. It asks you to run /export threads/raw/<date>-<name>.md, after checking
+     that threads/raw/ is git-ignored.
+  b. It runs the script with the repo's map.
+  c. It reviews the result and tells you about anything quoted from private
+     sources that the map can't catch. It never removes such material on its
+     own.
+  d. The thread file is committed with the handoff files.
+- thread-from-export.mjs: a Node port of the two scripts from this session,
+  with no names in it, since the repo is public. It writes nothing and exits 1
+  in two cases: when the export contains no user turns (meaning Claude Code
+  changed the format), or when a name listed in the map survives.
+- install.sh links the script the same way it links the skill.
+
+Tested on this thread's raw export:
+- 33 user turns came out.
+- The output matches the committed transcript except for blank lines.
+- An empty file fails the run.
+- A map that misses names fails the run, and lists the lines where names
+  survived.
+
+In artifact-dag
+- PR #30: .gitignore now covers threads/raw/ and threads/redact.json, and the
+  README says how thread files are made.
+- In your main checkout, not committed: threads/redact.json (the map: 24
+  replacements, 10 names to check for, and the list of placeholders) and the
+  raw export. Both are already excluded locally, so they can't be committed
+  before #30 merges.
+
+---
+
+**User:**
+1 - merge, unless you need me to
+2 - yes commit, add claude settings too
+
+**Assistant:**
+#29 merged. #30 conflicts with it: both edited adjacent rows of the README's
+Pieces table. Resolving that on its branch.
+
+Both are merged, and dotfiles is committed and pushed.
+
+- artifact-dag:
+  - #29 merged: the procedure tools, the one-claim reference pilot, the new
+    pilot layout, and the transcript.
+  - #30 merged: threads/raw/ and threads/redact.json are git-ignored. It
+    conflicted with #29 in the README's Pieces table; I kept #29's pilot/ row
+    and #30's threads/ row.
+  - main is clean, with no open PRs, no leftover worktrees, and no branches
+    besides main.
+  - The map and this thread's raw export are in your main checkout's threads/.
+    Git ignores both.
+- dotfiles: commit c497b59, pushed. It contains the /end skill's new step 4,
+  thread-from-export.mjs, the install.sh line that links the script, and your
+  settings.json change (Opus 5.5 effort high → xhigh).
+
+Next, per next/: confirm the Spinoza pilot's claim (Proposition V), measures
+and stopping rule in pilot/2026-11-02-spinoza-one-claim/README.md, and I'll
+start it. One small step remains from earlier: git branch -D tutorial-split.
+That branch is already gone (the branch list shows only main), so you can skip
+it.
+
+---
+
+**User:**
+/end
+
+**Assistant:**
+I've rewritten both handoff files; they're uncommitted for now.
+
+- Agent file: I updated the threads/ line to describe the /end export workflow
+  and the git-ignored map, and added three gotchas: how pilot agents are
+  prompted, the classifier sometimes refusing gh pr merge, and zsh's =
+  expansion.
+- Operator file: I removed the tutorial-split step, since that branch is
+  already gone. In its place is a new step: 11 merged branches are still on
+  GitHub because auto-delete is off. The file gives you a one-line delete
+  command and the setting to stop it recurring.
+
+Your turn (step 4, archiving the thread).
+threads/2026-11-02-library-pilot-run.md only runs up to your "is it more
+efficient to run /export?" question. To capture the rest, run exactly this,
+with nothing in front of the path:
+
+/export threads/raw/2026-11-02-library-pilot-run.md
+
+and tell me when it's done. I'll regenerate the thread file with the script,
+report anything it quotes from private sources, and then commit the thread
+file together with the handoff files.
