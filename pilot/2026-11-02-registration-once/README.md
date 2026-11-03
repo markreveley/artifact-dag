@@ -77,7 +77,7 @@ uses, wrote:
 **Step 5, examples.** Agent C, given only the statements and the
 vocabulary, wrote three cases for 2a: registered twice (forbidden),
 registered once (allowed), two members registered once each (allowed). All
-three pass against A's rule ([`examples/2a.dl`](examples/2a.dl)). For
+three pass against A's rule ([`examples/lib-2a.dl`](examples/lib-2a.dl)). For
 2a-desk, C reported that no forbidden case could be written: the same gap A
 found, found independently. C's cases for 2a-card were written for the
 earlier wording and were discarded when the statement changed.
@@ -95,10 +95,13 @@ bottom :- member(M), not has_registration(M).
 ```
 
 and 2a, saying only "at most once", was ratified with fidelity **yes**
-([`formal/2a.dl`](formal/2a.dl)).
+([`formal/lib-2a.dl`](formal/lib-2a.dl)).
 
 ## Where it stops
 
+- The predicate lines above were proposed by the decomposer and used, but
+  never ratified line by line, so step 2 is not finished; 2a's fidelity
+  rests on them.
 - `def:member`'s new rules have not been through steps 4 to 6.
 - `lib-2a-desk` and `lib-2a-card` wait at step 2 for `at_desk(R)` and
   `issued_at(C, R)`.
@@ -140,10 +143,10 @@ request as this pilot.
 | `source.md` | the source passage |
 | `dag/claims/` | the three atomic claims |
 | `dag/definitions/` | `member`, `card` |
-| `formal/2a.dl` | the ratified formal file |
-| `formal/2a-desk.dl`, `formal/2a-card.dl` | statements only; stopped at step 2 |
+| `formal/lib-2a.dl` | the ratified formal file |
+| `formal/lib-2a-desk.dl`, `formal/lib-2a-card.dl` | statements only; stopped at step 2 |
 | `formal/def-member.dl`, `formal/def-card.dl` | the vocabulary |
-| `examples/2a.dl` | C's examples for 2a |
+| `examples/lib-2a.dl` | C's examples for 2a |
 
 ```sh
 node bin/dagcheck.js pilot/2026-11-02-registration-once/dag --lint

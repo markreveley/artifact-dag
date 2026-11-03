@@ -57,6 +57,36 @@ measure 2.
   need to catch it (for example, a step that asks the example writer for a
   boundary case).
 
+## Amendment, 2 November 2026, before the run
+
+An audit of the setup found two ways the agents could be told of the flaw.
+The operator chose to close both before running. The claim, the measures
+and the stopping rule above are unchanged.
+
+1. **Steps 1 and 2 are a blind agent's.** As set up, the session's agent
+   would have split the proposition and written the predicate lines. That
+   agent has read this README, and its predicate lines reach A and C: the
+   round-1 pilot met this very ambiguity in choosing between
+   `same_attribute` and `distinguished_by_attribute`. The decomposer (D)
+   is now a separate run given only [`task.md`](task.md) and
+   [`source.md`](source.md). The ratifier still accepts, splits or merges
+   its claims and accepts each predicate line. The session's agent copies
+   outputs into files unchanged.
+2. **No agent can see the repo.** D, A, B and C run through
+   `node pilot/procedure.mjs blind`: no tools, no files, no memory, from an
+   empty folder. As set up they would have been subagents told not to read
+   files, in a repo that states the flaw here, in the round-1 README and in
+   both thread files.
+
+D is now an agent that has not been told of the flaw, so its output counts
+for measure 2 like A's, B's and C's: a split of "nature or attribute", a
+predicate that separates sharing one attribute from sharing all, or a note.
+
+What blindness cannot rule out is a model that knows the *Ethics*, and the
+objection, from its training. Each run's answer is kept in `runs/` with the
+model that gave it, and the results say if an output names the objection or
+its author.
+
 ## Results
 
 Not run.
