@@ -79,7 +79,7 @@ and the stopping rule above are unchanged.
    both thread files.
 
 D is now an agent that has not been told of the flaw, so its output counts
-for measure 2 like A's, B's and C's: a split of "nature or attribute", a
+for measure 2 like A's, B's and C's (confirmed by the operator): a split of "nature or attribute", a
 predicate that separates sharing one attribute from sharing all, or a note.
 
 What blindness cannot rule out is a model that knows the *Ethics*, and the
