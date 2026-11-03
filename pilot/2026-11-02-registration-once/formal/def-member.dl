@@ -1,0 +1,11 @@
+% formalizes: def:member
+% statement:  A person the library has registered.
+% predicate member(M): M is a member of the library.
+% predicate registered(M): the library has registered M.
+% predicate registration(R, M): R is an occasion on which the library registered M.
+member(M) :- registered(M).
+registered(M) :- member(M).
+registered(M) :- registration(_, M).
+% predicate has_registration(M): the library has registered M on some occasion.
+has_registration(M) :- registration(_, M).
+bottom :- member(M), not has_registration(M).

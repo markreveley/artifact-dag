@@ -1,6 +1,0 @@
-% formalizes: claim:lib-9b
-% claim: Declaring a loan lost closes it: the fine stops and the member owes the replacement cost
-% says: Declaring a loan lost closes it: the fine stops accruing, and the member owes the replacement cost of the copy instead.
-% fidelity: strained — "the fine stops accruing" follows from a lost loan no longer being open, which the freeze cannot see; "owes the replacement cost" is stated without the amount.
-owes_replacement(M, C) :- lost(L), loan_member(L, M), loan_copy(L, C).
-bottom :- lost(L), open(L).

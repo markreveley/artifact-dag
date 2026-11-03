@@ -1,5 +1,0 @@
-% formalizes: def:due-date
-% definition: Due date
-% says: The day by which a borrowed copy must be returned.
-% fidelity: yes
-must_return_by(C, D) :- loan_copy(L, C), loan_due(L, D), open(L).

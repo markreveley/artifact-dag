@@ -1,5 +1,0 @@
-% formalizes: claim:lib-4b
-% claim: A copy on loan cannot be lent again until it has been returned
-% says: A copy that is on loan cannot be lent again until it has been returned; the desk checks this before it stamps anything.
-% fidelity: yes
-bottom :- loan_copy(L1, C), loan_copy(L2, C), open(L1), open(L2), L1 != L2.

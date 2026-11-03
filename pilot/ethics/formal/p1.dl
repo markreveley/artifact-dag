@@ -1,5 +1,0 @@
-% formalizes: claim:ethics-p1
-% claim: Prop. I: substance is by nature prior to its modifications
-% says: Substance is by nature prior to its modifications.
-% prior(S, M): S is by nature prior to M.
-prior(S, M) :- substance(S), mode_of(M, S).

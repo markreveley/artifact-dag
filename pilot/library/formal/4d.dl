@@ -1,4 +1,0 @@
-% formalizes: claim:lib-4d
-% claim: A collection circulates only if copies spend little time waiting on one member's shelf
-% says: A collection circulates only if copies spend most of their time with members and little of it waiting on one member's shelf.
-% fidelity: no — "circulates only if copies spend most of their time with members" is about proportions of time; Datalog has neither time nor proportion.

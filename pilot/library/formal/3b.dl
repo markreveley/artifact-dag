@@ -1,6 +1,0 @@
-% formalizes: claim:lib-3b
-% claim: The library lends copies, never titles
-% says: What the library lends is always a copy, never a title.
-% fidelity: yes
-bottom :- loan_copy(_, X), title(X).
-copy(C) :- loan_copy(_, C).

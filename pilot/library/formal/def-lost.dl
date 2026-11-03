@@ -1,5 +1,0 @@
-% formalizes: def:lost
-% definition: Lost
-% says: The state of a loan still out six weeks after its due date, once the library declares it.
-% fidelity: yes
-lost(L) :- declared_lost(L).

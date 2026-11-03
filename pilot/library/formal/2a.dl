@@ -1,6 +1,0 @@
-% formalizes: claim:lib-2a
-% claim: A member is registered once, at the desk, and issued a card
-% says: Registration happens once, at the desk, and the library issues a card.
-% fidelity: strained — "once" is stated; "issues a card" says a card exists, an existential Datalog cannot state in a head.
-% registration(R, M): R is a registration of M.
-bottom :- registration(R1, M), registration(R2, M), R1 != R2.

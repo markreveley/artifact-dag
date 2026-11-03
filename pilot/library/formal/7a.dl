@@ -1,5 +1,0 @@
-% formalizes: claim:lib-7a
-% claim: A loan past its due date and not returned is overdue
-% says: A loan that has passed its due date without being returned is overdue.
-% fidelity: yes
-overdue(L) :- open(L), loan_due(L, D), today(N), D < N.

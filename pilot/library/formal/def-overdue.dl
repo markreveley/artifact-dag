@@ -1,5 +1,0 @@
-% formalizes: def:overdue
-% definition: Overdue
-% says: A loan past its due date and not returned.
-% fidelity: yes
-overdue(L) :- open(L), loan_due(L, D), today(N), D < N.

@@ -1,4 +1,0 @@
-% formalizes: claim:ethics-p8
-% claim: Prop. VIII: every substance is necessarily infinite
-% says: Every substance is necessarily infinite.
-bottom :- substance(X), finite(X).

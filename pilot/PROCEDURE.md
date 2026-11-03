@@ -1,9 +1,6 @@
 # Procedure: formalizing claims and ratifying the formalization
 
-Status: proposed on 2 November 2026, during the formal-nodes pilot
-(`README.md`). It replaces the pilot's original way of judging fidelity
-(the agent's own reading of its own Datalog); see "Amendment to the pilot"
-at the end. Not adopted outside `pilot/`.
+Status: under test in pilots (`README.md`); not adopted outside `pilot/`.
 
 The procedure turns a source document into atomic claims, gives some of
 them a formal expression, and ends with a person's judgment that each
@@ -62,13 +59,21 @@ cannot echo the statement, and C cannot fit the examples to the rules.
 1. **Decompose.** The decomposer splits the source into atomic claims and
    records, for each, where in the source it comes from. The ratifier
    accepts, splits or merges each one. A claim that turns out not to be
-   atomic later (step 6) comes back here.
+   atomic later (step 6) comes back here. Decomposition keeps every
+   assertion of the source, including ones nothing else rests on; whether
+   an assertion matters to the argument is shown by its edges, not by
+   leaving it out. Statements keep the source's words: a decomposer who
+   rewords a statement has already chosen a reading of it.
 
 2. **Vocabulary.** The decomposer proposes predicates for the terms the
    claims use, each with its predicate line, in the formal file of the
    term's definition. The ratifier accepts each predicate line once. Claims
    never define predicates; a claim that needs a new one sends it back to
-   this step.
+   this step. When several claims describe one event or object, the
+   predicates name it (`registration(R, M)`, `at_desk(R)`), so the claims
+   stay atomic and still meet in the vocabulary. A helper predicate defined
+   by a rule (`has_registration(M) :- registration(_, M).`) belongs to the
+   vocabulary too, with its own predicate line.
 
 3. **Formalize.** A writes the rules for one claim, using only the
    vocabulary. A script copies the claim's statement into the formal file
@@ -85,7 +90,17 @@ cannot echo the statement, and C cannot fit the examples to the rules.
    matched.
 
 6. **Compare.** The ratifier reads the statement against `states`, and
-   reads the example results. Then sets fidelity and writes the note:
+   reads the example results, asking four questions of the statement:
+   - **Domain:** whom or what does it apply to?
+   - **Modality:** is it a must, a may, or an is?
+   - **Subject:** which event or object is it about, and do neighbouring
+     claims share it?
+   - **Allocation:** what do the definitions or the context already supply,
+     and what does this claim add? What the context supplies is written
+     down, in a definition's formal file, never left implicit in a claim's
+     rules.
+
+   Then sets fidelity and writes the note:
    - **yes**: `states` says what the statement says, and every example
      passes.
    - **strained**: they differ, and the ratifier accepts the difference as
@@ -151,20 +166,14 @@ Lines that start with `%` are comments: Datalog ignores them.
 
 ## Tools
 
-| step | tool | exists |
-|---|---|---|
-| 3 | copy the statement into the formal file | no |
-| 4, 5 | give each agent only what its role allows | no |
-| 5 | run each example and record the verdict | no (`scenario.mjs` runs one set of facts over a whole corpus) |
-| 6 | count fidelity | yes, `check.mjs` |
-| 7 | check the argument | yes, `check.mjs` |
+| step | tool |
+|---|---|
+| 3 | `node pilot/procedure.mjs statement <pilot> <claim>`: copy the statement into the formal file; clears states, examples, fidelity, note and ratified if it changed |
+| 3, 4, 5 | `node pilot/procedure.mjs packet <pilot> <claim> A\|B\|C`: print exactly what that role is given, with its instructions |
+| 4, 6 | `node pilot/procedure.mjs set <pilot> <claim> states\|fidelity\|note\|ratified <text>` |
+| 5 | `node pilot/procedure.mjs examples <pilot> <claim> [--write]`: run each example, report verdicts, record the tally |
+| 6 | `check.mjs`: count fidelity |
+| 7 | `check.mjs`: check the argument |
 
-## Amendment to the pilot
-
-The pilot fixed its measures and stopping rule before it ran: fidelity
-"yes" for at least half the claims of the tutorial corpus. Its fidelity
-readings were the agent's own, judging its own Datalog, with nothing for
-the ratifier to compare in plain English. This procedure replaces that
-judgment with steps 3 to 6. The measures and the threshold are unchanged;
-the agent's earlier readings are superseded once a claim has been through
-step 6.
+The agents are separate runs given only their packet, with no access to
+files.
