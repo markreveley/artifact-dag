@@ -110,7 +110,11 @@ that means the same thing, and the graphs join cleanly.
 `bin/dag-to-glossary.js --config glossary.config.json` writes the
 `## Glossary` section of each listed document from the definitions tagged
 for it, and optionally a master glossary of every term. `--check` writes
-nothing and exits 1 if a glossary is out of date, for CI. The config format
+nothing and exits 1 if a glossary is out of date, for CI. Each entry in a
+document's glossary ends with "Introduced in section …": the first section
+where the document writes the term, or an alias of it, in bold (the usual
+mark of a first use), or failing that the first section whose claims use the
+term. The config format
 is at the top of the script.
 
 ## Setting up a new project
