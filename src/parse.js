@@ -21,6 +21,8 @@ export function parseId(id) {
   return m ? { prefix: m[1], slug: m[2] } : null;
 }
 
+const PREFIXES = new Set(Object.values(TYPES).map((t) => t.prefix));
+
 // Split the body into the value (text before the first H2) and sections.
 function splitBody(body) {
   const lines = body.split(/\r?\n/);
@@ -91,10 +93,15 @@ export function parseFile(path, text) {
 
   const edges = [];
   const seen = new Set();
+  // A link must name a node id; anything else is reported, not drawn.
   const add = (to, kind) => {
     const key = kind + "\u0000" + to;
     if (!to || seen.has(key)) return;
     seen.add(key);
+    if (!PREFIXES.has(parseId(to)?.prefix)) {
+      problem("bad_link", `${kind === "about" ? "subject" : kind} "${to}" is not a node id (<prefix>:<slug>, prefix ${[...PREFIXES].join(", ")})`);
+      return;
+    }
     edges.push({ from: node.id, to, kind });
   };
   for (const kind of EDGE_FIELDS) for (const to of fm[kind] || []) add(to, kind);
@@ -108,7 +115,9 @@ export function parseFile(path, text) {
 }
 
 // Kahn's algorithm over the DAG kinds; returns one representative cycle per
-// strongly connected remainder, as a list of ids, or [] when acyclic.
+// strongly connected remainder, as a list of ids, or [] when acyclic. The
+// result does not depend on the order of nodeIds beyond which cycle is found
+// first.
 export function findCycles(nodeIds, edges) {
   const ids = new Set(nodeIds);
   const out = new Map([...ids].map((id) => [id, []]));
@@ -131,22 +140,23 @@ export function findCycles(nodeIds, edges) {
   const stuck = [...ids].filter((id) => !done.has(id));
   if (!stuck.length) return [];
   // Walk from a stuck node until we revisit one; that walk is a cycle.
+  // A walk that reaches a node an earlier walk visited stops there: what
+  // lies beyond was reported then.
   const cycles = [];
-  const used = new Set();
+  const walked = new Set();
   for (const start of stuck) {
-    if (used.has(start)) continue;
+    if (walked.has(start)) continue;
     const trail = [];
     const pos = new Map();
     let cur = start;
-    while (cur !== undefined && !pos.has(cur)) {
+    while (cur !== undefined && !pos.has(cur) && !walked.has(cur)) {
       pos.set(cur, trail.length);
       trail.push(cur);
       cur = out.get(cur).find((t) => !done.has(t));
     }
-    if (cur === undefined) continue;
-    const cycle = trail.slice(pos.get(cur));
-    cycle.forEach((id) => used.add(id));
-    cycles.push(cycle);
+    trail.forEach((id) => walked.add(id));
+    if (cur === undefined || !pos.has(cur)) continue;
+    cycles.push(trail.slice(pos.get(cur)));
   }
   return cycles;
 }

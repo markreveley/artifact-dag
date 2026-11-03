@@ -25,7 +25,7 @@ editing.
   pages: articles, repos, papers). The small label above a title is the type
   or, for a claim, its subtype.
 - Arrows point from a node to what it builds on: a claim points at the
-  definitions it `uses`, a definition points at the narrower term it
+  definitions it `uses`, a narrower definition points at the broader term it
   `refines`, a resource points at the definitions it is filed under through
   `topics`. Green is `supports`, red dashed is `contradicts`, faint lines
   are `mentions` and `about`.
@@ -44,7 +44,9 @@ editing.
   document shows previous and next links, so you can read the document
   decomposed, one claim at a time.
 - The **problems** button lists what the validator found: missing fields,
-  bad ids, duplicates, cycles, and (as notes, not errors) external links.
+  bad ids, links that are not ids, duplicates, cycles, and (as notes, not
+  errors) external links and, on a joined page, ids defined in more than one
+  project.
 
 ## Adding and editing nodes
 
@@ -69,7 +71,7 @@ node <artifact-dag>/bin/dagcheck.js dag/ --lint   # also link findings
 
 The report gives node and edge counts and every problem with the file it came
 from; exit code 1 means at least one error. The viewer runs the same parser,
-so its problems button shows the same findings.
+so its problems button shows the same problems. It does not run the lint.
 
 `--lint` adds rules that look for missing links rather than broken files. It
 reports, for example, a definition whose text names another term without
@@ -84,29 +86,37 @@ Conventions for asking Claude, defined in this repo's `dag` skill. Anything
 you'd say in a sentence works too; the short forms make a request
 unambiguous.
 
-| say                                     | Claude does                                                        |
-|-----------------------------------------|--------------------------------------------------------------------|
-| `dag check`                             | runs the validator on `dag/` and posts the report                  |
-| `dag check --json`                      | same, and writes the parsed graph as `graph.json`                  |
-| `dag lint`                              | runs the link linter on `dag/` and posts its findings              |
-| `dag list`                              | lists every node id with its title, grouped by type                |
-| `dag show <id>`                         | posts the node's file contents                                     |
-| `dag add def <term>`                    | creates `dag/definitions/<slug>.md` and asks for or drafts the text |
-| `dag add claim <statement>`             | creates `dag/claims/<slug>.md`, subtype `proposition` unless told  |
-| `dag add res <url>`                     | creates `dag/resources/<slug>.md` filed under its topics           |
-| `dag link <id> <kind> <id>`             | adds an edge field, e.g. `dag link claim:x uses def:y`             |
-| `dag unlink <id> <kind> <id>`           | removes one                                                        |
-| `dag rename <id> <new-id>`              | renames the node and every link to it in this project              |
-| `dag externals`                         | lists ids linked but not defined here                              |
-| `dag view`                              | builds the viewer and opens it                                     |
+| say | Claude does |
+|---|---|
+| `dag check` | runs the validator on `dag/` and posts the report |
+| `dag check --json` | same, and writes the parsed graph as `graph.json` |
+| `dag lint [--json]` | runs `dagcheck --lint` on `dag/`; posts the counts by code and the warnings for what changed |
+| `dag list` | lists every node id with its title, grouped by type, from the validator's JSON |
+| `dag show <id>` | posts the node's file contents |
+| `dag add def <term>` | creates `dag/definitions/<slug>.md`, drafting the meta-definition from the request or asking for it |
+| `dag add claim <statement>` | creates `dag/claims/<slug>.md`, subtype `proposition` unless told, with `subject` set when it is clear |
+| `dag add res <url>` | creates `dag/resources/<slug>.md` with a short overview, filed under the definitions in its `topics` |
+| `dag link <id> <kind> <id>` | adds the second id to the first node's `<kind>` list (`uses`, `depends_on`, `supports`, `contradicts`, `refines`, `topics`), e.g. `dag link claim:x uses def:y` |
+| `dag unlink <id> <kind> <id>` | removes it |
+| `dag rename <id> <new-id>` | renames the file and id, and rewrites every reference to it in `dag/` |
+| `dag externals` | lists ids linked but not defined here (the validator's `external` notes) |
+| `dag view` | builds the viewer and opens it |
 
 Ids are global on purpose: use the same `def:credence` in every project
 that means the same thing, and the graphs join cleanly.
 
+## Glossaries
+
+`bin/dag-to-glossary.js --config glossary.config.json` writes the
+`## Glossary` section of each listed document from the definitions tagged
+for it, and optionally a master glossary of every term. `--check` writes
+nothing and exits 1 if a glossary is out of date, for CI. The config format
+is at the top of the script.
+
 ## Setting up a new project
 
-1. Create `dag/` in the project's repo, empty or with a copy of
-   `examples/dag/definitions` and `examples/dag/claims` as a starter.
+1. Create `dag/` in the project's repo, empty or with a copy of the
+   folders in `examples/dag/` as a starter.
 2. Add `dag-viewer/config.json`: `{"dag": "../dag", "title": "<project> DAG"}`.
 3. Say in the project's `AGENTS.md` (or `CLAUDE.md`) where artifact-dag is
    checked out, and which commands to run after changing a node.

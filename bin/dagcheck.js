@@ -24,7 +24,7 @@ async function walk(dir) {
     if (ent.isDirectory()) out.push(...(await walk(p)));
     else if (ent.isFile() && ent.name.endsWith(".md")) out.push(p);
   }
-  return out;
+  return out.sort();
 }
 
 const [root, ...flags] = process.argv.slice(2);
@@ -51,7 +51,17 @@ if (linting) {
   if (local != null) rules += "\n" + local;
   findings = lint(graph, rules);
   if (baselinePath) {
-    const old = await readFile(baselinePath, "utf8").then(JSON.parse).catch(() => null);
+    // A missing baseline is written from the current findings; one that is
+    // there but unreadable (a merge conflict, say) is an error, never replaced.
+    const text = await readFile(baselinePath, "utf8").catch((e) => (e.code === "ENOENT" ? null : Promise.reject(e)));
+    let old = null;
+    if (text != null) {
+      try { old = JSON.parse(text); } catch { old = undefined; }
+      if (!Array.isArray(old) || !old.every((k) => typeof k === "string")) {
+        console.error(`baseline ${baselinePath} is not a JSON list of finding keys; fix or delete it`);
+        process.exit(2);
+      }
+    }
     if (old == null) {
       const keys = findings.filter((f) => f.level !== "error").map(findingKey).sort();
       await writeFile(baselinePath, JSON.stringify(keys, null, 2) + "\n");

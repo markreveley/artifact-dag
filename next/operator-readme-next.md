@@ -10,7 +10,10 @@ Read with [`agents-readme-next.md`](agents-readme-next.md).
 
 ## 1. Say when to run the Spinoza pilot
 
-It is confirmed (`pilot/2026-11-02-spinoza-one-claim/README.md`). Start a session, run `/start`, and say "run it". You'll be needed at steps 1, 2 and 6 of `pilot/PROCEDURE.md`.
+It is confirmed and amended (`pilot/2026-11-02-spinoza-one-claim/README.md`,
+"Amendment"). Start a session, run `/start`, and say "run it". You'll be
+needed to ratify the blind decomposer's claims and predicate lines (steps 1
+and 2) and at step 6.
 
 ## Questions
 - None.

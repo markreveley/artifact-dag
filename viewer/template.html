@@ -1,3 +1,7 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>__TITLE__</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -35,7 +39,7 @@
   :root[data-theme="dark"] {
     --bg: #151920; --panel: #1d222b; --fg: #e6e9ee; --muted: #9aa4b2; --line: #2f3641;
     --def: #6fb7d0; --def-soft: #1d3540; --claim: #e0a060; --claim-soft: #3d2d1c;
-      --res: #b59ae0; --res-soft: #2b2340;
+    --res: #b59ae0; --res-soft: #2b2340;
     --ext: #7a8494; --good: #6fc08f; --bad: #e07a6e; --focus: #e6e9ee; color-scheme: dark;
   }
   html, body { height: 100%; }
@@ -198,7 +202,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.5/dagre.min.js"></script>
 <script>
-/* ---- parser (inlined from src/ at build time) ---- */
+/* ---- parser, merge and Markdown (inlined from src/ at build time) ---- */
 /*__PARSER__*/
 
 /* ---- the collection (inlined by bin/build-viewer.js) ---- */
@@ -209,43 +213,6 @@ const SOURCES = __SOURCES__;
 /* ---- state ---- */
 const state = { graph: null, selected: null, showProblems: false, query: "", doc: "", proj: "", projects: [] };
 const $ = (id) => document.getElementById(id);
-
-/* ---- several folders: one graph ---- */
-// Parse each project separately, then join on id. The first definition of an
-// id wins (folders in the order given); later ones are
-// noted. Externals and cycles are recomputed over the joined graph, so a link
-// that is external in one project resolves when another project defines it.
-function mergeSources(sources) {
-  const nodes = [], edges = [], problems = [];
-  const byId = new Map();
-  const seen = new Set();
-  for (const s of sources) {
-    const g = parseCollection(s.files.map((f) => ({ path: `${s.slug}/${f.path}`, text: f.text })));
-    for (const p of g.problems) if (p.code !== "external" && p.code !== "cycle") problems.push(p);
-    for (const n of g.nodes) {
-      n.project = s.slug;
-      const first = byId.get(n.id);
-      if (first) {
-        (first.alsoIn ||= []).push(s.slug);
-        problems.push({ level: "info", code: "shared", path: n.path,
-          message: `"${n.id}" is also defined in ${first.project}; showing ${first.project}'s version` });
-        continue;
-      }
-      byId.set(n.id, n);
-      nodes.push(n);
-    }
-    for (const e of g.edges) {
-      const k = `${e.from}\u0000${e.kind}\u0000${e.to}`;
-      if (!seen.has(k)) { seen.add(k); edges.push(e); }
-    }
-  }
-  const external = [...new Set(edges.map((e) => e.to).filter((id) => !byId.has(id)))].sort();
-  for (const id of external) problems.push({ level: "info", code: "external", path: "", message: `"${id}" is linked but defined in no project here` });
-  for (const cycle of findCycles(byId.keys(), edges)) {
-    problems.push({ level: "error", code: "cycle", path: byId.get(cycle[0]).path, message: `cycle: ${[...cycle, cycle[0]].join(" -> ")}` });
-  }
-  return { nodes, edges, problems, external };
-}
 
 function load() {
   state.projects = SOURCES.length > 1 ? SOURCES : [];
@@ -286,7 +253,7 @@ function fillDocs() {
   const docs = documents();
   if (state.doc && !docs.includes(state.doc)) state.doc = "";
   sel.innerHTML = `<option value="">All nodes</option>` + docs.map((d) =>
-    `<option value="${d.replace(/"/g, "&quot;")}">${docLabel(d).replace(/[&<>]/g, "")}</option>`).join("");
+    `<option value="${escapeHtml(d)}">${escapeHtml(docLabel(d))}</option>`).join("");
   sel.value = state.doc;
   sel.hidden = !docs.length;
 }
@@ -455,21 +422,6 @@ function render() {
   renderPane();
 }
 
-function md(text) {
-  // Minimal: paragraphs, wikilinks, bold, italic, code. Everything else is literal.
-  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  return text.split(/\n{2,}/).map((para) => {
-    let h = esc(para.trim());
-    h = h.replace(/\[\[([^\]|]+?)(?:\|([^\]]*))?\]\]/g, (m, id, label) => {
-      const n = nodeById(id.trim());
-      const cls = n ? `ref ${n.type}` : "ref external";
-      return `<a class="${cls}" data-ref="${id.trim()}">${label || (n && n.title) || id}</a>`;
-    });
-    h = h.replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+)\*/g, "<em>$1</em>");
-    return `<p>${h.replace(/\n/g, " ")}</p>`;
-  }).join("");
-}
-
 function renderPane() {
   const pane = $("pane");
   const g = state.graph;
@@ -517,8 +469,8 @@ function renderPane() {
     <div class="id">${esc(n.id)}</div>
     ${docNav(n, ref, esc)}
     ${links(n, esc)}
-    <div class="value">${n.value ? md(n.value) : "<p class=\"empty\">No body text.</p>"}</div>
-    ${n.subdefinitions.length ? `<h3>Sub-definitions</h3>${n.subdefinitions.map((s) => `<div class="subdef"><div class="src">${esc(s.source)}</div>${md(s.text)}</div>`).join("")}` : ""}
+    <div class="value">${n.value ? renderMarkdown(n.value, nodeById) : "<p class=\"empty\">No body text.</p>"}</div>
+    ${n.subdefinitions.length ? `<h3>Sub-definitions</h3>${n.subdefinitions.map((s) => `<div class="subdef"><div class="src">${esc(s.source)}</div>${renderMarkdown(s.text, nodeById)}</div>`).join("")}` : ""}
     ${n.sources.length ? `<h3>Sources</h3><ul class="list">${n.sources.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
     <h3>Builds on</h3>${list(outE, "out")}
     <h3>Used by</h3>${list(inE, "in")}

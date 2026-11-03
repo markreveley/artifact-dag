@@ -4,8 +4,9 @@ type: definition
 title: Belief
 aliases: [doxastic attitude]
 tags: [epistemics]
+uses: [def:proposition]
 ---
-A belief is an attitude an agent holds toward a proposition, taking it to be true.
+A belief is an attitude an agent holds toward a [[def:proposition|proposition]], taking it to be true.
 
 ## Sub-definitions
 

@@ -1,11 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { fileURLToPath } from "node:url";
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, relative } from "node:path";
 
-const here = new URL("..", import.meta.url).pathname;
+const here = fileURLToPath(new URL("..", import.meta.url));
 const builder = join(here, "bin/build-viewer.js");
 const build = (...args) => execFileSync("node", [builder, ...args], { encoding: "utf8" });
 const sources = (html) => JSON.parse(html.match(/const SOURCES = (.*);/)[1]);
@@ -36,4 +37,23 @@ test("config paths are relative to the config file; names can be given", () => {
   const html = build("--config", cfg);
   assert.deepEqual(sources(html).map((s) => s.name), ["examples", "Second"]);
   assert.match(html, /<title>T<\/title>/);
+});
+
+test("the page is a standards-mode UTF-8 document with a phone viewport", () => {
+  const html = build("--dag", example);
+  assert.match(html, /^<!DOCTYPE html>\n<html lang="en">\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">/);
+});
+
+test("the page inlines the parser, the merge and the Markdown, with no imports or exports left", () => {
+  const html = build("--dag", example);
+  const script = html.slice(html.indexOf("<script>\n"));
+  for (const fn of ["function parseFrontmatter", "function parseCollection", "function mergeSources", "function renderMarkdown"]) assert.ok(script.includes(fn), fn);
+  assert.ok(!/^\s*(import|export) /m.test(script));
+});
+
+test("it builds from a checkout whose path has a space", () => {
+  const root = join(mkdtempSync(join(tmpdir(), "build viewer ")), "artifact dag");
+  for (const d of ["bin", "src", "viewer"]) cpSync(join(here, d), join(root, d), { recursive: true });
+  const html = execFileSync("node", [join(root, "bin/build-viewer.js"), "--dag", example], { encoding: "utf8" });
+  assert.equal(sources(html)[0].name, "examples");
 });

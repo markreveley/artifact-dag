@@ -43,20 +43,26 @@ so the judgment can be checked later.
 
 | role | does | sees | does not see |
 |---|---|---|---|
-| decomposer (an agent) | proposes atomic claims and vocabulary | the source document | |
+| decomposer, D (an agent) | proposes atomic claims and vocabulary | the task, the source document, claims already ratified | what the pilot is looking for |
 | formalizer, A (an agent) | writes a claim's rules | the statement, the vocabulary | the examples, the states |
 | stater, B (an agent) | writes the states | the rules, the predicate lines they use | the statement, the examples |
 | example writer, C (an agent or the ratifier) | writes the examples | the statement, the vocabulary | the rules, the states |
 | ratifier (a person) | ratifies claims, vocabulary and fidelity | everything | |
 | scripts | copy text, run rules, count | files | |
 
-A, B and C are separate agent runs, each given only what its row allows.
-The separation is what makes the comparison in step 6 mean anything: B
-cannot echo the statement, and C cannot fit the examples to the rules.
+D, A, B and C are separate agent runs, each given only what its row allows
+and nothing else: no files, no tools, no memory of other runs
+(`procedure.mjs blind`). The separation is what makes the comparison in
+step 6 mean anything: B cannot echo the statement, and C cannot fit the
+examples to the rules. D is separate for a different reason: its claims and
+predicate lines reach A and C, so a decomposer who knows what a pilot is
+looking for could steer them. The session's agent, which has read the
+pilot's README, only transcribes: it copies each run's output into the
+files unchanged, and anything that changes it is the ratifier's decision.
 
 ## Steps
 
-1. **Decompose.** The decomposer splits the source into atomic claims and
+1. **Decompose.** The decomposer splits what the task names into atomic claims and
    records, for each, where in the source it comes from. The ratifier
    accepts, splits or merges each one. A claim that turns out not to be
    atomic later (step 6) comes back here. Decomposition keeps every
@@ -135,6 +141,7 @@ A claim's formal file:
 % formalizes: claim:<id>
 % statement:  <copied from the claim, by script>
 % states:     <written by B>
+% examples:   <n of m pass, recorded by script>
 % fidelity:   <yes | strained | no, set by the ratifier>
 % note:       <the ratifier's reason; for strained, what is lost>
 % ratified:   <ratifier, date>
@@ -142,13 +149,20 @@ A claim's formal file:
 ```
 
 A definition's formal file holds its predicate lines and any rules the
-term itself implies:
+term itself implies (the `statement` line is optional, copied the same
+way):
 
 ```
 % formalizes: def:<id>
+% statement:  <copied from the definition, by script>
 % predicate   registration(R, M): R is a registration of the member M.
 <rules>
 ```
+
+A new formal file is `formal/<id without "claim:">.dl`, or
+`formal/def-<id without "def:">.dl`; after that the `% formalizes:` line
+is what ties it to its node. Examples are `examples/<id without
+"claim:">.dl`.
 
 Examples, one file per claim, written by C:
 
@@ -168,12 +182,17 @@ Lines that start with `%` are comments: Datalog ignores them.
 
 | step | tool |
 |---|---|
+| 1, 2 | `node pilot/procedure.mjs packet <pilot> - D`: print the decomposer's packet, from the pilot's `task.md` and `source.md` and any claims already in its `dag/` |
+| 1 to 5 | `node pilot/procedure.mjs blind <pilot> <claim\|-> <role>`: give that packet to a fresh agent that cannot see the repo, and print its answer |
 | 3 | `node pilot/procedure.mjs statement <pilot> <claim>`: copy the statement into the formal file; clears states, examples, fidelity, note and ratified if it changed |
 | 3, 4, 5 | `node pilot/procedure.mjs packet <pilot> <claim> A\|B\|C`: print exactly what that role is given, with its instructions |
 | 4, 6 | `node pilot/procedure.mjs set <pilot> <claim> states\|fidelity\|note\|ratified <text>` |
 | 5 | `node pilot/procedure.mjs examples <pilot> <claim> [--write]`: run each example, report verdicts, record the tally |
-| 6 | `check.mjs`: count fidelity |
+| 6 | `check.mjs`: count fidelity (its entailment column means something only for step 7) |
 | 7 | `check.mjs`: check the argument |
 
-The agents are separate runs given only their packet, with no access to
-files.
+`blind` runs `claude -p` with no tools, no MCP servers and no
+customizations (no CLAUDE.md, skills or memory), from an empty temporary
+folder, so the agent has its packet and nothing else. It cannot stop a
+model knowing the source from its training; a pilot that depends on that
+says so.

@@ -7,11 +7,20 @@
 //       lines are removed: the file must go through steps 4 to 6 again.
 //
 //   node pilot/procedure.mjs packet <corpus> <claim-id> <A|B|C>
-//       Steps 3 to 5. Print what one role is given, and nothing else:
+//   node pilot/procedure.mjs packet <corpus> - D
+//       Steps 1 to 5. Print what one role is given, and nothing else:
+//         D (decomposer)     <corpus>/task.md and <corpus>/source.md, and the
+//                            claims already in <corpus>/dag, if any
 //         A (formalizer)     the statement and the vocabulary
 //         B (stater)         the claim's rules and the predicate lines they use
 //         C (example writer) the statement and the predicate lines
 //       Each packet starts with that role's instructions.
+//
+//   node pilot/procedure.mjs blind <corpus> <claim-id|-> <A|B|C|D> [--model <m>]
+//       Give that packet to a fresh agent that cannot see this repo: `claude
+//       -p` with no tools, no MCP servers and no customizations (no CLAUDE.md,
+//       skills or memory), run from an empty temporary folder. Prints its
+//       answer, then the model, on stderr.
 //
 //   node pilot/procedure.mjs examples <corpus> <claim-id> [--write]
 //       Step 5. Run each example in <corpus>/examples/<slug>.dl against the
@@ -25,18 +34,22 @@
 //
 // The vocabulary of a claim is the predicate lines ("% predicate p(X, Y):
 // meaning") and rules of the definitions it uses, directly or through other
-// definitions. Formal files are <corpus>/formal/<slug>.dl, where <slug> is
-// the id without its "claim:" or "def:" prefix ("def-" is added for a
-// definition).
+// definitions. A node's formal file is the one in <corpus>/formal whose
+// "% formalizes:" line names it; a new one is <slug>.dl, where <slug> is the
+// id without "claim:" ("claim:lib-2a" -> "lib-2a"), or "def-" and the id
+// without "def:". Examples are <corpus>/examples/<slug>.dl. No command
+// writes over a formal file that formalizes a different node.
 
-import { readdir, readFile, writeFile } from "node:fs/promises";
-import { join, relative, resolve } from "node:path";
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { dirname, join, relative, resolve } from "node:path";
 import { parseCollection } from "../src/parse.js";
 import { parseProgram, evaluate } from "../src/datalog.js";
 
 const HEADER = ["formalizes", "statement", "states", "examples", "fidelity", "note", "ratified"];
 const usage = () => {
-  console.error("usage: node pilot/procedure.mjs statement|packet|examples|set <corpus> <claim-id> ...");
+  console.error("usage: node pilot/procedure.mjs statement|packet|blind|examples|set <corpus> <claim-id> ...");
   process.exit(2);
 };
 
@@ -61,12 +74,11 @@ async function walk(dir, ext) {
 const dagDir = join(corpus, "dag");
 const graph = parseCollection(await Promise.all((await walk(dagDir, ".md")).map(async (p) => ({ path: relative(dagDir, p), text: await readFile(p, "utf8") }))));
 const nodes = new Map(graph.nodes.map((n) => [n.id, n]));
-const claim = nodes.get(id);
-if (!claim) { console.error(`no node ${id} in ${corpusArg}/dag`); process.exit(2); }
+// "-" stands for no claim: the decomposer (D) works before there is one.
+const claim = id === "-" ? null : nodes.get(id);
+if (!claim && id !== "-") { console.error(`no node ${id} in ${corpusArg}/dag`); process.exit(2); }
 
-// A node's file name: "def-<name>" for a definition; for a claim, the id
-// without "claim:" and without the corpus prefix ("claim:lib-2a" -> "2a").
-const slugOf = (nid) => (nid.startsWith("def:") ? "def-" + nid.slice(4) : nid.replace(/^claim:/, "").replace(/^[a-z]+-/, ""));
+const slugOf = (nid) => (nid.startsWith("def:") ? "def-" + nid.slice(4) : nid.replace(/^claim:/, ""));
 const readOr = async (p, d = "") => { try { return await readFile(p, "utf8"); } catch { return d; } };
 // The formal file is the one whose "% formalizes:" header names the node;
 // a node with none gets <slug>.dl.
@@ -76,6 +88,19 @@ for (const p of await walk(join(corpus, "formal"), ".dl")) {
   if (m && !byHeader.has(m[1])) byHeader.set(m[1], p);
 }
 const formalPath = (nid) => byHeader.get(nid) || join(corpus, "formal", slugOf(nid) + ".dl");
+// Write a node's formal file, refusing to replace one that formalizes
+// another node (two ids can share a file name).
+async function writeFormal(nid, file) {
+  const p = formalPath(nid);
+  const other = /^%\s*formalizes:\s*(\S+)/m.exec(await readOr(p))?.[1];
+  if (other && other !== nid) {
+    console.error(`${relative(process.cwd(), p)} formalizes ${other}, not ${nid}; give one of them another file`);
+    process.exit(1);
+  }
+  await mkdir(dirname(p), { recursive: true });
+  await writeFile(p, joinFile(file));
+  return p;
+}
 
 // A formal file: header lines ("% field: value"), other comments, and rules.
 function splitFile(text) {
@@ -146,6 +171,25 @@ const SYNTAX = `Datalog, as this evaluator reads it:
 - Lines starting with % are comments.`;
 
 const INSTRUCTIONS = {
+  D: `ROLE: decomposer (D). Below are a TASK and the SOURCE text it refers to.
+Step 1: split what the TASK names into atomic claims. A claim is atomic if it cannot be split into two
+statements each of which could be true while the other is false. Keep the source's own words: cut a
+statement down to one assertion, but do not reword it, since rewording chooses a reading. Keep every
+assertion, including ones nothing else rests on.
+Step 2: propose the vocabulary the claims need: predicates, each with one predicate line saying what its
+blanks are, filed under the definition of the term it belongs to, plus any rule a definition itself
+implies. Where several claims are about one event or object, name it in the predicates so the claims
+meet in the vocabulary. Do not write rules for the claims themselves.
+If RATIFIED CLAIMS are given, do not decompose again: write the vocabulary for those claims.
+Answer with exactly these sections:
+CLAIMS
+<one per line: the statement, then " | " and where in the source it comes from; or "as ratified">
+VOCABULARY
+<per definition: a line "definition: <term>", then its "% predicate name(Args): meaning" lines and rules>
+NOTES
+<anything a reader of your claims or predicates should know, or "none">
+
+${SYNTAX}`,
   A: `ROLE: formalizer (A). Write Datalog rules that say exactly what the STATEMENT says: no more, no less.
 Use only the predicates in the VOCABULARY; the vocabulary's own rules are in force alongside yours.
 If you need a predicate that is not listed, do not invent it: list it under MISSING with a proposed predicate line.
@@ -188,18 +232,23 @@ if (cmd === "statement") {
   const changed = file.header.get("statement") !== s;
   file.header.set("formalizes", id);
   file.header.set("statement", s);
-  // The old annotation lines this procedure replaces.
-  file.body = file.body.filter((l) => !/^%\s*(claim|says|definition):/.test(l));
   if (changed) for (const f of ["states", "examples", "fidelity", "note", "ratified"]) file.header.delete(f);
-  await writeFile(p, joinFile(file));
+  await writeFormal(id, file);
   console.log(`${relative(process.cwd(), p)}: statement ${changed ? "written; states, examples, fidelity, note and ratified cleared" : "unchanged"}`);
-} else if (cmd === "packet") {
+} else if (cmd === "packet" || cmd === "blind") {
   const role = (rest[0] || "").toUpperCase();
-  if (!INSTRUCTIONS[role]) usage();
+  if (!INSTRUCTIONS[role] || (role === "D") !== (id === "-")) usage();
   const out = [INSTRUCTIONS[role], ""];
-  const voc = await vocabulary(definitionsOf(id));
   const predLines = (ps) => ps.map((q) => `% predicate ${q.name}(${q.args}): ${q.meaning}`).join("\n") || "(none)";
-  if (role === "A" || role === "C") {
+  if (role === "D") {
+    const task = (await readOr(join(corpus, "task.md"))).trim();
+    const source = (await readOr(join(corpus, "source.md"))).trim();
+    if (!task || !source) { console.error(`${corpusArg} needs task.md and source.md`); process.exit(1); }
+    out.push("TASK", task, "", "SOURCE", source);
+    const ratified = graph.nodes.filter((n) => n.type === "claim").map((n) => `${n.id}: ${statementOf(n)}`);
+    if (ratified.length) out.push("", "RATIFIED CLAIMS", ...ratified);
+  } else if (role === "A" || role === "C") {
+    const voc = await vocabulary(definitionsOf(id));
     out.push("STATEMENT", statementOf(claim), "", "VOCABULARY", predLines(voc.preds));
     if (role === "A") out.push("", "VOCABULARY RULES (in force alongside yours)", voc.rules.map((r) => r.text).join("\n") || "(none)");
   } else {
@@ -212,7 +261,21 @@ if (cmd === "statement") {
     out.push("RULES", text, "", "PREDICATES", predLines(all.filter((q) => used.includes(q.name))));
     if (missing.length) out.push(...missing.map((n) => `% predicate ${n}(...): (no meaning given)`));
   }
-  console.log(out.join("\n"));
+  const packet = out.join("\n");
+  if (cmd === "packet") console.log(packet);
+  else {
+    const mi = rest.indexOf("--model");
+    const model = mi >= 0 ? rest[mi + 1] : null;
+    const cwd = await mkdtemp(join(tmpdir(), "blind-"));
+    const r = spawnSync("claude", ["-p", "--safe-mode", "--tools", "", "--strict-mcp-config", "--no-session-persistence",
+      "--output-format", "json", ...(model ? ["--model", model] : [])], { cwd, input: packet, encoding: "utf8" });
+    await rm(cwd, { recursive: true, force: true });
+    let res;
+    try { res = JSON.parse(r.stdout); } catch { console.error(r.stderr || r.stdout || r.error?.message); process.exit(1); }
+    if (res.is_error) { console.error(res.result); process.exit(1); }
+    console.log(res.result);
+    console.error(`model: ${Object.keys(res.modelUsage || {}).join(", ") || "unknown"}`);
+  }
 } else if (cmd === "examples") {
   const exText = await readOr(join(corpus, "examples", slugOf(id) + ".dl"));
   if (!exText.trim()) { console.error(`no examples file for ${id}`); process.exit(1); }
@@ -252,7 +315,7 @@ if (cmd === "statement") {
     const p = formalPath(id);
     const file = splitFile(await readOr(p));
     file.header.set("examples", tally);
-    await writeFile(p, joinFile(file));
+    await writeFormal(id, file);
   }
   process.exit(pass === blocks.length ? 0 : 1);
 } else if (cmd === "set") {
@@ -261,6 +324,6 @@ if (cmd === "statement") {
   const p = formalPath(id);
   const file = splitFile(await readOr(p));
   file.header.set(field, words.join(" ").replace(/\s+/g, " ").trim());
-  await writeFile(p, joinFile(file));
+  await writeFormal(id, file);
   console.log(`${relative(process.cwd(), p)}: ${field} set`);
 } else usage();

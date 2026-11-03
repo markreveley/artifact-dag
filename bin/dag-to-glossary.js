@@ -27,6 +27,7 @@
 import { readdir, readFile, writeFile, stat } from "node:fs/promises";
 import { join, dirname, resolve } from "node:path";
 import { homedir } from "node:os";
+import { parseFile } from "../src/parse.js";
 
 const argv = process.argv.slice(2);
 const check = argv.includes("--check");
@@ -41,31 +42,16 @@ const config = JSON.parse(await readFile(configPath, "utf8"));
 const at = (p) => (p.startsWith("~/") ? join(homedir(), p.slice(2)) : resolve(base, p));
 
 // Documents in the order the master glossary lists them, keyed by tag.
-const DOCS = config.docs;
+const DOCS = config.docs || [];
 const docByTag = new Map(DOCS.map(([tag, title, path], i) => [tag, { title, path, i }]));
 
-// Just enough of the artifact-dag frontmatter subset for these files.
-function readNode(text) {
-  const m = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*\r?\n?/.exec(text);
-  if (!m) return null;
-  const fm = {};
-  for (const line of m[1].split(/\r?\n/)) {
-    const kv = /^([A-Za-z_][\w-]*)\s*:\s*(.*)$/.exec(line);
-    if (!kv) continue;
-    let v = kv[2].trim();
-    if (v.startsWith("[") && v.endsWith("]"))
-      v = v.slice(1, -1).split(",").map((s) => s.trim()).filter(Boolean);
-    else if (/^".*"$/.test(v)) v = JSON.parse(v);
-    fm[kv[1]] = v;
-  }
-  const [value, ...sections] = text.slice(m[0].length).split(/^## /m);
-  const subs = [];
-  const sub = sections.find((s) => /^sub-?definitions\s*$/im.test(s.split("\n")[0]));
-  if (sub) for (const part of sub.split(/^### /m).slice(1)) {
-    const [head, ...rest] = part.split("\n");
-    subs.push({ source: head.trim(), text: rest.join("\n").trim() });
-  }
-  return { ...fm, tags: fm.tags || [], uses: fm.uses || [], value: value.trim(), subs };
+// A node as this script uses it, read by the same parser as dagcheck and the
+// viewer: its fields, the ids it `uses`, and its sub-definitions as `subs`.
+function readNode(path, text) {
+  const { node, edges } = parseFile(path, text);
+  if (!node) return null;
+  const uses = edges.filter((e) => e.kind === "uses").map((e) => e.to);
+  return { ...node, uses, subs: node.subdefinitions };
 }
 
 async function readDir(dir) {
@@ -74,7 +60,7 @@ async function readDir(dir) {
     const p = join(dir, e.name);
     if (e.isDirectory()) out.push(...(await readDir(p)));
     else if (e.name.endsWith(".md") && e.name !== "README.md") {
-      const n = readNode(await readFile(p, "utf8"));
+      const n = readNode(p, await readFile(p, "utf8"));
       if (n) out.push(n);
     }
   }
@@ -112,7 +98,7 @@ function body(n, inGlossary) {
 }
 
 const docClaims = (docPath) => claims.filter((c) => c.document && c.document.endsWith("/" + docPath))
-  .sort((a, b) => Number(a.order) - Number(b.order));
+  .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
 
 // "Introduced in" for a document decomposed into claims: the first section,
 // in reading order, whose claims use the term.

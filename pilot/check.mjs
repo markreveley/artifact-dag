@@ -1,5 +1,8 @@
 #!/usr/bin/env node
-// Entailment check for the formal-nodes pilot (see pilot/README.md).
+// Entailment check, written for the formal-nodes pilot (its design is in
+// pilot/2026-11-02-formal-nodes/README.md), and the fidelity count of
+// pilot/PROCEDURE.md (step 6). Entailment says something only about claims
+// argued step by step (the procedure's step 7); for a norm it says "fails".
 //   node pilot/check.mjs <corpus> [--json] [--no-bridges]
 // <corpus>/dag holds the nodes and <corpus>/formal/*.dl the formal text, one
 // node per file, headed by a line "% formalizes: <id>". For every claim that
@@ -58,7 +61,7 @@ const edgesFrom = (from, kinds) => graph.edges.filter((e) => e.from === from && 
 // ---------- the formal text ----------
 
 const formal = new Map(); // id -> [{ file, text }]
-const fidelity = new Map(); // id -> { level, reason }, from a "% fidelity:" line
+const fidelity = new Map(); // id -> { level, reason }, from the "% fidelity:" and "% note:" lines
 for (const p of await walk(resolve(corpus, "formal"), ".dl")) {
   const text = await readFile(p, "utf8");
   const m = /^%\s*formalizes:\s*(\S+)/m.exec(text);
@@ -67,8 +70,11 @@ for (const p of await walk(resolve(corpus, "formal"), ".dl")) {
   if (!nodes.has(m[1])) { console.error(`${file}: formalizes an unknown node, ${m[1]}`); process.exit(2); }
   if (!formal.has(m[1])) formal.set(m[1], []);
   formal.get(m[1]).push({ file, text });
-  const f = /^%\s*fidelity:\s*(yes|strained|no)\b[\s,:—-]*(.*)$/m.exec(text);
-  if (f) fidelity.set(m[1], { level: f[1], reason: f[2].trim() });
+  // The reason is the "% note:" line (PROCEDURE.md); round 1 wrote it on the
+  // fidelity line itself, after the word.
+  const f = /^%\s*fidelity:[ \t]*(yes|strained|no)\b[ \t,:—-]*(.*)$/m.exec(text);
+  const note = /^%\s*note:[ \t]*(.*)$/m.exec(text);
+  if (f) fidelity.set(m[1], { level: f[1], reason: (f[2].trim() || note?.[1] || "").trim() });
 }
 const textOf = (id) => (formal.get(id) || []).map((f) => f.text).join("\n");
 
@@ -163,7 +169,7 @@ function run(rule, program, skip = -1) {
 
 function show(l) {
   if (l.kind === "cmp") return `${showT(l.left)} ${l.op} ${showT(l.right)}`;
-  return `${l.neg ? "not " : ""}${l.pred}(${l.args.map(showT).join(", ")})`;
+  return `${l.neg ? "not " : ""}${l.pred}${l.args.length ? `(${l.args.map(showT).join(", ")})` : ""}`;
 }
 const showT = (t) => ("var" in t ? t.var : typeof t.const === "string" ? t.const : String(t.const));
 const showRule = (r) => `${show({ ...r.head, neg: false })}${r.body.length ? " :- " + r.body.map(show).join(", ") : ""}.`;
