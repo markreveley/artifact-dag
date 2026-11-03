@@ -10,6 +10,8 @@ The exchange of a working session, from Claude Code's session transcript. Kept: 
 and the assistant's text replies. Removed: tool calls, tool output, thinking, injected skill and
 system text, and housekeeping slash commands. The transcript was read while the session ran, so
 the assistant's last reply may be missing.
+Details that identify a private project's stack were cut by hand afterwards (2 November 2026);
+the sentences that held them are reworded, not marked.
 Names of other repositories, projects and products are replaced by placeholders:
 
 - **[project A]**: a private project with a DAG, and [product A] the product its tutorial describes
@@ -75,7 +77,7 @@ The earlier push happened in **[project A]**, not in this repo, and it was never
 5. **Usage is a signal.** The experiment had one active day and no reuse since.
 
 **What would make it worth doing (strongest first)**
-1. **Claims that describe shipped Datalog policy.** [product A]'s capability crate uses Biscuit, whose policies are Datalog, and [product B]'s `[product B]'s admin-capabilities crate` appears to have a Datalog engine too. If claim nodes start stating what those policies allow, the logic in a node could be the shipped policy text. Then the check compares a claim against code, not against itself.
+1. **Claims that describe shipped Datalog policy.** Two private projects ship rules written in Datalog. If claim nodes start stating what those policies allow, the logic in a node could be the shipped policy text. Then the check compares a claim against code, not against itself.
 2. **A missed error.** A conclusion that didn't follow from its `depends_on`, or two claims that contradicted each other, got past review. One real miss would justify a check.
 3. **Contradictions across projects.** [project A] and [product B] making conflicting claims about shared definitions in the joined viewer.
 4. **A third [repo D]-style analysis** that you want to bring into the DAG rather than keep as a standalone document.
@@ -167,7 +169,7 @@ expires(I) :- fingerprint_of(I, K), key(K).
 - **A new type, not "policy".** "Policy" sounds like a kind of claim, and [project A] already uses `subtype: norm` for those.
 - **`formalizes` is the seam, made explicit.** It's one edge, carrying one human judgment, and it can be reviewed on its own. A claim can be settled while its formalization is still in dispute.
 - **Many-to-many.** One claim can have several formal nodes, and one formal node can be a whole model. `agent-identity.lp` already works like this: each rule's comment names the statement it formalizes, which is a `formalizes` edge written by hand.
-- **The interop cost.** Checks only combine nodes in the same language. I'd accept that and start with Datalog alone: it always terminates, it's cheap, this repo already has an evaluator, and it's the language Biscuit policies are written in.
+- **The interop cost.** Checks only combine nodes in the same language. I'd accept that and start with Datalog alone: it always terminates, it's cheap, this repo already has an evaluator, and it's the language those shipped rules are written in.
 
 **2. Does dagcheck check the logic?** No. It checks ids, required fields, that edges resolve, cycles and document order. `--lint` adds word matching to find missing links. It would accept "apples reproduce" resting on "apples are red." With formal nodes, your example looks like this:
 
@@ -189,7 +191,7 @@ The analysis is still worth reading for this design. Its section "Keeping the pr
 **4 (and 3 in the second list). Shared vocabulary is the bridge.** Agreed, and this is what changes the cost against the value. Tie each predicate to a definition, so `replaced/1` belongs to `def:key-rotation`. Then three things follow:
 - The existing `unlinked_term` lint extends to formal nodes.
 - Contradictions between projects become detectable through the definitions the viewer already joins on.
-- Where [product A]'s code is Biscuit policy, the same predicates appear in shipped code, and a formal node could be the policy text itself, checked against the claims. That's the code end of your spectrum.
+- Where a project's code is Datalog policy, the same predicates appear in shipped code, and a formal node could be the policy text itself, checked against the claims. That's the code end of your spectrum.
 
 **5 (and 5 in the second list).** I withdraw both.
 
@@ -354,7 +356,7 @@ Is that acceptable?
 
 **4. Pilot content.** Abstract claims I write myself would be written to formalize cleanly, so the pilot would measure nothing. I propose **Spinoza's *Ethics*, Part I** instead. It's public domain (1677; Elwes's 1883 translation), axiomatic, and every proposition cites the definitions and axioms it rests on. Proposition 5 has a known gap: Leibniz pointed out that two substances could share one attribute and differ in another. That gives the pilot a known answer: the check should find that gap without being told. One limit: Spinoza wrote to be deductive and tutorial prose isn't, so a pass here says less about tutorial claims.
 
-No decision is needed on the rest. The test fixtures, lint comments and `SCHEMA.md` examples use [product A] terms (access token, [identifier type], C2, custody ladder, Biscuit, OAuth "grant"). I'll rewrite them as philosophical examples, and the tests will confirm the behaviour is unchanged. All of it goes on a branch, merged by PR.
+No decision is needed on the rest. The test fixtures, lint comments and `SCHEMA.md` examples use [product A] terms. I'll rewrite them as philosophical examples, and the tests will confirm the behaviour is unchanged. All of it goes on a branch, merged by PR.
 
 ---
 
@@ -476,7 +478,7 @@ Merging: I merged #21–#23 myself. When I tried #24 the permission classifier r
 
 **3. "The viewer discussion."** The item this thread started on. The last thread's handoff said the next thing was to decide where the DAG viewer is published: built by CI and hosted (which makes every node public) or kept as a page each person builds locally. We went into Datalog instead, so it's still open and carried in `next/`.
 
-**4. The trigger, plainly.** In the pilot, every Datalog rule was my paraphrase of a sentence, so "fidelity" compared prose with my paraphrase. The case worth reopening is a project whose software already contains rules in Datalog: authorization policies, for instance, in systems that use Biscuit tokens, whose policy language is Datalog. There, a formal node would hold the policy text taken from the code, the `formalizes` edge would point at the claim that describes it, fidelity would mean "does the code say what the tutorial says", and the scenario runner would evaluate the real policy over example facts. That is the NL-to-code bridge: no paraphrase in the middle. Two of your projects have such code; `LOCAL.md` names them.
+**4. The trigger, plainly.** In the pilot, every Datalog rule was my paraphrase of a sentence, so "fidelity" compared prose with my paraphrase. The case worth reopening is a project whose software already contains rules in Datalog: authorization policies, for instance. There, a formal node would hold the policy text taken from the code, the `formalizes` edge would point at the claim that describes it, fidelity would mean "does the code say what the tutorial says", and the scenario runner would evaluate the real policy over example facts. That is the NL-to-code bridge: no paraphrase in the middle. Two of your projects have such code; `LOCAL.md` names them.
 
 Documented: `pilot/README.md`, "What would reopen it", item 1 (generic terms); `next/agents-readme-next.md`, step 4; `LOCAL.md` with the concrete candidates.
 
