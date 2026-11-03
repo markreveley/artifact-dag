@@ -1,0 +1,25 @@
+% Written by the example writer (C) from the statement alone, 2 Nov 2026.
+% example:  m1 is registered on occasion r1, but no card has been issued to m1.
+% expect:   forbidden
+member(m1).
+registered(m1).
+registration(r1, m1).
+
+% example:  m1 is registered on occasion r1, and card c1 was issued to m1.
+% expect:   allowed
+member(m1).
+registered(m1).
+registration(r1, m1).
+card(c1).
+card_of(c1, m1).
+
+% example:  m1 and m2 are both registered, but only m1 was issued a card (c1).
+% expect:   forbidden
+member(m1).
+member(m2).
+registered(m1).
+registered(m2).
+registration(r1, m1).
+registration(r2, m2).
+card(c1).
+card_of(c1, m1).

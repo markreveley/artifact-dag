@@ -1,0 +1,22 @@
+% Written by the example writer (C) from the statement alone, 2 Nov 2026.
+% example:  m1 is registered on two separate occasions, r1 and r2.
+% expect:   forbidden
+member(m1).
+registered(m1).
+registration(r1, m1).
+registration(r2, m1).
+
+% example:  m1 is registered on exactly one occasion, r1.
+% expect:   allowed
+member(m1).
+registered(m1).
+registration(r1, m1).
+
+% example:  Two different members, m1 and m2, are each registered once, on separate occasions.
+% expect:   allowed
+member(m1).
+member(m2).
+registered(m1).
+registered(m2).
+registration(r1, m1).
+registration(r2, m2).

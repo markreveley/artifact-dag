@@ -151,13 +151,17 @@ Lines that start with `%` are comments: Datalog ignores them.
 
 ## Tools
 
-| step | tool | exists |
-|---|---|---|
-| 3 | copy the statement into the formal file | no |
-| 4, 5 | give each agent only what its role allows | no |
-| 5 | run each example and record the verdict | no (`scenario.mjs` runs one set of facts over a whole corpus) |
-| 6 | count fidelity | yes, `check.mjs` |
-| 7 | check the argument | yes, `check.mjs` |
+| step | tool |
+|---|---|
+| 3 | `node pilot/procedure.mjs statement <corpus> <claim>`: copy the statement into the formal file; clears states, examples, fidelity, note and ratified if it changed |
+| 3, 4, 5 | `node pilot/procedure.mjs packet <corpus> <claim> A\|B\|C`: print exactly what that role is given, with its instructions |
+| 4, 6 | `node pilot/procedure.mjs set <corpus> <claim> states\|fidelity\|note\|ratified <text>` |
+| 5 | `node pilot/procedure.mjs examples <corpus> <claim> [--write]`: run each example, report verdicts, record the tally |
+| 6 | `check.mjs`: count fidelity |
+| 7 | `check.mjs`: check the argument |
+
+The agents are separate runs given only their packet, with no access to
+files.
 
 ## Amendment to the pilot
 
