@@ -32,6 +32,7 @@ Read with [`operator-readme-next.md`](operator-readme-next.md). Rewrite both at 
 ## Next, in order
 1. (when the operator says) Run the Spinoza pilot, following `pilot/README.md`, "Running one": `blind … - D` for steps 1 and 2 (from `task.md` and `source.md`), the operator ratifies claims and predicate lines, then `blind` A, B and C, then step 6 with the operator. Save every answer in `runs/`, record each run's model, and note any output that names the objection or Leibniz (README, "Amendment"). The blind decomposer's output counts for measure 2 (operator, 2 Nov 2026). Record results in the instance README.
 2. When a downstream project's claims start describing a policy that also ships as Datalog, that is the trigger to pilot formal text on its `norm` claims (README, "Paused: formal text on nodes"; `pilot/2026-11-02-formal-nodes/README.md`, "What would reopen it").
+3. (optional, when there is time) Vendor dagre into the viewer so a built page lays out offline. Today the page loads dagre from cdnjs and, without a network, falls back to a simple layered layout (README, "The viewer"). A downstream project raised it on 2 Nov 2026; the README's sentence changes with it.
 
 Settled 2 Nov 2026, so not a step: the viewer stays in this repo and each project builds and publishes its own page (README, "The viewer").
 
