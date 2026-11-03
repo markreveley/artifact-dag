@@ -20,9 +20,11 @@
 //
 // With --check nothing is written; the exit code is 1 if any glossary would
 // change. Wikilinks in a definition become links to that term's heading when
-// the term is in the same glossary, and plain text otherwise. A document whose
-// claims are in the DAG gets "Introduced in section …" from the first section
-// whose claims use the term.
+// the term is in the same glossary, and plain text otherwise. Each entry in a
+// document's glossary gets "Introduced in section …": the first section, in
+// reading order, where the document writes the term (its title or an alias)
+// in bold, the usual mark of a first use; failing that, the first section
+// whose claims use the term, when the document is decomposed into claims.
 
 import { readdir, readFile, writeFile, stat } from "node:fs/promises";
 import { join, dirname, resolve } from "node:path";
@@ -100,18 +102,33 @@ function body(n, inGlossary) {
 const docClaims = (docPath) => claims.filter((c) => c.document && c.document.endsWith("/" + docPath))
   .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
 
-// "Introduced in" for a document decomposed into claims: the first section,
-// in reading order, whose claims use the term.
+// "Introduced in": the first section where the document writes the term in
+// bold (title or alias; case, a trailing "s" and a parenthesised qualifier
+// are ignored), else the first section whose claims use it. The text after the
+// "## Glossary" heading is not searched. The link's label is the section's
+// number when the heading has one, otherwise the heading itself.
+const termKey = (t) => t.toLowerCase().replace(/\s*\([^)]*\)/g, "").replace(/[`*]/g, "").trim().replace(/s$/, "");
 function introducedIn(docPath, docText) {
-  const first = new Map();
-  for (const c of docClaims(docPath)) for (const u of c.uses) if (!first.has(u)) first.set(u, c.section);
-  if (!first.size) return null;
-  const headings = new Set(docText.match(/^#{2,3} .+$/gm).map((h) => h.replace(/^#+ /, "")));
-  return (id) => {
-    const sec = first.get(id);
-    if (!sec || !headings.has(sec)) return "";
-    const label = /^(\d+)\./.exec(sec)?.[1] || sec.replace(/\..*$/, "");
-    return ` *Introduced in section [${label}](#${slug(sec)}).*`;
+  const glossaryAt = docText.search(/^## Glossary[ \t]*$/m);
+  const prose = glossaryAt < 0 ? docText : docText.slice(0, glossaryAt);
+  const headings = [...prose.matchAll(/^#{2,3} (.+)$/gm)].map((m) => ({ at: m.index, text: m[1].trim() }));
+  const sectionAt = (i) => { let s = null; for (const h of headings) { if (h.at <= i) s = h.text; else break; } return s; };
+  const firstBold = new Map();
+  for (const m of prose.matchAll(/\*\*([^*\n]{2,80})\*\*/g)) {
+    const k = termKey(m[1]), sec = sectionAt(m.index);
+    if (sec && !firstBold.has(k)) firstBold.set(k, { at: m.index, sec });
+  }
+  const firstClaim = new Map();
+  for (const c of docClaims(docPath)) for (const u of c.uses) if (!firstClaim.has(u)) firstClaim.set(u, c.section);
+  if (!firstBold.size && !firstClaim.size) return null;
+  const known = new Set(docText.match(/^#{2,3} .+$/gm).map((h) => h.replace(/^#+ /, "").trim()));
+  return (n) => {
+    const bold = [n.title, ...(n.aliases || [])].map((t) => firstBold.get(termKey(t))).filter(Boolean)
+      .sort((a, b) => a.at - b.at)[0];
+    const sec = bold?.sec || firstClaim.get(n.id);
+    if (!sec || !known.has(sec)) return "";
+    const num = /^(\d+)\./.exec(sec)?.[1];
+    return num ? ` *Introduced in section [${num}](#${slug(sec)}).*` : ` *Introduced in [${sec}](#${slug(sec)}).*`;
   };
 }
 
@@ -162,7 +179,7 @@ for (const [tag, , path] of DOCS) {
   if (intro) lines.push(intro, "");
   const entry = (n, h) => {
     const paras = body(n, ids);
-    paras[paras.length - 1] += intro_in(n.id);
+    paras[paras.length - 1] += intro_in(n);
     lines.push(`${h} ${n.title}`, "", ...paras.flatMap((p) => [p, ""]));
   };
   if (nested) {

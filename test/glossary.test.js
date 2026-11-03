@@ -17,12 +17,14 @@ function project() {
   put("dag/definitions/credence.md", "---\nid: def:credence\ntype: definition\ntitle: 'Credence'\ntags: [doc-essay] # graded\n---\nA degree of belief.\n");
   put("dag/claims/one.md", '---\nid: claim:one\ntype: claim\ntitle: One\ndocument: me/essay.md\nsection: "1. Start"\norder: 1\nuses:\n  - def:belief\n---\nOne.\n');
   put("dag/claims/two.md", '---\nid: claim:two\ntype: claim\ntitle: Two\ndocument: me/essay.md\nsection: "2. Next"\norder: 2\nuses: [def:credence, def:belief]\n---\nTwo.\n');
-  put("essay.md", "# Essay\n\n## 1. Start\n\nText.\n\n## 2. Next\n\nText.\n\n## Glossary\n\nTerms used here.\n\n---\n\nAfter.\n");
+  put("essay.md", "# Essay\n\n## 1. Start\n\nText, with **credences** in bold.\n\n## 2. Next\n\nText.\n\n## Glossary\n\nTerms used here.\n\n---\n\nAfter.\n");
   put("glossary.config.json", JSON.stringify({ dag: "dag", master: "glossary.md", docs: [["doc-essay", "Essay", "essay.md"]] }));
   return dir;
 }
 const run = (dir, ...args) => spawnSync("node", [SCRIPT, "--config", join(dir, "glossary.config.json"), ...args], { encoding: "utf8" });
 
+// Belief is introduced where a claim first uses it (section 1); Credence is
+// written in bold in section 1, which wins over the claim that uses it in 2.
 test("a document's glossary: every tagged term, block lists included, with where each is introduced", () => {
   const dir = project();
   assert.equal(run(dir).status, 0);
@@ -30,7 +32,7 @@ test("a document's glossary: every tagged term, block lists included, with where
 
 ## 1. Start
 
-Text.
+Text, with **credences** in bold.
 
 ## 2. Next
 
@@ -48,7 +50,7 @@ An attitude toward a [graded](#credence) proposition.
 
 ### Credence
 
-A degree of belief. *Introduced in section [2](#2-next).*
+A degree of belief. *Introduced in section [1](#1-start).*
 
 ---
 
