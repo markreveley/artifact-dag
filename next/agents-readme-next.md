@@ -30,6 +30,7 @@ Read with [`operator-readme-next.md`](operator-readme-next.md). Rewrite both at 
 1. (when the operator says) Run the Spinoza pilot. Its claim (Proposition V), measures and stopping rule are confirmed in `pilot/2026-11-02-spinoza-one-claim/README.md`; the operator asked not to run it in the thread that set it up.
    Steps: step 1 (Proposition V's statement as one atomic claim, or split if it is not), step 2 (predicate lines from Definitions III to V, for the operator to ratify), then A, B and C as separate agents given only `procedure.mjs packet` output, then step 6 with the operator. Record results in the instance README.
 2. When a downstream project's claims start describing a policy that also ships as Datalog, that is the trigger to pilot formal text on its `norm` claims (README, "Paused: formal text on nodes"; `pilot/2026-11-02-formal-nodes/README.md`, "What would reopen it").
+3. (optional, when there is time) Vendor dagre into the viewer so a built page lays out offline. Today the page loads dagre from cdnjs and, without a network, falls back to a simple layered layout (README, "The viewer"). A downstream project raised it on 2 Nov 2026; the README's sentence changes with it.
 
 Settled 2 Nov 2026, so not a step: the viewer stays in this repo and each project builds and publishes its own page (README, "The viewer").
 
