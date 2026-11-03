@@ -6,7 +6,7 @@ updated: 2026-11-02
 
 # Next steps for the operator
 
-Read with [`agents-readme-next.md`](agents-readme-next.md).
+Read with [`next-agents.md`](next-agents.md).
 
 ## 1. Say when to run the Spinoza pilot
 

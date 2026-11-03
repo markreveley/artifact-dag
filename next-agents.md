@@ -6,7 +6,7 @@ updated: 2026-11-02
 
 # Next steps for the agent
 
-Read with [`operator-readme-next.md`](operator-readme-next.md). Rewrite both at the end of each thread; delete finished steps.
+Read with [`next-operator.md`](next-operator.md). Rewrite both at the end of each thread; delete finished steps.
 
 ## State
 - The repo names no other project. The projects that run this code, and which of them run it in CI, are in the git-ignored `LOCAL.md` on the owner's machine (the README says so). Treat `SCHEMA.md` and the CLIs as contracts: a breaking change breaks a downstream CI that runs `main`.
