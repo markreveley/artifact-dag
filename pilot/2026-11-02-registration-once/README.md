@@ -95,7 +95,10 @@ bottom :- member(M), not has_registration(M).
 ```
 
 and 2a, saying only "at most once", was ratified with fidelity **yes**
-([`formal/lib-2a.dl`](formal/lib-2a.dl)).
+([`formal/lib-2a.dl`](formal/lib-2a.dl)). The "yes" rests on step 6's
+allocation question: `states` and the statement differ by the half that
+`def:member` now carries, and the note says so. Read by the definitions of
+step 6 alone, without allocation, the same difference would be "strained".
 
 ## Where it stops
 

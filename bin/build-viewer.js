@@ -10,9 +10,10 @@
 // where an entry is a path or {"path": ..., "name": ...}; paths are relative
 // to the config file. Flags override it.
 
-import { readdir, readFile } from "node:fs/promises";
-import { basename, dirname, join, relative, resolve } from "node:path";
+import { readFile } from "node:fs/promises";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { readNodeFiles } from "../src/files.js";
 
 const here = fileURLToPath(new URL("..", import.meta.url));
 const args = process.argv.slice(2);
@@ -39,31 +40,24 @@ const inline = (src) => src.replace(/^import .*$/gm, "").replace(/^export /gm, "
 const parser = (await Promise.all(["frontmatter.js", "parse.js", "merge.js", "markdown.js"]
   .map((f) => readFile(join(here, "src", f), "utf8")))).map(inline).join("\n");
 
-async function walk(dir) {
-  const out = [];
-  for (const ent of await readdir(dir, { withFileTypes: true })) {
-    const p = join(dir, ent.name);
-    if (ent.isDirectory()) out.push(...(await walk(p)));
-    else if (ent.name.endsWith(".md") && ent.name !== "README.md") out.push(p);
-  }
-  return out;
-}
 const slugs = new Set();
 const sources = [];
 for (const { path, name } of folders) {
   let slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "dag";
   while (slugs.has(slug)) slug += "-2";
   slugs.add(slug);
-  const files = await Promise.all((await walk(path)).sort().map(async (p) =>
-    ({ path: relative(path, p).split(/[\\/]/).join("/"), text: await readFile(p, "utf8") })));
-  sources.push({ slug, name, files });
+  sources.push({ slug, name, files: await readNodeFiles(path) });
 }
 
-// `</script` inside JSON would end the inline script early.
-const json = (v) => JSON.stringify(v).replace(/<\//g, "<\\/");
+// A `<` inside the JSON is written as <: `</script` would end the
+// inline script early, and `<!--` followed by `<script` would make the HTML
+// parser miss the real closing tag. Every replacement takes a function, so
+// `$&` and the like in a title or a node are not read as patterns.
+const json = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
+const safeTitle = title.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
 
 const html = (await readFile(join(here, "viewer/template.html"), "utf8"))
-  .replace(/__TITLE__/g, title.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])))
+  .replace(/__TITLE__/g, () => safeTitle)
   .replace("/*__PARSER__*/", () => parser)
   .replace("__SOURCES__", () => json(sources));
 process.stdout.write(html);

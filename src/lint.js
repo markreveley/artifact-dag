@@ -45,9 +45,10 @@ export function lint(graph, rules) {
     }
     out.push(f);
   }
+  // String(): a collection's own rule may derive a number as code or target.
   return out.sort((a, b) =>
     (LEVELS[a.level] ?? 3) - (LEVELS[b.level] ?? 3) ||
-    a.code.localeCompare(b.code) || a.path.localeCompare(b.path) || a.target.localeCompare(b.target));
+    String(a.code).localeCompare(String(b.code)) || a.path.localeCompare(b.path) || String(a.target).localeCompare(String(b.target)));
 }
 
 // A finding's identity for baselines: stable across message wording.

@@ -12,13 +12,19 @@ export function splitFrontmatter(text) {
   return { front: m[1], body: text.slice(m[0].length) };
 }
 
+// A quote opens a quoted string only where a value starts: after the key's
+// colon, a list's bracket or comma, or a list item's dash. An apostrophe
+// inside a word ("Spinoza's") is text.
+const OPENS_QUOTE = new Set(["", ":", "[", ",", "-"]);
+
 function stripComment(s) {
-  let q = null;
+  let q = null, prev = "";
   for (let i = 0; i < s.length; i++) {
     const c = s[i];
-    if (q) { if (c === q) q = null; }
-    else if (c === '"' || c === "'") q = c;
+    if (q) { if (c === q) q = null; continue; }
+    if ((c === '"' || c === "'") && OPENS_QUOTE.has(prev)) q = c;
     else if (c === "#" && (i === 0 || /\s/.test(s[i - 1]))) return s.slice(0, i);
+    if (!/\s/.test(c)) prev = c;
   }
   return s;
 }
@@ -39,7 +45,7 @@ function flowList(s) {
   let cur = "", q = null;
   for (const c of s) {
     if (q) { cur += c; if (c === q) q = null; }
-    else if (c === '"' || c === "'") { q = c; cur += c; }
+    else if ((c === '"' || c === "'") && cur.trim() === "") { q = c; cur += c; }
     else if (c === ",") { out.push(cur); cur = ""; }
     else cur += c;
   }
@@ -47,7 +53,9 @@ function flowList(s) {
   return out.map(scalar).filter((v) => v !== "");
 }
 
-export function parseFrontmatter(front) {
+// `onBadLine`, when given, is called with each line that is neither
+// `key: value` nor a list item under a key (a nested mapping, say).
+export function parseFrontmatter(front, onBadLine) {
   const data = {};
   if (front == null) return data;
   const lines = front.split(/\r?\n/);
@@ -55,13 +63,14 @@ export function parseFrontmatter(front) {
   for (const rawLine of lines) {
     const line = stripComment(rawLine);
     if (line.trim() === "") continue;
-    const item = /^\s+-\s*(.*)$/.exec(line) || /^-\s*(.*)$/.exec(line);
-    if (item && listKey) {
-      data[listKey].push(scalar(item[1]));
+    const item = /^\s*-\s*(.*)$/.exec(line);
+    if (item) {
+      if (listKey) data[listKey].push(scalar(item[1]));
+      else onBadLine?.(rawLine.trim());
       continue;
     }
     const kv = /^([A-Za-z_][\w-]*)\s*:\s*(.*)$/.exec(line);
-    if (!kv) continue;
+    if (!kv) { onBadLine?.(rawLine.trim()); continue; }
     const [, key, rest] = kv;
     const v = rest.trim();
     if (v === "") {

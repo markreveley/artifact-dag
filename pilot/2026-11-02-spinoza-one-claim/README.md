@@ -87,6 +87,22 @@ objection, from its training. Each run's answer is kept in `runs/` with the
 model that gave it, and the results say if an output names the objection or
 its author.
 
+**Noted before the run, 2 November 2026 (a second audit).** Two limits of
+the setup, recorded so they are read into the result rather than found
+after it:
+
+1. The source D receives includes the proof of Proposition V and
+   Propositions VI to VIII, which restate V as "two substances with an
+   identical attribute", the one-attribute reading. D is asked for the
+   statement only, but its vocabulary will be shaped by that phrasing. A
+   vocabulary that fixes the one-attribute reading without remark is a
+   result for measure 2, not a fault of the run.
+2. With one claim and four agents, each a chance to surface the ambiguity,
+   a pass is cheap and a fail is the informative outcome. Whether to add a
+   control (the same procedure on a proposition with no known flaw) is an
+   open question for the operator; the measures and the stopping rule
+   above are unchanged.
+
 ## Results
 
 Not run.

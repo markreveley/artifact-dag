@@ -57,3 +57,13 @@ test("it builds from a checkout whose path has a space", () => {
   const html = execFileSync("node", [join(root, "bin/build-viewer.js"), "--dag", example], { encoding: "utf8" });
   assert.equal(sources(html)[0].name, "examples");
 });
+
+test("a node's text cannot end the inline script or swallow it, and a title is not a replacement pattern", () => {
+  const dir = mkdtempSync(join(tmpdir(), "build-viewer-"));
+  writeFileSync(join(dir, "evil.md"), "---\nid: def:evil\ntype: definition\ntitle: Evil\n---\nText with </script> and <!--<script> inside.\n");
+  const html = build("--dag", dir, "--title", "Cost $& more");
+  const line = html.slice(html.indexOf("const SOURCES")).split("\n")[0];
+  assert.ok(!/<\/script|<!--|<script/.test(line), "raw tags in the inlined sources");
+  assert.match(sources(html)[0].files[0].text, /<\/script> and <!--<script>/);
+  assert.match(html, /<title>Cost \$&amp; more<\/title>/);
+});
