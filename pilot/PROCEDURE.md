@@ -62,7 +62,11 @@ cannot echo the statement, and C cannot fit the examples to the rules.
 1. **Decompose.** The decomposer splits the source into atomic claims and
    records, for each, where in the source it comes from. The ratifier
    accepts, splits or merges each one. A claim that turns out not to be
-   atomic later (step 6) comes back here.
+   atomic later (step 6) comes back here. Decomposition keeps every
+   assertion of the source, including ones nothing else rests on; whether
+   an assertion matters to the argument is shown by its edges, not by
+   leaving it out. Statements keep the source's words: a decomposer who
+   rewords a statement has already chosen a reading of it.
 
 2. **Vocabulary.** The decomposer proposes predicates for the terms the
    claims use, each with its predicate line, in the formal file of the
