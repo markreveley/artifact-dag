@@ -1,4 +1,0 @@
-% formalizes: claim:ethics-b2b
-% claim: Bridge 2b: two things, neither of whose conceptions involves the other's, have nothing in common
-% says: Two things, neither of whose conceptions involves the conception of the other, have nothing in common.
-nothing_in_common(X, Y) :- thing(X), thing(Y), X != Y, not conception_involves(X, Y), not conception_involves(Y, X).

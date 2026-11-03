@@ -1,5 +1,0 @@
-% formalizes: claim:lib-6b
-% claim: Holds on a title are served in the order they were placed
-% says: Holds on a title are served in the order they were placed.
-% fidelity: yes — read as: a copy is not set aside for a later hold while an earlier hold on the title is pending.
-bottom :- set_aside(C, H2), placed_before(H1, H2), pending(H1).

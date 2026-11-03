@@ -1,7 +1,0 @@
-% formalizes: def:finite
-% definition: Finite
-% says: A thing is called finite after its kind, when it can be limited by another thing of the same nature; for instance, a body is called finite because we always conceive another greater body. So, also, a thought is limited by another thought, but a body is not limited by thought, nor a thought by body.
-% Finite after its kind: limited by another thing of the same nature. The
-% converse, "a finite thing is limited by some other thing", needs an
-% existential in the head, which Datalog cannot state.
-finite(X) :- limited_by(X, Y), same_nature(X, Y), X != Y.

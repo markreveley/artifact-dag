@@ -1,6 +1,0 @@
-% formalizes: claim:lib-9c
-% claim: If a lost copy turns up, the replacement charge is cancelled and the fine stands
-% says: If the copy turns up later, the replacement charge is cancelled and the fine stands.
-% fidelity: strained — "cancelled" retracts a charge; Datalog cannot retract, so the charge is stated as not owed once the copy turns up, and the fine is untouched.
-replacement_cancelled(L) :- lost(L), turned_up(L).
-still_owes_replacement(M, C) :- owes_replacement(M, C), loan_copy(L, C), lost(L), not turned_up(L).

@@ -1,6 +1,0 @@
-% formalizes: claim:lib-5d
-% claim: A loan may not be renewed while another member holds a hold on its title
-% says: A loan may not be renewed at all while another member holds a request for that title.
-% fidelity: strained — "while another member holds a request" is a state at the time of renewal; pending_on(H, D) stands in for "pending on day D".
-bottom :- renewal(R, L), renewal_on(R, D), loan_copy(L, C), copy_of(C, T), loan_member(L, M1),
-          hold_title(H, T), hold_member(H, M2), M1 != M2, pending_on(H, D).

@@ -1,7 +1,0 @@
-% formalizes: def:renewal
-% definition: Renewal
-% says: Replacing a loan's due date with a new one, three weeks on.
-% fidelity: strained — a renewal replaces the due date; Datalog adds facts and cannot replace one, so the new date is recorded beside the old, and "three weeks on" is a given relation, not arithmetic.
-% renewal(R, L): R is a renewal of the loan L; renewal_on(R, D): made on day D.
-renewed(L) :- renewal(_, L).
-due_after_renewal(L, D2) :- renewal(R, L), renewal_on(R, D1), three_weeks_after(D1, D2).

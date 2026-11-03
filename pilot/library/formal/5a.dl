@@ -1,5 +1,0 @@
-% formalizes: claim:lib-5a
-% claim: Every loan has a due date three weeks from the day it was made
-% says: Every loan has a due date, three weeks from the day it was made.
-% fidelity: yes — with "three weeks after" a given relation between day numbers, not arithmetic.
-loan_due(L, D2) :- made_on(L, D1), three_weeks_after(D1, D2).

@@ -1,4 +1,0 @@
-% formalizes: claim:lib-5e
-% claim: Without the hold rule a popular book could circle between renewals and never reach the queue
-% says: Without that rule a popular book could circle between renewals and never reach the queue. (The prose refers to the queue here, before section 6 introduces holds.)
-% fidelity: no — a counterfactual ("without that rule ... could"); Datalog states what holds, not what would.

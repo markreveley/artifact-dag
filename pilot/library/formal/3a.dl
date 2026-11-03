@@ -1,5 +1,0 @@
-% formalizes: claim:lib-3a
-% claim: A title is the work; a copy sits on the shelf; a title may have several copies
-% says: A title is the work: a particular novel, a particular edition of a dictionary. What sits on the shelf is a copy, and a popular title may have several.
-% fidelity: strained — "may have several copies" is a permission that the vocabulary allows (copy_of is many to one); only "a copy is a copy of one title" is a rule.
-bottom :- copy_of(C, T1), copy_of(C, T2), T1 != T2.

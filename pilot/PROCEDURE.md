@@ -1,9 +1,6 @@
 # Procedure: formalizing claims and ratifying the formalization
 
-Status: proposed on 2 November 2026, during the formal-nodes pilot
-(`README.md`). It replaces the pilot's original way of judging fidelity
-(the agent's own reading of its own Datalog); see "Amendment to the pilot"
-at the end. Not adopted outside `pilot/`.
+Status: under test in pilots (`README.md`); not adopted outside `pilot/`.
 
 The procedure turns a source document into atomic claims, gives some of
 them a formal expression, and ends with a person's judgment that each
@@ -171,22 +168,12 @@ Lines that start with `%` are comments: Datalog ignores them.
 
 | step | tool |
 |---|---|
-| 3 | `node pilot/procedure.mjs statement <corpus> <claim>`: copy the statement into the formal file; clears states, examples, fidelity, note and ratified if it changed |
-| 3, 4, 5 | `node pilot/procedure.mjs packet <corpus> <claim> A\|B\|C`: print exactly what that role is given, with its instructions |
-| 4, 6 | `node pilot/procedure.mjs set <corpus> <claim> states\|fidelity\|note\|ratified <text>` |
-| 5 | `node pilot/procedure.mjs examples <corpus> <claim> [--write]`: run each example, report verdicts, record the tally |
+| 3 | `node pilot/procedure.mjs statement <pilot> <claim>`: copy the statement into the formal file; clears states, examples, fidelity, note and ratified if it changed |
+| 3, 4, 5 | `node pilot/procedure.mjs packet <pilot> <claim> A\|B\|C`: print exactly what that role is given, with its instructions |
+| 4, 6 | `node pilot/procedure.mjs set <pilot> <claim> states\|fidelity\|note\|ratified <text>` |
+| 5 | `node pilot/procedure.mjs examples <pilot> <claim> [--write]`: run each example, report verdicts, record the tally |
 | 6 | `check.mjs`: count fidelity |
 | 7 | `check.mjs`: check the argument |
 
 The agents are separate runs given only their packet, with no access to
 files.
-
-## Amendment to the pilot
-
-The pilot fixed its measures and stopping rule before it ran: fidelity
-"yes" for at least half the claims of the tutorial corpus. Its fidelity
-readings were the agent's own, judging its own Datalog, with nothing for
-the ratifier to compare in plain English. This procedure replaces that
-judgment with steps 3 to 6. The measures and the threshold are unchanged;
-the agent's earlier readings are superseded once a claim has been through
-step 6.

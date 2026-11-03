@@ -1,4 +1,0 @@
-% formalizes: claim:ethics-p5
-% claim: Prop. V: there cannot be two or more substances with the same nature or attribute
-% says: There cannot exist in the universe two or more substances having the same nature or attribute.
-bottom :- substance(X), substance(Y), X != Y, same_attribute(X, Y).

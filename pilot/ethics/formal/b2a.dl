@@ -1,4 +1,0 @@
-% formalizes: claim:ethics-b2a
-% claim: Bridge 2a: the conception of what is conceived through itself involves the conception of no other thing
-% says: The conception of what is conceived through itself involves the conception of no other thing.
-bottom :- conceived_through_itself(X), conception_involves(X, Y), X != Y.
