@@ -1,7 +1,8 @@
 # Pilot: one claim from the Ethics
 
-Set up 2 November 2026. Not run. The claim, the measures and the stopping
-rule below are a proposal; they are fixed, and committed, before step 3.
+Set up 2 November 2026. The claim, the measures and the stopping rule below
+were confirmed by the operator the same day, before anything was
+formalized. Not run.
 
 ## Question
 
@@ -18,7 +19,7 @@ but not that it recovers someone else's meaning.
 [`source.md`](source.md): Spinoza, *Ethics*, Part I, definitions, axioms and
 propositions I to VIII, in Elwes's 1883 translation (public domain).
 
-## The claim (proposed)
+## The claim
 
 **Proposition V:** "There cannot exist in the universe two or more
 substances having the same nature or attribute."
