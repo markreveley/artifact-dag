@@ -29,7 +29,7 @@ and view the graph. The rest of this file is for someone working on the code.
 | `docs/USAGE.md`    | the user guide                                              |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
 | `pilot/`           | a pilot of formal (Datalog) nodes joined to claims by a `formalizes` edge: two corpora, an entailment checker, a scenario runner and the results (`pilot/README.md`); stopped in November 2026 |
-| `threads/`         | the exchange of design threads, other projects' names redacted |
+| `threads/`         | the exchange of working threads, made at `/end` from `/export` (user turns and assistant text, other projects' names redacted). The redaction map `threads/redact.json` and raw exports in `threads/raw/` are git-ignored |
 
 A git-ignored `LOCAL.md` at the root may hold notes that stay on one machine,
 such as which projects run this code and which of them run it in CI. This
