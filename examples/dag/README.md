@@ -10,6 +10,6 @@ an external node is reported.
 through `topics`.
 
 Not shown here: `refines`, a document decomposed into claims (`document`,
-`section`, `order`), `not_links`, and a `scale`. The lint fixtures in
-`test/fixtures/lint/` have all but the first, but they are built to trip the
-linter, so they are not a model to copy.
+`section`, `order`), `not_links`, a `scale`, and a `pervasive` term. The lint
+fixtures in `test/fixtures/lint/` have all but the last, but they are built
+to trip the linter, so they are not a model to copy.

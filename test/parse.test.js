@@ -196,3 +196,60 @@ test("SCHEMA.md's examples are the example collection's files, verbatim", async 
     assert.equal(block.trimEnd(), file.trimEnd(), path);
   }
 });
+
+test("findCycles finds a cycle whose first edge leads away from it", () => {
+  const e = (from, to) => ({ from, to, kind: "uses" });
+  const key = (cs) => cs.map((c) => [...c].sort().join("+")).sort();
+  // p's first edge goes to d, a dead end hanging off the p <-> q cycle.
+  assert.deepEqual(key(findCycles(["p", "q", "d"], [e("p", "d"), e("p", "q"), e("q", "p")])), ["p+q"]);
+  // a's first edge leads to the other cycle.
+  assert.deepEqual(key(findCycles(["a", "b", "x", "c", "d"], [e("a", "x"), e("a", "b"), e("b", "a"), e("x", "c"), e("c", "d"), e("d", "c")])), ["a+b", "c+d"]);
+  assert.deepEqual(findCycles(["s"], [e("s", "s")]), [["s"]]);
+  const g = parseCollection([
+    { path: "p.md", text: "---\nid: def:p\ntype: definition\ntitle: P\nuses: [def:d, def:q]\n---\n" },
+    { path: "q.md", text: "---\nid: def:q\ntype: definition\ntitle: Q\nuses: [def:p]\n---\n" },
+    { path: "d.md", text: "---\nid: def:d\ntype: definition\ntitle: D\n---\n" },
+  ]);
+  assert.deepEqual(g.problems.map((p) => p.code), ["cycle"]);
+});
+
+test("a list in a one-value field is bad_field, and the node still parses and lints", async () => {
+  const r = parseFile("d.md", "---\nid: def:a\ntype: [definition]\ntitle: [Alpha, Beta]\n---\nbody");
+  assert.deepEqual(r.problems.map((p) => `${p.code} ${p.message}`),
+    ['bad_field "type" is a list; it takes one value', 'bad_field "title" is a list; it takes one value']);
+  assert.equal(r.node.title, "Alpha, Beta");
+  const { lint } = await import("../src/lint.js");
+  const rules = await readFile(new URL("../lint/rules.dl", import.meta.url), "utf8");
+  assert.doesNotThrow(() => lint(parseCollection([{ path: "d.md", text: "---\nid: def:a\ntype: definition\ntitle: [Alpha, Beta]\n---\nbody" }]), rules));
+});
+
+test("a wikilink that is not an id is a bad_link, like an edge field", () => {
+  const r = parseFile("c.md", "---\nid: claim:c\ntype: claim\ntitle: C\n---\nSee [[credence]], [[def credence]] and [[def:credence]].");
+  assert.deepEqual(r.problems.map((p) => p.message), [
+    'mentions "credence" is not a node id (<prefix>:<slug>, prefix def, claim, res)',
+    'mentions "def credence" is not a node id (<prefix>:<slug>, prefix def, claim, res)',
+  ]);
+  assert.deepEqual(r.edges.map((e) => e.to), ["def:credence"]);
+});
+
+test("a node without an id gets no edges", () => {
+  const r = parseFile("n.md", "---\ntype: claim\ntitle: No id\nuses: [def:z]\n---\n");
+  assert.deepEqual(r.problems.map((p) => p.code), ["missing_field"]);
+  assert.deepEqual(r.edges, []);
+});
+
+test("frontmatter lines that cannot be read are reported on nodes, not on notes", () => {
+  const r = parseFile("x.md", "---\nid: def:x\ntype: definition\nmeta:\n  nested: value\ntitle: X\n- stray\n---\n");
+  assert.deepEqual(r.problems.map((p) => `${p.code} ${p.message}`), [
+    'bad_frontmatter cannot read frontmatter line "nested: value": not "key: value" or a list item',
+    'bad_frontmatter cannot read frontmatter line "- stray": not "key: value" or a list item',
+  ]);
+  assert.deepEqual(parseFile("note.md", "---\ntitle: a note\n  nested: value\n---\n").problems, []);
+});
+
+test("an apostrophe inside a word is not a quote", () => {
+  const fm = parseFrontmatter("title: Spinoza's Ethics # Elwes\naliases: [Spinoza's Ethics, the Ethics]\nsources:\n  - Spinoza's Ethics # 1677\n  - 'quoted # kept'");
+  assert.equal(fm.title, "Spinoza's Ethics");
+  assert.deepEqual(fm.aliases, ["Spinoza's Ethics", "the Ethics"]);
+  assert.deepEqual(fm.sources, ["Spinoza's Ethics", "quoted # kept"]);
+});

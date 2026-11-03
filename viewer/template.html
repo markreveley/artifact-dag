@@ -350,6 +350,10 @@ function labelOf(n) {
 
 /* ---- rendering ---- */
 let bounds = { x: 0, y: 0, w: 1, h: 1 };
+// Positions are kept until the set of shown nodes changes: a search or a
+// selection only dims and highlights, and the layout of a large graph takes
+// longer than a keystroke should.
+let layoutCache = { key: null, pos: null };
 function render() {
   const g = state.graph;
   const vis = visibleTypes();
@@ -372,7 +376,9 @@ function render() {
   const nodes = pool.filter((n) => vis[n.type]);
   const ids = new Set(nodes.map((n) => n.id));
   const edges = g.edges.filter((e) => ids.has(e.from) && ids.has(e.to));
-  const pos = layout(nodes, edges);
+  const key = nodes.map((n) => n.id).join("\n");
+  if (layoutCache.key !== key) layoutCache = { key, pos: layout(nodes, edges) };
+  const pos = layoutCache.pos;
   const sel = state.selected;
   const near = new Set();
   if (sel) { near.add(sel); for (const e of edges) { if (e.from === sel) near.add(e.to); if (e.to === sel) near.add(e.from); } }

@@ -26,10 +26,11 @@
 // in bold, the usual mark of a first use; failing that, the first section
 // whose claims use the term, when the document is decomposed into claims.
 
-import { readdir, readFile, writeFile, stat } from "node:fs/promises";
+import { readFile, writeFile, stat } from "node:fs/promises";
 import { join, dirname, resolve } from "node:path";
 import { homedir } from "node:os";
 import { parseFile } from "../src/parse.js";
+import { readNodeFiles } from "../src/files.js";
 
 const argv = process.argv.slice(2);
 const check = argv.includes("--check");
@@ -57,16 +58,7 @@ function readNode(path, text) {
 }
 
 async function readDir(dir) {
-  const out = [];
-  for (const e of await readdir(dir, { withFileTypes: true })) {
-    const p = join(dir, e.name);
-    if (e.isDirectory()) out.push(...(await readDir(p)));
-    else if (e.name.endsWith(".md") && e.name !== "README.md") {
-      const n = readNode(p, await readFile(p, "utf8"));
-      if (n) out.push(n);
-    }
-  }
-  return out;
+  return (await readNodeFiles(dir)).map((f) => readNode(f.path, f.text)).filter(Boolean);
 }
 const all = await readDir(at(config.dag || "dag"));
 const defs = all.filter((n) => n.type === "definition");

@@ -16,8 +16,9 @@ and view the graph. The rest of this file is for someone working on the code.
 | path               | what                                                        |
 |--------------------|-------------------------------------------------------------|
 | `SCHEMA.md`        | the node format: frontmatter, ids, edges, body layout       |
-| `src/parse.js`     | files in, `{nodes, edges, problems}` out; runs in Node and the browser |
+| `src/parse.js`     | files in, `{nodes, edges, problems, external}` out; runs in Node and the browser |
 | `src/frontmatter.js` | the small YAML subset the schema allows                   |
+| `src/files.js`     | which files under a folder are a collection; the three CLIs share it |
 | `bin/dagcheck.js`  | CLI validator and JSON export; `--lint` runs the link rules |
 | `src/datalog.js`   | a small Datalog evaluator (semi-naive, stratified negation) |
 | `src/facts.js`, `src/lint.js` | graph to Datalog facts, and rules to findings     |
@@ -28,7 +29,7 @@ and view the graph. The rest of this file is for someone working on the code.
 | `bin/build-viewer.js` | builds the viewer page from one or more `dag/` folders  |
 | `bin/dag-to-glossary.js` | writes each document's `## Glossary` (and an optional master glossary) from the definitions, per a project's `glossary.config.json`; can draw terms from other projects' DAGs |
 | `docs/USAGE.md`    | the user guide                                              |
-| `test/`            | `npm test`; `test/fixtures/lint/` is a collection built to trip every lint rule |
+| `test/`            | `npm test`; `test/fixtures/lint/` is a collection built to trip the lint rules (the two resource rules are tripped by nodes written in `test/lint.test.js`) |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
 | `pilot/`           | pilots: bounded tests of a method before it is built in. What a pilot is and how to run one (`pilot/README.md`), the procedure under test (`pilot/PROCEDURE.md`) and its tools, and one folder per pilot |
 | `next/`            | the handoff between working threads: next steps for the agent and for the operator, rewritten at the end of each thread |
