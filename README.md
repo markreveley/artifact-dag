@@ -28,7 +28,7 @@ and view the graph. The rest of this file is for someone working on the code.
 | `bin/dag-to-glossary.js` | writes each document's `## Glossary` (and an optional master glossary) from the definitions, per a project's `glossary.config.json`; can draw terms from other projects' DAGs |
 | `docs/USAGE.md`    | the user guide                                              |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
-| `pilot/`           | a pilot of formal (Datalog) nodes joined to claims by a `formalizes` edge: two corpora, an entailment checker, a scenario runner and the results (`pilot/README.md`); stopped in November 2026 |
+| `pilot/`           | pilots: bounded tests of a method before it is built in. What a pilot is and how to run one (`pilot/README.md`), the procedure under test (`pilot/PROCEDURE.md`) and its tools, and one folder per pilot |
 | `threads/`         | the exchange of design threads, other projects' names redacted |
 
 A git-ignored `LOCAL.md` at the root may hold notes that stay on one machine,

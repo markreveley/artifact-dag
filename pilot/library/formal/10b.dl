@@ -1,4 +1,0 @@
-% formalizes: claim:lib-10b
-% claim: Everything the library records attaches to the member and survives a replaced card
-% says: Because the card is not the membership, everything the library records attaches to the member and survives a replaced card.
-% fidelity: no — a statement about the records' shape (loans, holds and fines name the member, not the card); in the vocabulary this is true by construction, and there is no rule to check.

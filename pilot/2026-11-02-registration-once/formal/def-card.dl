@@ -1,0 +1,6 @@
+% formalizes: def:card
+% statement:  What the library issues at registration, and what the desk uses to recognise a member.
+% predicate card(C): C is a library card.
+% predicate card_of(C, M): the card C was issued to the member M.
+card(C) :- card_of(C, _).
+member(M) :- card_of(_, M).

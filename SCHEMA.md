@@ -116,7 +116,7 @@ the node the claim is about, and adds an `about` edge.
 
 A `formal` node type, a claim's expression in Datalog joined to it by a
 `formalizes` edge and checked for entailment along `depends_on`, was piloted
-in November 2026 and not adopted. `pilot/README.md` has the results and what
+in November 2026 and not adopted. `pilot/2026-11-02-formal-nodes/README.md` has the results and what
 would reopen it.
 
 ## Resource

@@ -1,5 +1,0 @@
-% formalizes: def:self-caused
-% definition: Self-caused
-% says: By that which is self-caused, I mean that of which the essence involves existence, or that of which the nature is only conceivable as existent.
-essence_involves_existence(X) :- self_caused(X).
-self_caused(X) :- essence_involves_existence(X).

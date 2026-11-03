@@ -1,5 +1,0 @@
-% formalizes: claim:lib-8c
-% claim: A hold waits only for a lending copy
-% says: A hold on the title waits only for a lending copy.
-% fidelity: yes
-bottom :- set_aside(C, _), reference(C).

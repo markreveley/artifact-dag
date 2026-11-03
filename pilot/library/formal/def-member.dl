@@ -1,6 +1,0 @@
-% formalizes: def:member
-% definition: Member
-% says: A person the library has registered.
-% fidelity: yes
-member(M) :- registered(M).
-registered(M) :- member(M).

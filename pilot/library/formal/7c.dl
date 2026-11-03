@@ -1,6 +1,0 @@
-% formalizes: claim:lib-7c
-% claim: The fine is owed by the member on the loan and stays on their account after the return
-% says: The fine is owed by the member on the loan, and stays on their account after the return.
-% fidelity: yes — "stays on their account after the return" is what a fact that nothing retracts does; "until paid" is added from section 7's last sentence.
-fine_accrued(L) :- fine_accrues(L).
-owes(M, L) :- fine_accrued(L), loan_member(L, M), not paid(L).
