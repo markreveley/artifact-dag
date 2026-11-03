@@ -80,6 +80,23 @@ A folder is named after the directory that holds it (`ethics/dag` is
 The page loads dagre from cdnjs and fonts from Google Fonts. Without a
 network it falls back to a simple layered layout and system fonts.
 
+## Paused: formal text on nodes
+
+A node could carry, beside its plain English, a formal version of what it
+says (Datalog, to start). A machine could then run a claim's rules over
+example facts, or check that they follow from the claims it depends on.
+This is not the lint: the lint is Datalog about the graph's shape, not
+about what a claim says.
+
+The idea is paused and unresolved, not rejected. Nothing in `SCHEMA.md` or
+the tools depends on it yet. The pilots in `pilot/` test it. The first
+round stopped on fidelity readings no one had ratified, which led to
+`pilot/PROCEDURE.md`. One claim has since been taken through that
+procedure, and a second, from a text no one in the loop wrote, is set up
+and not run. The idea moves forward when that pilot is run, or when a
+project's claims describe a policy that also ships as Datalog, so that the
+formal text can be the shipped rule rather than a paraphrase of it.
+
 ## History
 
 Until November 2026 the nodes lived in Claude projects' files and the viewer
