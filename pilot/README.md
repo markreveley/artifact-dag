@@ -5,6 +5,11 @@ on the agent's fidelity reading, so the pilot stops, pending the operator's
 ratification of that reading (see Results). The measures and the stopping
 rule below were fixed before the first claim was formalized.
 
+Amended 2 November 2026: fidelity is to be judged by the procedure in
+[`PROCEDURE.md`](PROCEDURE.md) (a blind restatement of the rules and
+examples written from the statement), not by the agent's own reading. The
+measures and the threshold are unchanged.
+
 ## Question
 
 Is it worth adding a node type that carries a formal expression of a claim
