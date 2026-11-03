@@ -6,10 +6,11 @@ so a collection folder can hold ordinary notes alongside nodes.
 
 ## Where nodes live
 
-By convention nodes live under a `dag/` folder in a project's files, at any
-depth. The viewer is told the project and the root folder; nothing else about
-the layout matters. File names are free, but `<id without prefix>.md` keeps
-things findable (`dag/definitions/entropy.md` for `def:entropy`).
+By convention nodes live under a `dag/` folder in a project's repo, at any
+depth. The validator and the viewer are given that folder and read every
+`.md` file under it; nothing else about the layout matters. File names are
+free, but `<id without prefix>.md` keeps things findable
+(`dag/definitions/entropy.md` for `def:entropy`).
 
 ## Ids
 
@@ -64,16 +65,18 @@ are allowed to cycle.
 
 ## Definition
 
+From `examples/dag/definitions/credence.md`:
+
 ```yaml
 ---
 id: def:credence
 type: definition
 title: Credence
 aliases: [degree of belief, subjective probability]
-uses: [def:belief]
+tags: [epistemics, probability]
+uses: [def:belief, def:proposition]
 ---
-A credence is the strength with which an agent holds a belief, expressed as a
-number between 0 and 1 that behaves like a probability.
+A credence is the strength with which an agent holds a [[def:belief]] in a [[def:proposition]], expressed as a number between 0 and 1 that behaves like a probability.
 
 ## Sub-definitions
 
@@ -81,8 +84,7 @@ number between 0 and 1 that behaves like a probability.
 The degree of belief revealed by the odds at which an agent is willing to bet.
 
 ### de Finetti (1937)
-A coherent price an agent would set for a bet that pays 1 if the proposition
-is true, 0 otherwise.
+A coherent price an agent would set for a bet that pays 1 if the proposition is true and 0 otherwise.
 ```
 
 The body above the first `##` heading is the node's **value**: the single
@@ -93,20 +95,22 @@ heading text as the attribution and the paragraph(s) below it as the text.
 
 ## Claim
 
+From `examples/dag/claims/conditionalization-is-rational.md`:
+
 ```yaml
 ---
-id: claim:credences-should-be-probabilities
+id: claim:conditionalization-is-rational
 type: claim
 subtype: proposition
-title: Credences should obey the probability axioms
-subject: def:credence
+title: Rational agents update by conditionalization
+subject: def:conditionalization
+tags: [epistemics]
 sources:
-  - Dutch book argument, Ramsey 1926
-uses: [def:credence]
-supports: [claim:bayesian-updating-is-rational]
+  - Lewis 1999, "Why Conditionalize?"
+uses: [def:conditionalization, def:evidence]
+depends_on: [claim:credences-should-be-probabilities]
 ---
-An agent whose credences violate the probability axioms can be offered a set
-of bets they will each accept and that together guarantee a loss.
+An agent who plans to update by any rule other than conditionalization is vulnerable to a diachronic Dutch book, so conditionalization is the uniquely rational update rule.
 ```
 
 The body is the claim's **value**: one atomic statement, elaborated as needed.
@@ -114,34 +118,36 @@ The body is the claim's **value**: one atomic statement, elaborated as needed.
 likely to follow are `observation`, `hypothesis` and `norm`. `subject` names
 the node the claim is about, and adds an `about` edge.
 
-A `formal` node type, a claim's expression in Datalog joined to it by a
-`formalizes` edge and checked for entailment along `depends_on`, was piloted
-in November 2026 and not adopted. `pilot/2026-11-02-formal-nodes/README.md` has the results and what
-would reopen it.
+Formal text on claims (a claim's expression in Datalog) is not part of the
+schema. It is paused, not rejected: README.md, "Paused: formal text on
+nodes", says where it stands, and `pilot/` holds the pilots that test it.
 
 ## Resource
 
+From `examples/dag/resources/sep-formal-belief.md`:
+
 ```yaml
 ---
-id: res:software-sandboxing-basics
+id: res:sep-formal-belief
 type: resource
-title: "Software sandboxing: The basics"
-url: https://blog.emilua.org/2025/01/12/software-sandboxing-basics/
-hacker_news: https://news.ycombinator.com/item?id=49778670
-tags: [security]
-topics: [def:sandboxing]
+title: Formal Representations of Belief (SEP)
+url: https://plato.stanford.edu/entries/formal-belief/
+tags: [epistemics, reference]
+topics: [def:credence, def:belief]
 ---
-A short overview of what the page is and why it was kept.
+Stanford Encyclopedia of Philosophy survey of the ways a belief state can be
+modelled, from all-or-nothing belief to graded credence.
 ```
 
 A resource is an outside page worth keeping: an article, a repo, a paper, a
 video. `url` is required and is the page itself. `hacker_news` is optional,
-the discussion thread that led to it; for a post with no outside link (an
-Ask HN), `url` and `hacker_news` are the same thread. The body is the
+the Hacker News thread that led to it
+(`hacker_news: https://news.ycombinator.com/item?id=<n>`); for a post with
+no outside link (an Ask HN), `url` and `hacker_news` are the same thread. The body is the
 resource's **value**, an overview in the collection's own words.
 
 `topics` lists the definitions the resource is about. A topic is an ordinary
-definition (`def:sandboxing`), so topics can `refine` broader topics, and the
+definition (`def:credence`), so topics can `refine` broader topics, and the
 viewer shows each resource hanging off the terms it is filed under. Other
 fields a collection finds useful (`added`, `status`) are allowed; the parser
 keeps only the ones listed under Parsed shape.
@@ -212,17 +218,24 @@ Nested mappings are not supported. Keep frontmatter flat.
 ```js
 {
   nodes: [{ id, type, subtype, title, aliases, tags, sources, subject,
-            document, section, order, url, hackerNews,
+            document, section, order, url, hackerNews, notLinks,
             value, subdefinitions: [{ source, text }], path }],
   edges: [{ from, to, kind }],          // kind: uses | depends_on | topics | ...
-  problems: [{ level, code, path, message }]
+  problems: [{ level, code, path, message }],
+  external: [id, ...]                   // linked but not in the collection
 }
 ```
 
-Problem codes: `missing_field`, `bad_id`, `prefix_mismatch`, `duplicate_id`,
-`unknown_type`, `cycle`, `bad_order`. External links are reported as `external` at level
-`info` so a viewer can count them without treating them as errors.
 `notLinks` on a node is its `not_links` list.
+
+Problem codes, all errors: `missing_field`, `bad_id`, `prefix_mismatch`,
+`duplicate_id`, `unknown_type`, `cycle`, `bad_order`, and `bad_link` (an
+edge field, `subject` or wikilink names something that is not
+`<prefix>:<slug>` with a known prefix; no edge is drawn). External links are
+reported as `external` at level `info`, so a viewer can count them without
+treating them as errors. A page joining several collections adds `shared`,
+also `info`, for an id defined in more than one; the first collection's
+version is shown.
 
 ## Lint findings
 

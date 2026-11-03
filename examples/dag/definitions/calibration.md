@@ -3,6 +3,6 @@ id: def:calibration
 type: definition
 title: Calibration
 tags: [epistemics, probability]
-uses: [def:credence]
+uses: [def:credence, def:proposition]
 ---
 An agent is calibrated when, across the propositions to which they assign credence p, a fraction p of them turn out true.

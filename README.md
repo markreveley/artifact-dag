@@ -21,14 +21,17 @@ and view the graph. The rest of this file is for someone working on the code.
 | `bin/dagcheck.js`  | CLI validator and JSON export; `--lint` runs the link rules |
 | `src/datalog.js`   | a small Datalog evaluator (semi-naive, stratified negation) |
 | `src/facts.js`, `src/lint.js` | graph to Datalog facts, and rules to findings     |
+| `src/merge.js`, `src/markdown.js` | the viewer's join of several collections, and its Markdown; inlined into the page, tested in Node |
 | `lint/rules.dl`    | the default lint rules, one per finding code                |
 | `examples/dag/`    | an example collection (epistemics) to copy into a project   |
 | `viewer/template.html` | the viewer page, with placeholders for the parser and the nodes |
 | `bin/build-viewer.js` | builds the viewer page from one or more `dag/` folders  |
 | `bin/dag-to-glossary.js` | writes each document's `## Glossary` (and an optional master glossary) from the definitions, per a project's `glossary.config.json`; can draw terms from other projects' DAGs |
 | `docs/USAGE.md`    | the user guide                                              |
+| `test/`            | `npm test`; `test/fixtures/lint/` is a collection built to trip every lint rule |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
 | `pilot/`           | pilots: bounded tests of a method before it is built in. What a pilot is and how to run one (`pilot/README.md`), the procedure under test (`pilot/PROCEDURE.md`) and its tools, and one folder per pilot |
+| `next/`            | the handoff between working threads: next steps for the agent and for the operator, rewritten at the end of each thread |
 | `threads/`         | the exchange of working threads, written at `/end` from the session transcript (user turns and assistant text, other projects' names redacted). The redaction map `threads/redact.json`, and raw `/export` files in `threads/raw/` if one is used, are git-ignored |
 
 A git-ignored `LOCAL.md` at the root may hold notes that stay on one machine,
@@ -40,15 +43,16 @@ repo is public, so nothing in it names those projects.
 ```sh
 npm test                          # unit tests
 npm run check -- examples/dag     # validate a collection
-npm run check -- examples/dag --json > graph.json
+npm run check -- examples/dag --json > /tmp/graph.json
 npm run check -- examples/dag --lint
 npm run build -- --dag examples/dag --title "Example" > /tmp/viewer.html
 ```
 
 ## The viewer
 
-`bin/build-viewer.js` inlines `src/frontmatter.js`, `src/parse.js` and the
-text of every node file into `viewer/template.html`. The result is one HTML
+`bin/build-viewer.js` inlines `src/frontmatter.js`, `src/parse.js`,
+`src/merge.js`, `src/markdown.js` and the text of every node file into
+`viewer/template.html`. The result is one HTML
 file with no server code: open it from disk or put it on any static host. It
 shows the nodes as they were when it was built, so rebuild it after editing.
 Never commit a built page.
@@ -71,7 +75,7 @@ config file.
 (`"dag": ["../dag", {"path": "../../other/dag", "name": "Other"}]`), and the
 page joins them into one graph. Each folder is parsed separately, then joined
 on id: the first definition of an id wins (folders in the order given), later
-ones are noted in the problems list, and externals and cycles are recomputed
+ones are noted in the problems list and left out with their edges, and externals and cycles are recomputed
 over the whole graph, so a link that is external in one project resolves when
 another defines it. A **project** menu narrows the graph to one collection.
 A folder is named after the directory that holds it (`ethics/dag` is

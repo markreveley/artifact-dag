@@ -53,24 +53,11 @@ definition, `uses` in a claim), or record that the word is meant in another
 sense with `not_links: [def:…]`. Do not add edges from word matches without
 reading them; put the decisions in a PR so they are reviewed as a diff.
 
-## Commands (from docs/USAGE.md)
+## Commands
 
-| user says                     | do                                                                                  |
-|-------------------------------|-------------------------------------------------------------------------------------|
-| `dag check [--json]`          | run the validator; post the report (write `graph.json` for `--json`)                |
-| `dag lint [--json]`           | run `dagcheck --lint`; post the counts by code and the warnings for what changed     |
-| `dag list`                    | ids and titles grouped by type, from the validator's JSON                           |
-| `dag show <id>`               | post the file's contents                                                            |
-| `dag add def <term>`          | write a definition; draft the meta-definition from the request or ask for it         |
-| `dag add claim <statement>`   | write a claim, `subtype: proposition` unless told otherwise; set `subject` if clear  |
-| `dag add res <url>`           | write a resource with `url`; draft a short overview; file it under `topics` definitions |
-| `dag link A <kind> B`         | add B to A's `<kind>` list (`uses`, `depends_on`, `supports`, `contradicts`, `refines`, `topics`) |
-| `dag unlink A <kind> B`       | remove it                                                                           |
-| `dag rename <id> <new-id>`    | rename the file and id, and rewrite every reference in `dag/`                       |
-| `dag externals`               | the validator's `external` notes                                                    |
-| `dag view`                    | see below                                                                           |
-
-Plain-language requests that mean one of these get the same treatment.
+The `dag …` commands, and what to do for each, are the table under
+"Commands" in `<repo>/docs/USAGE.md`. Read it there; it is the one list. Plain-language
+requests that mean one of them get the same treatment. `dag view` is below.
 
 ## Viewing the graph
 

@@ -7,7 +7,7 @@ subject: def:calibration
 tags: [epistemics]
 sources:
   - Tetlock and Gardner 2015, "Superforecasting"
-uses: [def:calibration]
+uses: [def:calibration, def:evidence]
 supports: [claim:conditionalization-is-rational]
 ---
 Agents who are better calibrated make better decisions under uncertainty, and conditionalizing on evidence tends to improve calibration over time.
