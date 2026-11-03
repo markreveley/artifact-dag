@@ -1,2 +1,4 @@
 node_modules/
 LOCAL.md
+threads/raw/
+threads/redact.json
