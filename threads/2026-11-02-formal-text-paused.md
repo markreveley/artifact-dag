@@ -197,3 +197,29 @@ cut that line, as nothing in artifact-dag should refer to external repos (correc
 Now committing the skill change to the dotfiles repo's `main`.
 
 Regenerating the thread file now so it covers this exchange.
+
+The thread file is clean. Committing on `main` and pushing.
+
+Done. I cut the line, and the end-of-thread work is committed and pushed.
+
+**One correction:** the repo's actual rule is narrower than "nothing should refer to external repos". It says the repo must *name* no other project; the names live in the git-ignored `LOCAL.md`. Unnamed references are allowed and already in use:
+- the handoff file talks about "downstream projects";
+- thread files use placeholders like [product A];
+- you decided earlier to keep quoted private-repo material in thread files, as long as it's reported to you each time.
+
+The cut line named nothing, but its stack details still identified the project, so cutting it fits the narrower rule too. I've recorded that in the handoff: details that identify a private project are cut even when the name is redacted. If you want the stricter rule, no references to other projects at all, say so; it would mean rewriting existing handoff lines and the first thread file.
+
+**What landed:**
+- **Thread file:** I cut the stack sentences in two of my replies and the three places that quoted them. The git-ignored redaction map now redacts the policy-language name and fails the run if it survives, so future thread files can't leak it.
+- **Dotfiles (`b55b0ee`):** the new `/end` is pushed to `main`.
+- **artifact-dag (`4ffddb5`):** the handoff and thread file are pushed straight to `main`, following the new rule. There's no PR because the work was already on `main`. Nothing was left to clean up: only `main` and the main checkout exist.
+
+**Next:** your turn. Say "run it" to start the Spinoza pilot.
+
+---
+
+**User:**
+/end
+
+**Assistant:**
+Both handoff files are still current; nothing has changed since `4ffddb5`. Only the thread file needs rebuilding, to cover the last exchange.
