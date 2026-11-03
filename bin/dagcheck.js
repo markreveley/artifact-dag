@@ -8,39 +8,28 @@
 //                                        report only warn and info findings
 //                                        not in <file>; writes <file> with the
 //                                        current ones when it does not exist
+//                                        (not in CI: there a missing file is
+//                                        an error)
 //
 // Lint rules are lint/rules.dl, then <folder>/lint.dl when present.
 
-import { readdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join, relative } from "node:path";
+import { readFile, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseCollection } from "../src/parse.js";
 import { lint, findingKey } from "../src/lint.js";
-
-async function walk(dir) {
-  const out = [];
-  for (const ent of await readdir(dir, { withFileTypes: true })) {
-    const p = join(dir, ent.name);
-    if (ent.isDirectory()) out.push(...(await walk(p)));
-    else if (ent.isFile() && ent.name.endsWith(".md")) out.push(p);
-  }
-  return out.sort();
-}
+import { readNodeFiles } from "../src/files.js";
 
 const [root, ...flags] = process.argv.slice(2);
 const bi = flags.indexOf("--baseline");
 const baselinePath = bi >= 0 ? flags[bi + 1] : null;
-if (!root || (bi >= 0 && !baselinePath)) {
+if (!root || root.startsWith("--") || (bi >= 0 && (!baselinePath || baselinePath.startsWith("--")))) {
   console.error("usage: dagcheck <folder> [--json] [--lint [--baseline <file>]]");
   process.exit(2);
 }
 const json = flags.includes("--json");
 const linting = flags.includes("--lint");
-const paths = await walk(root);
-const files = await Promise.all(
-  paths.map(async (p) => ({ path: relative(root, p), text: await readFile(p, "utf8") })),
-);
-const graph = parseCollection(files);
+const graph = parseCollection(await readNodeFiles(root));
 
 let findings = [];
 let baselined = 0;
@@ -61,6 +50,12 @@ if (linting) {
         console.error(`baseline ${baselinePath} is not a JSON list of finding keys; fix or delete it`);
         process.exit(2);
       }
+    }
+    if (old == null && process.env.CI) {
+      // In CI a missing baseline is not written: a wrong path would otherwise
+      // create a fresh baseline on every run and hide every finding.
+      console.error(`baseline ${baselinePath} does not exist, and CI is set, so it is not created here; commit it or fix the path`);
+      process.exit(2);
     }
     if (old == null) {
       const keys = findings.filter((f) => f.level !== "error").map(findingKey).sort();

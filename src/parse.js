@@ -48,43 +48,55 @@ function parseSubdefinitions(section) {
   return out.map((s) => ({ source: s.source, text: s.text.join("\n").trim() }));
 }
 
+// Frontmatter fields that take one value. A list there is reported and
+// joined, so the rest of the checks still run instead of crashing later.
+const SCALAR_FIELDS = ["id", "type", "title", "subtype", "subject", "document", "section", "order", "url", "hacker_news"];
+
 export function parseFile(path, text) {
   const problems = [];
-  const { front, body } = splitFrontmatter(text);
-  if (front == null) return { node: null, edges: [], problems };
-  const fm = parseFrontmatter(front);
-  if (!fm.type) return { node: null, edges: [], problems }; // not a node, ignore
-
   const problem = (code, message, level = "error") =>
     problems.push({ level, code, path, message });
+  const { front, body } = splitFrontmatter(text);
+  if (front == null) return { node: null, edges: [], problems: [] };
+  const badLines = [];
+  const fm = parseFrontmatter(front, (line) => badLines.push(line));
+  if (!fm.type) return { node: null, edges: [], problems: [] }; // not a node, ignore
+  for (const line of badLines) problem("bad_frontmatter", `cannot read frontmatter line "${line}": not "key: value" or a list item`);
 
-  const typeDef = TYPES[fm.type];
-  if (!typeDef) problem("unknown_type", `type "${fm.type}" is not ${Object.keys(TYPES).join(", ")}`);
-  for (const f of ["id", "title", ...(typeDef?.required || [])]) if (!fm[f]) problem("missing_field", `missing "${f}"`);
-  const pid = parseId(fm.id);
-  if (fm.id && !pid) problem("bad_id", `id "${fm.id}" is not <prefix>:<slug>`);
-  if (fm.order !== undefined && !/^\d+$/.test(fm.order))
-    problem("bad_order", `order "${fm.order}" is not a whole number`);
+  const s = {};
+  for (const k of SCALAR_FIELDS) {
+    const v = fm[k];
+    if (Array.isArray(v)) { problem("bad_field", `"${k}" is a list; it takes one value`); s[k] = v.join(", "); }
+    else s[k] = v;
+  }
+
+  const typeDef = TYPES[s.type];
+  if (!typeDef) problem("unknown_type", `type "${s.type}" is not ${Object.keys(TYPES).join(", ")}`);
+  for (const f of ["id", "title", ...(typeDef?.required || [])]) if (!s[f]) problem("missing_field", `missing "${f}"`);
+  const pid = parseId(s.id);
+  if (s.id && !pid) problem("bad_id", `id "${s.id}" is not <prefix>:<slug>`);
+  if (s.order !== undefined && !/^\d+$/.test(s.order))
+    problem("bad_order", `order "${s.order}" is not a whole number`);
   if (pid && typeDef && pid.prefix !== typeDef.prefix)
-    problem("prefix_mismatch", `id "${fm.id}" should start with "${typeDef.prefix}:" for type ${fm.type}`);
+    problem("prefix_mismatch", `id "${s.id}" should start with "${typeDef.prefix}:" for type ${s.type}`);
 
   const { value, sections } = splitBody(body);
-  const subSection = sections.find((s) => /^sub-?definitions$/i.test(s.title));
+  const subSection = sections.find((sec) => /^sub-?definitions$/i.test(sec.title));
 
   const node = {
-    id: fm.id || "",
-    type: fm.type,
-    subtype: fm.subtype || "",
-    title: fm.title || "",
+    id: s.id || "",
+    type: s.type,
+    subtype: s.subtype || "",
+    title: s.title || "",
     aliases: fm.aliases || [],
     tags: fm.tags || [],
     sources: fm.sources || [],
-    subject: fm.subject || "",
-    document: fm.document || "",
-    section: fm.section || "",
-    order: /^\d+$/.test(fm.order || "") ? Number(fm.order) : null,
-    url: fm.url || "",
-    hackerNews: fm.hacker_news || "",
+    subject: s.subject || "",
+    document: s.document || "",
+    section: s.section || "",
+    order: /^\d+$/.test(s.order || "") ? Number(s.order) : null,
+    url: s.url || "",
+    hackerNews: s.hacker_news || "",
     value,
     subdefinitions: subSection ? parseSubdefinitions(subSection) : [],
     notLinks: fm.not_links || [],
@@ -93,7 +105,8 @@ export function parseFile(path, text) {
 
   const edges = [];
   const seen = new Set();
-  // A link must name a node id; anything else is reported, not drawn.
+  // A link must name a node id; anything else is reported, not drawn. A node
+  // with no id of its own gets no edges either: there is nothing to draw from.
   const add = (to, kind) => {
     const key = kind + "\u0000" + to;
     if (!to || seen.has(key)) return;
@@ -102,62 +115,53 @@ export function parseFile(path, text) {
       problem("bad_link", `${kind === "about" ? "subject" : kind} "${to}" is not a node id (<prefix>:<slug>, prefix ${[...PREFIXES].join(", ")})`);
       return;
     }
-    edges.push({ from: node.id, to, kind });
+    if (node.id) edges.push({ from: node.id, to, kind });
   };
   for (const kind of EDGE_FIELDS) for (const to of fm[kind] || []) add(to, kind);
-  if (fm.subject) add(fm.subject, "about");
-  for (const m of body.matchAll(WIKILINK_RE)) {
-    const target = m[1].trim();
-    if (parseId(target)) add(target, "mentions");
-  }
+  if (s.subject) add(s.subject, "about");
+  for (const m of body.matchAll(WIKILINK_RE)) add(m[1].trim(), "mentions");
 
   return { node, edges, problems };
 }
 
-// Kahn's algorithm over the DAG kinds; returns one representative cycle per
-// strongly connected remainder, as a list of ids, or [] when acyclic. The
-// result does not depend on the order of nodeIds beyond which cycle is found
-// first.
+// Tarjan's strongly connected components over the DAG kinds; returns one
+// representative cycle per component that has one, as a list of ids, or []
+// when acyclic. Which cycle of a component is shown, and the order of the
+// components, depend on the order of nodeIds and edges; the count does not.
 export function findCycles(nodeIds, edges) {
   const ids = new Set(nodeIds);
   const out = new Map([...ids].map((id) => [id, []]));
-  const indeg = new Map([...ids].map((id) => [id, 0]));
   for (const e of edges) {
-    if (!DAG_KINDS.has(e.kind) || !ids.has(e.from) || !ids.has(e.to)) continue;
-    out.get(e.from).push(e.to);
-    indeg.set(e.to, indeg.get(e.to) + 1);
+    if (DAG_KINDS.has(e.kind) && ids.has(e.from) && ids.has(e.to)) out.get(e.from).push(e.to);
   }
-  const queue = [...ids].filter((id) => indeg.get(id) === 0);
-  const done = new Set();
-  while (queue.length) {
-    const id = queue.pop();
-    done.add(id);
-    for (const t of out.get(id)) {
-      indeg.set(t, indeg.get(t) - 1);
-      if (indeg.get(t) === 0) queue.push(t);
+  const index = new Map(), low = new Map(), stack = [], onStack = new Set(), cycles = [];
+  let next = 0;
+  const visit = (v) => {
+    index.set(v, next);
+    low.set(v, next++);
+    stack.push(v);
+    onStack.add(v);
+    for (const w of out.get(v)) {
+      if (!index.has(w)) { visit(w); low.set(v, Math.min(low.get(v), low.get(w))); }
+      else if (onStack.has(w)) low.set(v, Math.min(low.get(v), index.get(w)));
     }
-  }
-  const stuck = [...ids].filter((id) => !done.has(id));
-  if (!stuck.length) return [];
-  // Walk from a stuck node until we revisit one; that walk is a cycle.
-  // A walk that reaches a node an earlier walk visited stops there: what
-  // lies beyond was reported then.
-  const cycles = [];
-  const walked = new Set();
-  for (const start of stuck) {
-    if (walked.has(start)) continue;
-    const trail = [];
-    const pos = new Map();
-    let cur = start;
-    while (cur !== undefined && !pos.has(cur) && !walked.has(cur)) {
+    if (low.get(v) !== index.get(v)) return;
+    const comp = new Set();
+    let w;
+    do { w = stack.pop(); onStack.delete(w); comp.add(w); } while (w !== v);
+    if (comp.size === 1 && !out.get(v).includes(v)) return;
+    // Every node of the component has an edge to another node of it, so a
+    // walk that keeps inside the component must revisit a node: that is a cycle.
+    const trail = [], pos = new Map();
+    let cur = v;
+    while (!pos.has(cur)) {
       pos.set(cur, trail.length);
       trail.push(cur);
-      cur = out.get(cur).find((t) => !done.has(t));
+      cur = out.get(cur).find((t) => comp.has(t));
     }
-    trail.forEach((id) => walked.add(id));
-    if (cur === undefined || !pos.has(cur)) continue;
     cycles.push(trail.slice(pos.get(cur)));
-  }
+  };
+  for (const id of ids) if (!index.has(id)) visit(id);
   return cycles;
 }
 

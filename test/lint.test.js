@@ -156,7 +156,8 @@ test("findings sort errors first", () => {
 
 const CLI = fileURLToPath(new URL("../bin/dagcheck.js", import.meta.url));
 const runCli = (...args) => {
-  try { return { code: 0, out: execFileSync("node", [CLI, ...args], { encoding: "utf8", stdio: "pipe" }) }; }
+  const opts = typeof args[args.length - 1] === "object" ? args.pop() : {};
+  try { return { code: 0, out: execFileSync("node", [CLI, ...args], { encoding: "utf8", stdio: "pipe", ...opts }) }; }
   catch (e) { return { code: e.status, out: e.stdout }; }
 };
 
@@ -175,7 +176,7 @@ test("without --lint the fixture passes", () => {
 test("--baseline hides known warnings but never errors", async () => {
   const dir = await mkdtemp(join(tmpdir(), "dagcheck-"));
   const file = join(dir, "baseline.json");
-  runCli(FIXTURE, "--lint", "--baseline", file);
+  runCli(FIXTURE, "--lint", "--baseline", file, { env: { ...process.env, CI: "" } }); // a missing baseline is written outside CI
   const keys = JSON.parse(await readFile(file, "utf8"));
   assert.ok(!keys.some((k) => k.startsWith("forward_dependency")));
   // Forget one warning; it is reported again, as are both errors.
@@ -203,4 +204,32 @@ test("dagcheck reads files in sorted order, as the viewer does", async () => {
   const g = JSON.parse(runCli(dir, "--json").out);
   assert.deepEqual(g.nodes.map((n) => n.title), ["A"]);
   assert.deepEqual(g.problems.map((p) => `${p.code} ${p.path}`), ["duplicate_id b.md"]);
+});
+
+test("a collection rule may derive a number; findings still sort", () => {
+  const g = parseCollection([
+    { path: "c.md", text: "---\nid: claim:c\ntype: claim\ntitle: C\ndocument: d.md\norder: 3\n---\nb" },
+    { path: "e.md", text: "---\nid: claim:e\ntype: claim\ntitle: E\ndocument: d.md\norder: 1\n---\nb" },
+  ]);
+  const fs = lint(g, RULES + '\nfinding("ordered", "info", N, O) :- in_doc(N, _, O).');
+  assert.deepEqual(fs.filter((f) => f.code === "ordered").map((f) => f.target), [3, 1]);
+});
+
+test("a flag where the folder should be is a usage error", () => {
+  assert.equal(runCli("--lint", FIXTURE).code, 2);
+  assert.equal(runCli(FIXTURE, "--lint", "--baseline", "--json").code, 2);
+});
+
+test("in CI a missing baseline is an error and is not written", async () => {
+  const file = join(await mkdtemp(join(tmpdir(), "dagcheck-")), "baseline.json");
+  const r = runCli(FIXTURE, "--lint", "--baseline", file, { env: { ...process.env, CI: "true" } });
+  assert.equal(r.code, 2);
+  await assert.rejects(readFile(file));
+});
+
+test("README.md files are not nodes, so the CLI agrees with the viewer", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "dagcheck-"));
+  await writeFile(join(dir, "README.md"), "---\nid: def:readme\ntype: definition\ntitle: R\n---\n");
+  await writeFile(join(dir, "a.md"), "---\nid: def:a\ntype: definition\ntitle: A\n---\n");
+  assert.deepEqual(JSON.parse(runCli(dir, "--json").out).nodes.map((n) => n.id), ["def:a"]);
 });
