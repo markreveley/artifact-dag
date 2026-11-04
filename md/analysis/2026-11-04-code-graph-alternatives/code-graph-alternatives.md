@@ -7,20 +7,12 @@ code graph that claim anchors resolve against? Asked straight after
 [graphify-as-code-graph](../2026-11-04-graphify-as-code-graph/graphify-as-code-graph.md),
 which found Graphify records a symbol's start line only.
 
-**Sources read.** For each tool, its repository through the GitHub API
-(stars, last push, latest release, licence) and its docs or source where the
-span and id question turned on them: SCIP's `scip.proto` and `docs/CLI.md`;
-the span code in scip-typescript, scip-python and scip-go; codegraph's
-`src/extraction/tree-sitter-helpers.ts` and `src/db/schema.sql`. Searches for
-newer tools. The reading was done by a research subagent and checked here
-where a recommendation rests on it (SCIP's enclosing range, read in
-`scip.proto`).
+**Sources read.** The survey [code-graph-tools](../../research/2026-11-04-code-graph-tools/code-graph-tools.md), which holds the
+candidates, the facts and their sources.
 
-**Method caveat.** Nothing was installed or run. Universal-ctags's JSON
-output and `end` field are from its documentation, not fetched this session
-or tried: the machine has only the BSD `ctags` that ships with macOS. The
-SCIP enclosing range was not found in scip-java or scip-clang by a filename
-search; that is not evidence they lack it. Figures are as of 4 Nov 2026.
+**Method caveat.** Nothing was installed or run; the survey's caveats
+apply. The recommendation on ctags rests on its documented `end` field,
+not yet tried here.
 
 ---
 
@@ -44,26 +36,10 @@ search; that is not evidence they lack it. Figures are as of 4 Nov 2026.
 
 ## 2. The candidates
 
-| tool | full span | stable id | cross-file refs | run, output | licence | state |
-|---|---|---|---|---|---|---|
-| SCIP indexers and `scip` CLI | yes, `enclosing_range` | yes, language-defined descriptor | yes, with roles | one indexer per language; `index.scip`, `scip print --json` | Apache-2.0 | CLI v0.10.0 (Sep 2026); indexers pushed within two weeks |
-| universal-ctags | yes, `--fields=+e` | path, scope, name | no | one C binary; `--output-format=json` | GPL-2.0, fine for a tool run as a command | v6.2.1, pushed Nov 2026 |
-| Graphify | start line only | lossy | yes, confidence-tagged | Python CLI; JSON | Apache-2.0 | daily releases |
-| codegraph (colbymchenry) | yes, lines and columns | no, hashes the start line; `qualified_name` usable | yes | npm CLI or MCP; SQLite | MIT | v1.6.2 (Oct 2026) |
-| ast-grep | yes, per match | none, patterns are written by hand | no | one Rust binary; `--json` | MIT | 0.51.1 (Nov 2026) |
-
-Ruled out:
-
-- **LSIF:** superseded by SCIP.
-- **stack-graphs:** archived September 2025.
-- **Kythe and Glean:** need build integration or a server.
-- **CodeQL:** heavy, and its licence limits use on closed code.
-- **Joern:** a JVM code property graph for security work.
-- **Aider's repo map and Serena:** in-process agent aids that write no file.
-- **Graph-database and model-service tools** (CodeGraphContext,
-  code-graph-rag, Potpie): the wrong shape for a file read from a pinned
-  checkout.
-- **Tools under a year old with a few hundred stars:** too young to pin.
+The survey ([code-graph-tools](../../research/2026-11-04-code-graph-tools/code-graph-tools.md), §2 and §3) compares SCIP,
+universal-ctags, Graphify, codegraph and ast-grep, and rules out the rest.
+For need 1, a full span under a name that survives lines moving, only
+SCIP and ctags qualify.
 
 ## 3. What each gives the anchor
 
@@ -77,9 +53,8 @@ Ruled out:
   hash of those lines at each pin gives the cross-pin check across every
   language a project uses, with no build. An overloaded name gives two tags;
   the anchor then needs its optional lines, or a person picks.
-- **codegraph** has spans but an id that moves when a line is added above the
-  symbol, and SQLite-only output; it is no better than ctags for this and
-  heavier.
+- **codegraph** has spans, but its id moves when a line is added above the
+  symbol and it writes SQLite only: heavier than ctags, and no better here.
 
 ## 4. Recommendations
 

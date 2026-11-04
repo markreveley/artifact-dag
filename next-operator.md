@@ -28,10 +28,25 @@ It is confirmed and amended (`pilot/2026-11-02-spinoza-one-claim/README.md`,
 needed to ratify the blind decomposer's claims and predicate lines (steps 1
 and 2) and at step 6.
 
+## 3. Install universal-ctags
+
+Claim anchors resolve against its output (`md/governance/ARCHITECTURE.md`,
+D1). The machine has only macOS's BSD `ctags`, which lacks JSON output and
+end lines, and the agent may not install software unasked. Run:
+
+```sh
+brew install universal-ctags && ctags --version | head -1
+```
+
+The first line should read `Universal Ctags 6.2.1` or later. Then say so in
+a session: the agent's first run is on both downstream checkouts, counting
+tags and how many of their existing `sources` anchors resolve or are
+ambiguous (`md/analysis/2026-11-04-code-graph-alternatives/code-graph-alternatives.md`,
+§4, item 5). It comes before step 1's anchor work.
+
 ## Questions
 - **`PROCEDURE.md` stays in `pilot/` until adopted.** The governance README points at it and says it moves to `md/governance/` when a pilot adopts it. Say if it should move now instead.
 - **Where does a document claim's source sentence live?** As the body itself where one sentence is the claim (the skill now says so), and otherwise in a field the parser keeps (`quote:`) rather than in `sources`, so the `stale_claim` rule has one place to read. Say if you want it elsewhere.
 - **Anchor form.** `<repo>@<commit>:<path>#<symbol>` with optional lines, hash of the symbol's text at the pin. The downstream `sources` lines today pin by line range only; they keep working, with no hash and so no cross-pin check. `<symbol>` would be in ctags's scope form (`Class.method`), with the optional lines picking between overloads. The alternative is a cite in the claim's body, `path::Class::method`, resolved by a small Node resolver here (alternatives analysis, §4). Say which, or if the form should differ.
-- **Install universal-ctags?** Step 3 needs it (`brew install universal-ctags`); the machine has only macOS's BSD `ctags`. The first run is on both downstream checkouts, counting how many of their existing `sources` anchors resolve and how many are ambiguous (alternatives analysis, §4, item 5). Say yes, or install it yourself.
 - **Code to claims.** Extracting unverified claims from code, to find code no claim covers, is legal under the thread's ruling but not scheduled. Say if it goes on the list, and for which project.
 - **A control for the Spinoza pilot?** With one claim and four agents, each a chance to surface the ambiguity, a pass is cheap. Running the same procedure on a proposition with no known flaw (III or VI, say) would show what the agents produce when there is nothing to find. The pilot README notes this under "Noted before the run"; the measures and stopping rule are unchanged. Say yes, no, or which proposition.

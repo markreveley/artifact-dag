@@ -30,6 +30,7 @@ and view the graph. The rest of this file is for someone working on the code.
 | `md/docs/USAGE.md` | the user guide                                              |
 | `md/governance/`   | the documents that govern the repo, per [repo-template](https://github.com/markreveley/repo-template): `SCHEMA.md` (the node format: frontmatter, ids, edges, body layout) and `POLICY.md`; its README says where the others stand |
 | `md/analysis/`     | dated analysis documents: findings and recommendations, one folder per analysis; open questions go to the next docs, not here |
+| `md/research/`     | dated surveys of tools and prior work outside the repo, with sources; recommendations drawn from them are analyses |
 | `test/`            | `npm test`; `test/fixtures/lint/` is a collection built to trip the lint rules (the two resource rules are tripped by nodes written in `test/lint.test.js`) |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
 | `evals/`           | the assertion-DAG evals brought from another project (commit `fa3db1d`): prose against assertion graphs as context for a model; its README explains |
