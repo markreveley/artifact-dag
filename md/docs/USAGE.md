@@ -4,7 +4,7 @@ A project that uses the DAG keeps its nodes in its own repo:
 
 1. **Node files.** Markdown files under `dag/`, one per definition, claim or
    resource. They are the source of truth. The format is in
-   [SCHEMA.md](../../SCHEMA.md).
+   [SCHEMA.md](../governance/SCHEMA.md).
 2. **The viewer.** An HTML page built from `dag/` by `bin/build-viewer.js`
    (see "Viewing the graph"). It is not committed; build it when you want it.
 3. **This repo**, checked out beside the project's (for example
@@ -78,7 +78,7 @@ reports, for example, a definition whose text names another term without
 linking it, a claim with no edge to any other claim, or a claim that depends
 on one later in its document. It only reports; each finding is decided by
 adding the link or by noting in the node that the word means something else
-(`not_links`, see `SCHEMA.md`), and then it stays quiet.
+(`not_links`, see `md/governance/SCHEMA.md`), and then it stays quiet.
 
 ## Commands
 

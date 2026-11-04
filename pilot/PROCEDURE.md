@@ -69,7 +69,8 @@ files unchanged, and anything that changes it is the ratifier's decision.
    assertion of the source, including ones nothing else rests on; whether
    an assertion matters to the argument is shown by its edges, not by
    leaving it out. Statements keep the source's words: a decomposer who
-   rewords a statement has already chosen a reading of it.
+   rewords a statement has already chosen a reading of it. (Both rules are
+   now policy outside the pilots too: `md/governance/POLICY.md`, P4.)
 
 2. **Vocabulary.** The decomposer proposes predicates for the terms the
    claims use, each with its predicate line, in the formal file of the

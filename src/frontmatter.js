@@ -1,4 +1,4 @@
-// Minimal frontmatter reader. Handles the YAML subset documented in SCHEMA.md
+// Minimal frontmatter reader. Handles the YAML subset documented in md/governance/SCHEMA.md
 // and nothing more, so it can ship inside the viewer page with no deps.
 
 const LIST_KEYS = new Set([

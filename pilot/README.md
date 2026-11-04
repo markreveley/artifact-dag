@@ -1,7 +1,7 @@
 # Pilots
 
 A pilot is a bounded test of whether a method is worth building into
-artifact-dag, run on a small corpus before anything changes in `SCHEMA.md`
+artifact-dag, run on a small corpus before anything changes in `md/governance/SCHEMA.md`
 or the tools. Nothing under `pilot/` is part of the library.
 
 This file says what a pilot is and how to run one. What a particular pilot
@@ -27,7 +27,7 @@ One folder per pilot, named `<date it started>-<short name>`:
   source.md        the source text, or the part of it the pilot uses, with where it comes from
   task.md          what the decomposer (D) is asked to do; it names nothing the pilot looks for
   runs/            each agent run's answer, as returned: <step>-<role>[-<claim>].txt
-  dag/             claim and definition nodes, in the format of SCHEMA.md
+  dag/             claim and definition nodes, in the format of `md/governance/SCHEMA.md`
   formal/          one formal file per formalized node (format in PROCEDURE.md)
   examples/        one examples file per claim (format in PROCEDURE.md)
 ```
@@ -69,7 +69,7 @@ One folder per pilot, named `<date it started>-<short name>`:
    pilot shows the procedure needs goes into `PROCEDURE.md`, in the same
    commit, and the instance README says so.
 5. **Decide** against the stopping rule. A pilot that passes leads to a
-   proposal for `SCHEMA.md` or the tools; one that stops records what would
+   proposal for `md/governance/SCHEMA.md` or the tools; one that stops records what would
    reopen it.
 
 Sources in this public repo name no other project. A pilot on private

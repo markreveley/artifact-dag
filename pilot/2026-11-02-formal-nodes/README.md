@@ -85,7 +85,7 @@ Stop, and record what would reopen the question, if either holds:
 - the check finds nothing: no bridge, no wrong edge, and Proposition 5's
   gap missed.
 
-Otherwise: add `type: formal` and the `formalizes` edge to `SCHEMA.md`, and
+Otherwise: add `type: formal` and the `formalizes` edge to `md/governance/SCHEMA.md`, and
 build `dagcheck --entail` from `pilot/check.mjs`.
 
 ## Run

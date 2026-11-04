@@ -15,7 +15,6 @@ and view the graph. The rest of this file is for someone working on the code.
 
 | path               | what                                                        |
 |--------------------|-------------------------------------------------------------|
-| `SCHEMA.md`        | the node format: frontmatter, ids, edges, body layout       |
 | `src/parse.js`     | files in, `{nodes, edges, problems, external}` out; runs in Node and the browser |
 | `src/frontmatter.js` | the small YAML subset the schema allows                   |
 | `src/files.js`     | which files under a folder are a collection; the three CLIs share it |
@@ -29,9 +28,11 @@ and view the graph. The rest of this file is for someone working on the code.
 | `bin/build-viewer.js` | builds the viewer page from one or more `dag/` folders  |
 | `bin/dag-to-glossary.js` | writes each document's `## Glossary` (and an optional master glossary) from the definitions, per a project's `glossary.config.json`; can draw terms from other projects' DAGs |
 | `md/docs/USAGE.md` | the user guide                                              |
+| `md/governance/`   | the documents that govern the repo, per [repo-template](https://github.com/markreveley/repo-template): `SCHEMA.md` (the node format: frontmatter, ids, edges, body layout) and `POLICY.md`; its README says where the others stand |
 | `md/analysis/`     | dated analysis documents: findings and recommendations, one folder per analysis; open questions go to the next docs, not here |
 | `test/`            | `npm test`; `test/fixtures/lint/` is a collection built to trip the lint rules (the two resource rules are tripped by nodes written in `test/lint.test.js`) |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
+| `evals/`           | the assertion-DAG evals brought from another project (commit `fa3db1d`): prose against assertion graphs as context for a model; its README explains |
 | `pilot/`           | pilots: bounded tests of a method before it is built in. What a pilot is and how to run one (`pilot/README.md`), the procedure under test (`pilot/PROCEDURE.md`) and its tools, and one folder per pilot |
 | `next-agents.md`, `next-operator.md` | the handoff between working threads: next steps for the agent and for the operator, rewritten at the end of each thread |
 | `md/threads/`      | the exchange of working threads, written at `/end` from the session transcript (user turns and assistant text, other projects' names redacted). The redaction map `md/threads/redact.json`, and raw `/export` files in `md/threads/raw/` if one is used, are git-ignored |
@@ -94,7 +95,7 @@ example facts, or check that they follow from the claims it depends on.
 This is not the lint: the lint is Datalog about the graph's shape, not
 about what a claim says.
 
-The idea is paused and unresolved, not rejected. Nothing in `SCHEMA.md` or
+The idea is paused and unresolved, not rejected. Nothing in `md/governance/SCHEMA.md` or
 the tools depends on it yet. The pilots in `pilot/` test it. The first
 round stopped on fidelity readings no one had ratified, which led to
 `pilot/PROCEDURE.md`. One claim has since been taken through that

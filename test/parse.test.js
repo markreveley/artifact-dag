@@ -188,7 +188,7 @@ test("examples pass the lint: no errors, no warnings", async () => {
 });
 
 test("SCHEMA.md's examples are the example collection's files, verbatim", async () => {
-  const schema = await readFile(new URL("../SCHEMA.md", import.meta.url), "utf8");
+  const schema = await readFile(new URL("../md/governance/SCHEMA.md", import.meta.url), "utf8");
   const quoted = [...schema.matchAll(/From `(examples\/dag\/[^`]+)`:\n\n```yaml\n([\s\S]*?)```/g)];
   assert.equal(quoted.length, 3);
   for (const [, path, block] of quoted) {

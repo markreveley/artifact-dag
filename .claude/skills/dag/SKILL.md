@@ -8,7 +8,7 @@ description: Maintain a project's DAG of definition, claim and resource nodes (M
 The project keeps a graph of **definitions**, **claims** and **resources**
 as Markdown files under `dag/` in its repo. This repo (`artifact-dag`,
 called `<repo>` below) holds the schema, parser, validator and viewer. Read
-`SCHEMA.md` before writing a node; `md/docs/USAGE.md` is the user-facing guide
+`md/governance/SCHEMA.md` before writing a node; `md/docs/USAGE.md` is the user-facing guide
 and defines the commands. The project's `AGENTS.md` (or `CLAUDE.md`) says
 where `<repo>` is checked out and what else to run after a change (for
 example regenerating glossaries); follow it.
@@ -19,7 +19,7 @@ example regenerating glossaries); follow it.
 - Ids are global: `def:<slug>`, `claim:<slug>` and `res:<slug>`, lowercase, hyphenated.
   Reuse an id that exists in another project when it means the same thing.
 - A link to an id not present in this project is fine (an external node).
-- Keep frontmatter flat; the parser handles only the subset in SCHEMA.md.
+- Keep frontmatter flat; the parser handles only the subset in `md/governance/SCHEMA.md`.
 - Definitions: `dag/definitions/<slug>.md`. Claims: `dag/claims/<slug>.md`.
   Resources: `dag/resources/<slug>.md`.
 - After any change, run the validator and report errors to the user.
@@ -30,19 +30,13 @@ example regenerating glossaries); follow it.
 
 To decompose a document into claims, write one claim per atomic statement
 under `dag/claims/<document-slug>/`, each with `document: <repo>/<path>`,
-`section: "<heading>"` and `order: <n>` in reading order (see SCHEMA.md,
+`section: "<heading>"` and `order: <n>` in reading order (see `md/governance/SCHEMA.md`,
 Documents). Link each claim to the definitions it `uses` and to the claims it
 `depends_on` or `supports`. The viewer's document picker reads these fields.
 
-A claim's body keeps the source's words. Where one sentence of the source is
-the claim, the body is that sentence; where the claim condenses several, it
-quotes the one that carries it. A decomposer who rewords a statement has
-already chosen a reading of it, and a claim that quotes its source can be
-checked against the source later in seconds, by a person or a lint rule.
-Keep every assertion of the source, including ones nothing else rests on:
-whether an assertion matters is shown by its edges, not by leaving it out.
-A claim written by an agent is legal and expected; it is unverified until a
-person ratifies it, which is a separate act from reviewing the PR.
+The body keeps the source's words, every assertion of the source is kept,
+and a claim an agent wrote is unverified until a person ratifies it:
+`md/governance/POLICY.md`, P4 to P6, which bind here.
 
 ## Validator
 
