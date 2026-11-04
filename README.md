@@ -8,7 +8,7 @@ validator and drawn by a static HTML viewer.
 This repo holds the generic pieces. Each project keeps its nodes under
 `dag/` in its own repo and builds the viewer from them.
 
-**Start with [docs/USAGE.md](docs/USAGE.md)**: how to add nodes, check them
+**Start with [md/docs/USAGE.md](md/docs/USAGE.md)**: how to add nodes, check them
 and view the graph. The rest of this file is for someone working on the code.
 
 ## Pieces
@@ -28,12 +28,13 @@ and view the graph. The rest of this file is for someone working on the code.
 | `viewer/template.html` | the viewer page, with placeholders for the parser and the nodes |
 | `bin/build-viewer.js` | builds the viewer page from one or more `dag/` folders  |
 | `bin/dag-to-glossary.js` | writes each document's `## Glossary` (and an optional master glossary) from the definitions, per a project's `glossary.config.json`; can draw terms from other projects' DAGs |
-| `docs/USAGE.md`    | the user guide                                              |
+| `md/docs/USAGE.md` | the user guide                                              |
+| `md/analysis/`     | dated analysis documents: findings and recommendations, one folder per analysis; open questions go to the next docs, not here |
 | `test/`            | `npm test`; `test/fixtures/lint/` is a collection built to trip the lint rules (the two resource rules are tripped by nodes written in `test/lint.test.js`) |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
 | `pilot/`           | pilots: bounded tests of a method before it is built in. What a pilot is and how to run one (`pilot/README.md`), the procedure under test (`pilot/PROCEDURE.md`) and its tools, and one folder per pilot |
 | `next-agents.md`, `next-operator.md` | the handoff between working threads: next steps for the agent and for the operator, rewritten at the end of each thread |
-| `threads/`         | the exchange of working threads, written at `/end` from the session transcript (user turns and assistant text, other projects' names redacted). The redaction map `threads/redact.json`, and raw `/export` files in `threads/raw/` if one is used, are git-ignored |
+| `md/threads/`      | the exchange of working threads, written at `/end` from the session transcript (user turns and assistant text, other projects' names redacted). The redaction map `md/threads/redact.json`, and raw `/export` files in `md/threads/raw/` if one is used, are git-ignored |
 
 A git-ignored `LOCAL.md` at the root may hold notes that stay on one machine,
 such as which projects run this code and which of them run it in CI. This

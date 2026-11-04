@@ -1,14 +1,27 @@
 ---
 type: handoff
 audience: operator
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 
 # Next steps for the operator
 
 Read with [`next-agents.md`](next-agents.md).
 
-## 1. Say when to run the Spinoza pilot
+## 1. Say go on the claims-to-code steps
+
+The thread of 3 Nov 2026 settled, in
+[`md/analysis/2026-11-03-claims-to-code-gradient/claims-to-code-gradient.md`](md/analysis/2026-11-03-claims-to-code-gradient/claims-to-code-gradient.md)
+(§6), four steps the agent takes in order once you say so:
+
+1. `ratified: <person>, <date>` on claims: parsed, shown in the viewer, counted by the lint per document.
+2. The source sentence on document claims, and a `stale_claim` lint rule.
+3. Anchor syntax by symbol with a text hash, and the cross-pin check (the code-anchors script a downstream project plans; it lands here).
+4. `norm` as a used subtype.
+
+Each changes `SCHEMA.md` or a CLI, so each is run against both downstream `dag/` folders before merging, as `next-agents.md` says.
+
+## 2. Say when to run the Spinoza pilot
 
 It is confirmed and amended (`pilot/2026-11-02-spinoza-one-claim/README.md`,
 "Amendment"). Start a session, run `/start`, and say "run it". You'll be
@@ -16,4 +29,7 @@ needed to ratify the blind decomposer's claims and predicate lines (steps 1
 and 2) and at step 6.
 
 ## Questions
+- **Where does a document claim's source sentence live?** As the body itself where one sentence is the claim (the skill now says so), and otherwise in a field the parser keeps (`quote:`) rather than in `sources`, so the `stale_claim` rule has one place to read. Say if you want it elsewhere.
+- **Anchor form.** `<repo>@<commit>:<path>#<symbol>` with optional lines, hash of the symbol's text at the pin. The downstream `sources` lines today pin by line range only; they keep working, with no hash and so no cross-pin check. Say if the form should differ.
+- **Code to claims.** Extracting unverified claims from code, to find code no claim covers, is legal under the thread's ruling but not scheduled. Say if it goes on the list, and for which project.
 - **A control for the Spinoza pilot?** With one claim and four agents, each a chance to surface the ambiguity, a pass is cheap. Running the same procedure on a proposition with no known flaw (III or VI, say) would show what the agents produce when there is nothing to find. The pilot README notes this under "Noted before the run"; the measures and stopping rule are unchanged. Say yes, no, or which proposition.

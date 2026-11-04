@@ -4,7 +4,7 @@ A project that uses the DAG keeps its nodes in its own repo:
 
 1. **Node files.** Markdown files under `dag/`, one per definition, claim or
    resource. They are the source of truth. The format is in
-   [SCHEMA.md](../SCHEMA.md).
+   [SCHEMA.md](../../SCHEMA.md).
 2. **The viewer.** An HTML page built from `dag/` by `bin/build-viewer.js`
    (see "Viewing the graph"). It is not committed; build it when you want it.
 3. **This repo**, checked out beside the project's (for example

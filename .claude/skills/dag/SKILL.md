@@ -8,7 +8,7 @@ description: Maintain a project's DAG of definition, claim and resource nodes (M
 The project keeps a graph of **definitions**, **claims** and **resources**
 as Markdown files under `dag/` in its repo. This repo (`artifact-dag`,
 called `<repo>` below) holds the schema, parser, validator and viewer. Read
-`SCHEMA.md` before writing a node; `docs/USAGE.md` is the user-facing guide
+`SCHEMA.md` before writing a node; `md/docs/USAGE.md` is the user-facing guide
 and defines the commands. The project's `AGENTS.md` (or `CLAUDE.md`) says
 where `<repo>` is checked out and what else to run after a change (for
 example regenerating glossaries); follow it.
@@ -34,6 +34,16 @@ under `dag/claims/<document-slug>/`, each with `document: <repo>/<path>`,
 Documents). Link each claim to the definitions it `uses` and to the claims it
 `depends_on` or `supports`. The viewer's document picker reads these fields.
 
+A claim's body keeps the source's words. Where one sentence of the source is
+the claim, the body is that sentence; where the claim condenses several, it
+quotes the one that carries it. A decomposer who rewords a statement has
+already chosen a reading of it, and a claim that quotes its source can be
+checked against the source later in seconds, by a person or a lint rule.
+Keep every assertion of the source, including ones nothing else rests on:
+whether an assertion matters is shown by its edges, not by leaving it out.
+A claim written by an agent is legal and expected; it is unverified until a
+person ratifies it, which is a separate act from reviewing the PR.
+
 ## Validator
 
 ```sh
@@ -56,7 +66,7 @@ reading them; put the decisions in a PR so they are reviewed as a diff.
 ## Commands
 
 The `dag …` commands, and what to do for each, are the table under
-"Commands" in `<repo>/docs/USAGE.md`. Read it there; it is the one list. Plain-language
+"Commands" in `<repo>/md/docs/USAGE.md`. Read it there; it is the one list. Plain-language
 requests that mean one of them get the same treatment. `dag view` is below.
 
 ## Viewing the graph
