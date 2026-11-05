@@ -1,10 +1,9 @@
 # md/
 
-Every Markdown document about this repo or its work, in the layout
-[repo-template](https://github.com/markreveley/repo-template) sets. Markdown
-a tool reads as data (`examples/dag/`, `pilot/`, `evals/`) is content, stays
-where its tool expects it, is listed in `.layoutignore`, and is named in the
-root README's table.
+The documents about this repo and its work, in the layout
+[repo-template](https://github.com/markreveley/repo-template) sets: its
+seven default folders, each with a README, and `research/`, this repo's
+addition.
 
 | folder | holds | file name |
 |---|---|---|
@@ -12,22 +11,22 @@ root README's table.
 | [`docs/`](docs/README.md) | how to use and work on what the repo holds | `<topic>.md` |
 | [`plans/`](plans/README.md) | what will be done, in order, and what it waits on | `YYYY-MM-DD-<slug>/<slug>.md` |
 | [`analysis/`](analysis/README.md) | dated findings and recommendations | `YYYY-MM-DD-<slug>/<slug>.md` |
+| [`issues/`](issues/README.md) | dated findings against something | `YYYY-MM-DD-<slug>.md` |
+| [`audits/`](audits/README.md) | a dated reading of the repo against what it claims to be | `YYYY-MM-DD-<slug>.md` |
+| [`tested/`](tested/README.md) | one report per run of something only a run can check | `YYYY-MM-DD-HHMM-<kind>.md` |
 | [`research/`](research/README.md) | dated surveys of tools and prior work outside the repo, with sources; added here, not a template default | `YYYY-MM-DD-<slug>/<slug>.md` |
 
-The template's other defaults (`issues/`, `audits/`, `tested/`)
-are created when the repo first has one. A survey reports and an analysis
-recommends: an analysis that rests on a survey links to it in its
-"Sources read".
+A survey reports and an analysis recommends: an analysis that rests on a
+survey links to it in its "Sources read".
 
 ---
 
-<!-- pinned from repo-template md/README.md @ 868468a; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `868468a`)
+<!-- pinned from repo-template md/README.md @ 05156a6; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `05156a6`)
 
-Every Markdown document about this repo or its work. The rule: a folder that
-holds Markdown files and only Markdown files lives here. Markdown that a tool
-reads as data (a DAG's nodes, a site's posts, a tutorial's source) is content,
-stays where its tool expects it, and is named in the root README's table.
+The repo's documents about itself and its work. The seven folders below
+exist in every repo, each with its README, whether or not anything is in it
+yet (root README, guideline 1).
 
 | folder | holds | file name |
 |---|---|---|

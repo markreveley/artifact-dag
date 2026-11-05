@@ -178,7 +178,7 @@ If assertions are files and dependencies are JSON, then a knowledge base is a di
 ```
 knowledge/
   domains/
-    its-just-shell/
+    agent-architecture/
       primitives/            14 files
       compounds_l2/          7 files + deps.json
       compounds_l3/          3 files + deps.json

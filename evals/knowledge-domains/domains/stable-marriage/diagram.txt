@@ -80,7 +80,7 @@ PRIMITIVE REUSE ACROSS L2 COMPOUNDS
   p13    ─────────────────●─ (1 compound)   caveat
 
   No primitive reuse across compounds (each belongs to exactly one L2 compound).
-  This is structurally different from the Its Just Shell DAG where p06 appeared in 4 compounds.
+  This is structurally different from the thesis DAG in dag-vs-prose-reasoning/, where p06 appeared in 4 compounds.
 
   The lack of cross-compound reuse means the four L2 compounds are INDEPENDENT PILLARS.
   Each can be attacked or defended without affecting the others.

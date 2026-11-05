@@ -35,7 +35,7 @@ The honest conclusion is c06 (advantage is real but bounded), not c05 (asking is
 
 ### No primitive reuse — four independent pillars
 
-Unlike the Its Just Shell DAG where p06 appeared in 4 compounds (making it a keystone), every primitive here appears in exactly one L2 compound. The four L2 compounds are completely independent of each other. This means:
+Unlike the thesis DAG in `dag-vs-prose-reasoning/`, where p06 appeared in 4 compounds (making it a keystone), every primitive here appears in exactly one L2 compound. The four L2 compounds are completely independent of each other. This means:
 
 - Attacking c01 (math) doesn't affect c03 (empirical) or c04 (caveats)
 - Attacking c02 (bridge) doesn't affect c03 (empirical) — there's a weaker case for initiative that doesn't depend on the math at all
@@ -62,12 +62,12 @@ Several primitives here could appear in other domain DAGs:
 - **p11** (rejection has psychological cost) → any domain involving interpersonal risk
 - **p06** (preferences are rankable) → decision theory, economics, ethics (preference utilitarianism)
 
-These are candidates for the `knowledge/shared/` directory.
+These are candidates for the `knowledge-domains/shared/` directory (not made yet).
 
 ## Structure
 
 ```
-knowledge/domains/stable-marriage/
+knowledge-domains/domains/stable-marriage/
   primitives/           13 primitives (p01-p13)
     p01-p04             math (proven theorems)
     p05-p07             bridge (maps math to reality)

@@ -19,22 +19,18 @@ helper spec, where a failed runner step lists the claims it covers and a
 Understand-Anything's `packages/core/src/fingerprint.ts` and its
 `docs/incremental/` audit.
 
+**Method caveat.** A reading, not a run: nothing in §6 was built or tried.
+Projects A and B were read at their checkouts on 3 Nov 2026 and are named
+here only by letter (P9), so their figures cannot be checked from this
+repo. Understand-Anything's fingerprinting, and the conclusion of its
+nineteen review rounds, are as its own code and audit state them.
+
 **Settled in the thread that produced this.** Claims written by an agent
 are legal and expected; they are unverified until a person ratifies them,
 and ratification is a separate act from reviewing the PR. A claim from a
 document keeps the source's words (now in the `dag` skill, "Claims from a
 document"). A `ratified` field is wanted. The glossary is the set of
 definition nodes, which it already is.
-
-**Later readings.** Recommendation 5, and the Tree-sitter pass in §1 and §4,
-are overtaken by decision D1 in
-[`ARCHITECTURE.md`](../../governance/ARCHITECTURE.md): anchors resolve
-against universal-ctags, and a tool for references waits. The readings
-behind it are
-[graphify-as-code-graph](../2026-11-04-graphify-as-code-graph/graphify-as-code-graph.md)
-and
-[code-graph-alternatives](../2026-11-04-code-graph-alternatives/code-graph-alternatives.md).
-The rest of this analysis stands.
 
 ---
 

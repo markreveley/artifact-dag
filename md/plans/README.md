@@ -4,8 +4,8 @@
 
 ---
 
-<!-- pinned from repo-template md/plans/README.md @ 868468a; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `868468a`)
+<!-- pinned from repo-template md/plans/README.md @ 05156a6; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `05156a6`)
 
 What will be done, in what order, and what it waits on. A plan is the
 bridge from an analysis's recommendations to the steps in `next-agents.md`.

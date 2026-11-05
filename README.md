@@ -31,10 +31,13 @@ and view the graph. The rest of this file is for someone working on the code.
 | `md/governance/`   | the documents that govern the repo, per [repo-template](https://github.com/markreveley/repo-template): `SCHEMA.md` (the node format: frontmatter, ids, edges, body layout), `POLICY.md` (the numbered rules) and `ARCHITECTURE.md` (the parts and the design decisions); its README says where the others stand |
 | `md/analysis/`     | dated analysis documents: findings and recommendations, one folder per analysis; open questions go to the next docs, not here |
 | `md/plans/`        | what will be done, in what order, and what it waits on: one folder per plan, decisions numbered `D1` |
+| `md/issues/`       | dated findings against the repo, one file per subject; open ones say so |
+| `md/audits/`       | dated readings of the repo against what it claims to be, with the fixes that followed |
+| `md/tested/`       | one report per run of something only a run can check; none yet |
 | `md/research/`     | dated surveys of tools and prior work outside the repo, with sources; recommendations drawn from them are analyses |
 | `test/`            | `npm test`; `test/fixtures/lint/` is a collection built to trip the lint rules (the two resource rules are tripped by nodes written in `test/lint.test.js`) |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
-| `evals/`           | the assertion-DAG evals brought from another project (commit `fa3db1d`): prose against assertion graphs as context for a model; its README explains |
+| `evals/`           | evals of the DAG method, added in commit `fa3db1d`: prose against assertion graphs as context for a model, and a reasoning comparison a person runs; its README says what each is and how to run it |
 | `pilot/`           | pilots: bounded tests of a method before it is built in. What a pilot is and how to run one (`pilot/README.md`), the procedure under test (`pilot/PROCEDURE.md`) and its tools, and one folder per pilot |
 | `next-agents.md`, `next-operator.md` | the handoff between working threads: next steps for the agent and for the operator, rewritten at the end of each thread |
 

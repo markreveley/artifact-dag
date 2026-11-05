@@ -1,6 +1,6 @@
 # Governance as a DAG
 
-> Status: proposed · 2026-11-04 · from [governance-as-dag](../../analysis/2026-11-04-governance-as-dag/governance-as-dag.md)
+> Status: proposed · 2026-11-05 · from [governance-as-dag](../../analysis/2026-11-04-governance-as-dag/governance-as-dag.md)
 
 The complete design for writing repo governance as nodes, inherited across
 the repos that follow repo-template. It is built in full, but enforcement
@@ -33,7 +33,7 @@ lands last.
   an edge field in step 7.
 - **D6. One global collection, inherited whole.** Rules that hold in every
   repo live in one collection. A repo declares it in
-  `md/governance/dag/inherits.json` (`{"collections": [{"repo": …,
+  `dag/governance/inherits.json` (`{"collections": [{"repo": …,
   "path": …, "commit": …}]}`), pinned to a commit and bumped on purpose. A
   repo keeps nodes only for its own rules and for norms that `refines` a
   global one. An inherited rule has no local node, number or citation stub:
@@ -57,10 +57,10 @@ lands last.
    repo-template's README "Conventions" into norms and rationale claims,
    keeping the source's words (P4) and a resource for each check (D5). The
    operator ratifies each node.
-3. **Write this repo's local collection** in `md/governance/dag/`, with only
-   the rules this repo alone has, plus `inherits.json`. List it in
-   `.layoutignore` if repo-template's layout check would otherwise read it
-   as documents.
+3. **Write this repo's local collection** in `dag/governance/`, with only
+   the rules this repo alone has, plus `inherits.json`. It sits outside
+   `md/`, whose `governance/` folder holds only the five governing
+   documents (operator, 5 Nov 2026).
 4. **The generator.** A script reads the local folder and the inherited
    folders at their pins, and writes `POLICY.md` (titles, bodies, *Why*,
    check) with a generated header. Add a check mode to `npm run check`.

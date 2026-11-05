@@ -1,4 +1,4 @@
-# Its Just Shell — DAG vs Prose Reasoning Test
+# DAG vs Prose Reasoning Test
 
 ## What This Is
 
@@ -45,7 +45,7 @@ This is analogous to neural network weights: both are dependency graphs where co
 ## How It Was Constructed
 
 ### Step 1: Read the thesis
-The full Its Just Shell thesis (~8000 words) was read and analyzed.
+The full thesis (~8000 words) was read and analyzed.
 
 ### Step 2: Extract primitives
 14 primitive assertions were identified — atomic, irreducible claims that the thesis rests on. Each became a file containing one statement. Primitives include empirical claims (p10: "82% of LLMs fell to inter-agent trust exploitation"), architectural claims (p01: "An LLM is a pure function"), and philosophical claims (p07: "Mechanism and policy must be separated").
@@ -60,7 +60,7 @@ The full Its Just Shell thesis (~8000 words) was read and analyzed.
 - c10: Composability enables scaling (derivative stack)
 
 ### Step 5: Compose Layer 4 (top-level claim)
-1 top-level compound (c11: "Its Just Shell") composes the three L3 pillars into the thesis statement.
+1 top-level compound (c11, the top-level thesis) composes the three L3 pillars into the thesis statement.
 
 ### Step 6: Analyze the graph
 A reuse matrix and structural analysis were produced, revealing the orphaned primitive (p11), the keystone primitive (p06), the two independent pillars, and the overrepresentation of p03 in rhetoric vs structure.
@@ -128,13 +128,13 @@ Agent beliefs can be externalized as assertion files on disk — inspectable wit
 ### For "hallucination" (conflation)
 Many LLM reasoning failures are not fabrication but conflation — collapsing distinct nodes into one. The assertion DAG prevents this by making nodes explicit. The intervention for conflation is structural decomposition, not fact-checking.
 
-### For the Its Just Shell thesis itself
+### For the thesis itself
 The DAG is built from the thesis's own primitives: files, text, composition, inspectability. The thesis tests itself with its own methodology. The recursive self-validation — using Unix primitives to structure knowledge that argues for Unix primitives — is either circular or foundational, depending on whether the test produces better reasoning.
 
 ## File Structure
 
 ```
-its-just-shell-dag-reasoning-test/
+dag-vs-prose-reasoning/
   README.md                              # this file
   prose.md                               # thesis as prose (context for conversation A)
   dag/                                   # thesis as assertion DAG (context for conversation B)
@@ -166,7 +166,7 @@ its-just-shell-dag-reasoning-test/
       c09_control_as_spectrum.md         + c09_deps.json
       c10_composability_enables_scaling.md + c10_deps.json
     compounds_l4/                        # 1 top-level thesis (from L3 compounds)
-      c11_its_just_shell.md              + c11_deps.json
+      c11_top_level_thesis.md            + c11_deps.json
     diagram.txt                          # full ASCII dependency graph + reuse matrix
     ANALYSIS.md                          # structural analysis findings
 ```
@@ -175,7 +175,7 @@ its-just-shell-dag-reasoning-test/
 
 ```
                             ┌─────────────────────┐
-                            │  c11: ITS JUST SHELL │
+                            │  c11: THESIS         │
                             │    (Layer 4)         │
                             └──────┬──────┬───────┘
                                    │      │       │

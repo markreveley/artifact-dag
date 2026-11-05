@@ -20,12 +20,13 @@ and adds nothing. The layout follows
 ## Where things are
 
 - Code: `src/`, `bin/`, `lint/rules.dl`, `viewer/template.html`, `test/`.
-  Example collection: `examples/dag/`. Pilots: `pilot/`. Evals brought from
-  another project: `evals/`. These Markdown folders are content, not
-  documents, and are listed in `.layoutignore`.
+  Example collection: `examples/dag/`. Pilots: `pilot/`. Evals of the DAG
+  method: `evals/`; its README says what each eval is and how to run it.
 - `md/`: every document about the repo. `md/governance/` the governing
   documents, `md/docs/USAGE.md` the user guide, `md/analysis/`,
-  `md/plans/`, `md/research/` (surveys of outside tools). Each folder's README says what belongs in it.
+  `md/plans/`, `md/issues/`, `md/audits/`, `md/tested/`, and
+  `md/research/` (surveys of outside tools). Each folder's README says what
+  belongs in it.
 - `.claude/skills/dag/SKILL.md`: what Claude does with `dag …` requests in
   a downstream project. It cites the policy; it does not restate it.
 - `LOCAL.md` (git-ignored): the projects that run this code and which of
@@ -47,12 +48,16 @@ and adds nothing. The layout follows
   under `threads/artifact-dag/`, unredacted, not into this repo. The
   private names and terms for the P9 scan are in `.local/private-terms.json`
   (git-ignored, main checkout only).
+
+## This repo's own rules
+
 - Pilot agents run only through `pilot/procedure.mjs blind`, never as
   subagents: a subagent has tools and the repo states what pilots look
   for. One run per claim per role.
 - The lint fixtures and the schema's examples use philosophical vocabulary
   (propositions, credences, grounds, a scale of assent); keep new examples
-  in that register.
+  in that register. Examples drawn from a project's own domain identified
+  it (P9).
 
 ## Gotchas
 
@@ -65,9 +70,6 @@ and adds nothing. The layout follows
 - The auto-mode classifier refuses to execute downloaded code (a tool
   fetched with `uvx` or cloned): reading it is fine; running it is the
   operator's.
-- `check-layout.sh` flags a Markdown-only folder even when it is
-  git-ignored; keep local Markdown in `.local/` as files beside a non-Markdown
-  file, not in a subfolder.
 - Headless Chrome (`--headless=new --dump-dom` or `--screenshot`) checks
   the viewer; its window is never narrower than 500px.
 - zsh expands a word starting with `=`, so `echo =====` aborts a command

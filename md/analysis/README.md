@@ -1,17 +1,17 @@
 # analysis/
 
-- [2026-11-03-understand-anything-comparison](2026-11-03-understand-anything-comparison/understand-anything-comparison.md): Understand-Anything against this repo; what to borrow (fingerprinting) and what not.
-- [2026-11-03-claims-to-code-gradient](2026-11-03-claims-to-code-gradient/claims-to-code-gradient.md): the five levels of evidence a claim can carry, and the code graph as addressing layer.
+- [2026-11-03-understand-anything-comparison](2026-11-03-understand-anything-comparison/understand-anything-comparison.md): Understand-Anything against this repo; what to borrow (fingerprinting) and what not. Its §3 Tree-sitter script for addressing is overtaken by ARCHITECTURE D1 (universal-ctags), after the two readings of 4 Nov.
+- [2026-11-03-claims-to-code-gradient](2026-11-03-claims-to-code-gradient/claims-to-code-gradient.md): the five levels of evidence a claim can carry, and the code graph as addressing layer. Its recommendation 5 and the Tree-sitter pass in §1 and §4 are overtaken by ARCHITECTURE D1 (universal-ctags; references wait), after the two readings of 4 Nov; the rest stands.
 - [2026-11-04-graphify-as-code-graph](2026-11-04-graphify-as-code-graph/graphify-as-code-graph.md): Graphify fits, but records start lines only, so no anchor hash.
 - [2026-11-04-code-graph-alternatives](2026-11-04-code-graph-alternatives/code-graph-alternatives.md): anchors on universal-ctags, references deferred; became ARCHITECTURE D1.
 - [2026-11-04-governance-as-dag](2026-11-04-governance-as-dag/governance-as-dag.md): governance as `norm` and `observation` claims; its plan is in `../plans/`.
 
-A survey that an analysis rests on is in `../research/`.
+A survey that an analysis rests on is in `../research/`. An analysis is not edited once written, except to fix an error; what a later reading overtakes is noted here, beside its entry.
 
 ---
 
-<!-- pinned from repo-template md/analysis/README.md @ 120a4bd; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `120a4bd`)
+<!-- pinned from repo-template md/analysis/README.md @ 05156a6; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `05156a6`)
 
 Dated findings and recommendations: what was looked at, what was found, what
 to do about it. An analysis is a record of a reading at a date; it is not
