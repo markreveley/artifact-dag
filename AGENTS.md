@@ -23,7 +23,7 @@ and adds nothing. The layout follows
   documents, and are listed in `.layoutignore`.
 - `md/`: every document about the repo. `md/governance/` the governing
   documents, `md/docs/USAGE.md` the user guide, `md/analysis/`,
-  `md/threads/`. Each folder's README says what belongs in it.
+  `md/research/` (surveys of outside tools), `md/threads/`. Each folder's README says what belongs in it.
 - `.claude/skills/dag/SKILL.md`: what Claude does with `dag …` requests in
   a downstream project. It cites the policy; it does not restate it.
 - `LOCAL.md` (git-ignored): the projects that run this code and which of
