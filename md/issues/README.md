@@ -8,8 +8,8 @@ All three come from the [second audit of 2 Nov 2026](../audits/2026-11-02-second
 
 ---
 
-<!-- pinned from repo-template md/issues/README.md @ efe325f; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `efe325f`)
+<!-- pinned from repo-template md/issues/README.md @ 05156a6; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `05156a6`)
 
 Dated findings against something: a bug, a place where a document disagrees
 with the code, a review's defects, a security advisory draft. An issue file

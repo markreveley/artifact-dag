@@ -4,8 +4,8 @@
 
 ---
 
-<!-- pinned from repo-template md/docs/README.md @ efe325f; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `efe325f`)
+<!-- pinned from repo-template md/docs/README.md @ 05156a6; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `05156a6`)
 
 How to use and work on what the repo holds: user guides, setup, reference
 for a tool or format the repo ships, decision records that a reader needs

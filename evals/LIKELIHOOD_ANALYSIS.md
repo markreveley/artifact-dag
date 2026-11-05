@@ -84,11 +84,11 @@ Context C is the critical condition. Without it, the finding is "more specific i
 
 ## Presentation Format
 
-**The shell thesis's framing, but with rigorous methodology shown, not hidden.**
+**The thesis's framing, but with rigorous methodology shown, not hidden.**
 
 A formal academic paper would reach a small audience of NLP researchers who already know about FActScore and neuro-symbolic AI. They'd evaluate it against a standard they define and likely find the sample size insufficient.
 
-The shell thesis's framing reaches practitioners — the people who write CLAUDE.md files, build agent systems, and would actually use assertion DAGs tomorrow if convinced they work. That audience is larger, more engaged, and more likely to amplify.
+The thesis's framing reaches practitioners — the people who write CLAUDE.md files, build agent systems, and would actually use assertion DAGs tomorrow if convinced they work. That audience is larger, more engaged, and more likely to amplify.
 
 But: the framing only works if the methodology is credible. Practitioners are allergic to hand-waving. The matklad article works precisely because it's technically precise while being accessibly written. The thesis already has this quality — it cites papers, shows code, makes falsifiable claims.
 
@@ -96,7 +96,7 @@ The recommended presentation:
 
 1. **Lead with the result**: "We gave an LLM the same design principles two ways. Prose produced 22% compound adherence. An assertion DAG produced 100%. The DAG-guided LLM invented abstractions the prose-guided LLM never attempted."
 2. **Show the code**: side-by-side of `get_config_pure()` (DAG) vs straight-to-temp-files (prose). Let people see the difference.
-3. **Show the methodology**: the eval is 50 lines of bash. People can reproduce it. This is the shell thesis's own standard — the methodology is shell-inspectable.
+3. **Show the methodology**: the eval is 50 lines of bash. People can reproduce it. This is the thesis's own standard — the methodology is shell-inspectable.
 4. **Be honest about limitations**: N=3, one task, information asymmetry concern. This is how you build trust with the practitioner audience — show that you know what you don't know.
 5. **Frame the bigger picture**: agent belief systems, the deliberation layer, the trust gradient extending to epistemology. This is the "why you should care" beyond the specific result.
 

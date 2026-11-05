@@ -1,4 +1,4 @@
-# The Shell Thesis (Prose Version)
+# Thesis (Prose Version)
 
 The shell is all the tool you need for building simple agents. It is also a methodology for producing reliable knowledge with agents.
 

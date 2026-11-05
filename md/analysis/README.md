@@ -10,8 +10,8 @@ A survey that an analysis rests on is in `../research/`. An analysis is not edit
 
 ---
 
-<!-- pinned from repo-template md/analysis/README.md @ efe325f; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `efe325f`)
+<!-- pinned from repo-template md/analysis/README.md @ 05156a6; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `05156a6`)
 
 Dated findings and recommendations: what was looked at, what was found, what
 to do about it. An analysis is a record of a reading at a date; it is not

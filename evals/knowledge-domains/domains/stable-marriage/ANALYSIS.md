@@ -35,7 +35,7 @@ The honest conclusion is c06 (advantage is real but bounded), not c05 (asking is
 
 ### No primitive reuse — four independent pillars
 
-Unlike the shell thesis DAG where p06 appeared in 4 compounds (making it a keystone), every primitive here appears in exactly one L2 compound. The four L2 compounds are completely independent of each other. This means:
+Unlike the thesis DAG in `dag-vs-prose-reasoning/`, where p06 appeared in 4 compounds (making it a keystone), every primitive here appears in exactly one L2 compound. The four L2 compounds are completely independent of each other. This means:
 
 - Attacking c01 (math) doesn't affect c03 (empirical) or c04 (caveats)
 - Attacking c02 (bridge) doesn't affect c03 (empirical) — there's a weaker case for initiative that doesn't depend on the math at all

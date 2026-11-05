@@ -20,10 +20,8 @@ and adds nothing. The layout follows
 ## Where things are
 
 - Code: `src/`, `bin/`, `lint/rules.dl`, `viewer/template.html`, `test/`.
-  Example collection: `examples/dag/`, which the tools read as data, so it
-  is listed in `.layoutignore`. Pilots: `pilot/`, Markdown among the pilot
-  tools. Evals of the DAG method, brought from another project: `evals/`;
-  its README says what each eval is and how to run it.
+  Example collection: `examples/dag/`. Pilots: `pilot/`. Evals of the DAG
+  method: `evals/`; its README says what each eval is and how to run it.
 - `md/`: every document about the repo. `md/governance/` the governing
   documents, `md/docs/USAGE.md` the user guide, `md/analysis/`,
   `md/plans/`, `md/issues/`, `md/audits/`, `md/tested/`, and

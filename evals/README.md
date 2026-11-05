@@ -21,8 +21,8 @@ evals/
   IMPLICATIONS.md                 theoretical implications and future directions
   LIKELIHOOD_ANALYSIS.md          how likely the result is to hold, and what testing it needs
   CONFLATION.md                   reasoning failures read as conflation rather than hallucination
-  CONNECTION_TO_SHELL_THESIS.md   how assertion DAGs extend the shell thesis
-  ASSERTION_DAGS_THESIS_SECTION.md  a section on assertion DAGs written for that thesis
+  CONNECTION_TO_THESIS.md         how assertion DAGs extend the thesis
+  ASSERTION_DAGS_THESIS_SECTION.md  a section on assertion DAGs written for the thesis
   NEXT_EXPERIMENT.md              the four-condition experiment (A/B/C/D): design, and how to build it
 
   conceptual-prototype/           the first prototype (apples, fruit, seeds): the "visible fruit" deduction gap
@@ -35,10 +35,13 @@ evals/
     run.sh  score.sh              generate N runs per context; score each against the rubric
     run_tests.sh  tests/          left from the earlier "write a test runner" task (METHODOLOGY.md, "Wrong task alignment"); not used by run.sh or score.sh
     results/                      raw outputs and summary.txt
-  shell-thesis-reasoning-test/    the shell thesis as prose and as a 4-layer DAG, for a reasoning comparison a person runs
+  dag-vs-prose-reasoning/         a thesis on agent architecture as prose and as a 4-layer DAG, for a reasoning comparison a person runs
     README.md  prose.md  dag/
   knowledge-domains/domains/stable-marriage/   a worked example: an article on the stable marriage problem as a DAG
 ```
+
+"The thesis", in these documents, is the one `dag-vs-prose-reasoning/`
+decomposes: `prose.md` there is a version at the DAG's scope.
 
 The nodes here are this eval's own format (an assertion per file, a
 `deps.json` per compound), not `md/governance/SCHEMA.md`'s.
@@ -74,10 +77,9 @@ See [METHODOLOGY.md](METHODOLOGY.md) for full details.
 Early-stage experimental. N=3 on one task with one model. The signal is strong but narrow. This is a proof of concept, not a validated result.
 
 Not run yet: the four-condition experiment (`NEXT_EXPERIMENT.md`), the
-reasoning comparison in `shell-thesis-reasoning-test/README.md`, and a DAG
+reasoning comparison in `dag-vs-prose-reasoning/README.md`, and a DAG
 of an agent's identity in its system prompt, against identity conflation
 (`CONFLATION.md`), which was discussed and not built.
 
-These evals came from another project at its commit `8f8780c` (this repo's
-`fa3db1d`). Local paths in the raw results (`purity-test/results/a/run_1.txt`)
-are cut to `<eval>`.
+Added to this repo in commit `fa3db1d`. Local paths in the raw results
+(`purity-test/results/a/run_1.txt`) are cut to `<eval>`.

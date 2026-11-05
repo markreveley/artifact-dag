@@ -7,8 +7,8 @@ Both were written up on 5 Nov 2026 from their PRs, commits and thread files.
 
 ---
 
-<!-- pinned from repo-template md/audits/README.md @ efe325f; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `efe325f`)
+<!-- pinned from repo-template md/audits/README.md @ 05156a6; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `05156a6`)
 
 A dated reading of the repo, or of one piece of it, against what it claims
 to be: the code against its documents, the documents against each other, a

@@ -23,7 +23,7 @@ and view the graph. The rest of this file is for someone working on the code.
 | `src/facts.js`, `src/lint.js` | graph to Datalog facts, and rules to findings     |
 | `src/merge.js`, `src/markdown.js` | the viewer's join of several collections, and its Markdown; inlined into the page, tested in Node |
 | `lint/rules.dl`    | the default lint rules, one per finding code                |
-| `examples/dag/`    | an example collection (epistemics) to copy into a project; the tools read it as data, so `.layoutignore` lists it |
+| `examples/dag/`    | an example collection (epistemics) to copy into a project   |
 | `viewer/template.html` | the viewer page, with placeholders for the parser and the nodes |
 | `bin/build-viewer.js` | builds the viewer page from one or more `dag/` folders  |
 | `bin/dag-to-glossary.js` | writes each document's `## Glossary` (and an optional master glossary) from the definitions, per a project's `glossary.config.json`; can draw terms from other projects' DAGs |
@@ -37,7 +37,7 @@ and view the graph. The rest of this file is for someone working on the code.
 | `md/research/`     | dated surveys of tools and prior work outside the repo, with sources; recommendations drawn from them are analyses |
 | `test/`            | `npm test`; `test/fixtures/lint/` is a collection built to trip the lint rules (the two resource rules are tripped by nodes written in `test/lint.test.js`) |
 | `.claude/skills/dag/` | what Claude does with `dag …` requests                   |
-| `evals/`           | evals of the DAG method, brought from another project (commit `fa3db1d`): prose against assertion graphs as context for a model, and a reasoning comparison a person runs; its README says what each is and how to run it |
+| `evals/`           | evals of the DAG method, added in commit `fa3db1d`: prose against assertion graphs as context for a model, and a reasoning comparison a person runs; its README says what each is and how to run it |
 | `pilot/`           | pilots: bounded tests of a method before it is built in. What a pilot is and how to run one (`pilot/README.md`), the procedure under test (`pilot/PROCEDURE.md`) and its tools, and one folder per pilot |
 | `next-agents.md`, `next-operator.md` | the handoff between working threads: next steps for the agent and for the operator, rewritten at the end of each thread |
 

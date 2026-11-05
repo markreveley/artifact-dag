@@ -168,7 +168,7 @@ The original eval used Simon Willison's `llm` CLI. This was abandoned because `l
 
 ### Attempt 2: `agent` wrapper
 
-Used an `agent` wrapper script around `claude -p`, from another project and not kept here. The problem: `claude -p` by default has tool access and read the existing filesystem instead of generating fresh code. Outputs were commentary on existing files rather than new scripts.
+Used an `agent` wrapper script around `claude -p`. The problem: `claude -p` by default has tool access and read the existing filesystem instead of generating fresh code. Outputs were commentary on existing files rather than new scripts.
 
 ### Attempt 3: `claude -p` with `--tools ""`
 

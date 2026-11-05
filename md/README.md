@@ -1,11 +1,9 @@
 # md/
 
-Every Markdown document about this repo or its work, in the layout
-[repo-template](https://github.com/markreveley/repo-template) sets, and
-nothing else. The Markdown elsewhere stays where it is (repo-template,
-guideline 1): `examples/dag/` is a collection the tools read as data, listed
-in `.layoutignore`; `pilot/` and `test/` hold Markdown among code and data;
-`evals/` holds the evals. The root README's table says what each is.
+The documents about this repo and its work, in the layout
+[repo-template](https://github.com/markreveley/repo-template) sets: its
+seven default folders, each with a README, and `research/`, this repo's
+addition.
 
 | folder | holds | file name |
 |---|---|---|
@@ -23,16 +21,12 @@ survey links to it in its "Sources read".
 
 ---
 
-<!-- pinned from repo-template md/README.md @ efe325f; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `efe325f`)
+<!-- pinned from repo-template md/README.md @ 05156a6; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `05156a6`)
 
-Every Markdown document about this repo or its work, and nothing else: only
-Markdown meant for one of the folders below lives here. A folder elsewhere
-whose files are all Markdown moves here, unless a tool reads it as data (a
-DAG's nodes, a site's posts, a tutorial's source): that is content, stays
-where its tool expects it, and is named in the root README's table. A folder
-that holds Markdown among other file types, and `evals/`, are outside the
-rule (root README, guideline 1).
+The repo's documents about itself and its work. The seven folders below
+exist in every repo, each with its README, whether or not anything is in it
+yet (root README, guideline 1).
 
 | folder | holds | file name |
 |---|---|---|

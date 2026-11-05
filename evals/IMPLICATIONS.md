@@ -95,13 +95,13 @@ This enables:
 
 ### The Deliberation Layer
 
-The shell thesis identifies three layers: deliberation (unconstrained NL), execution (shell-semantic), verification (shell-inspectable). The deliberation layer is currently the weak link — it's unconstrained.
+The thesis that `dag-vs-prose-reasoning/` decomposes identifies three layers: deliberation (unconstrained NL), execution (shell-semantic), verification (shell-inspectable). The deliberation layer is currently the weak link — it's unconstrained.
 
 The assertion DAG constrains the deliberation layer without restricting natural language. Agents can chat freely, but beliefs resulting from deliberation must be deposited as structured assertions. The deliberation is unconstrained; the *output* of deliberation is structured.
 
 ### Self-Referential Testing
 
-The shell thesis itself makes testable claims that decompose into primitive and compound assertions. An eval could:
+The thesis itself (`dag-vs-prose-reasoning/`) makes testable claims that decompose into primitive and compound assertions. An eval could:
 1. Decompose the thesis into an assertion DAG
 2. Give an LLM the thesis-as-DAG and ask it to build an agent system
 3. Give another LLM the thesis-as-prose

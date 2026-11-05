@@ -4,8 +4,8 @@ Nothing yet. A pilot's runs stay in its own folder under `pilot/`.
 
 ---
 
-<!-- pinned from repo-template md/tested/README.md @ efe325f; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `efe325f`)
+<!-- pinned from repo-template md/tested/README.md @ 05156a6; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `05156a6`)
 
 One report per run of something that can only be checked by running it: an
 install, a load into a live system, a manual test pass. A report is opened

@@ -15,8 +15,8 @@ each present only when it has content.
 
 ---
 
-<!-- pinned from repo-template md/governance/README.md @ efe325f; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `efe325f`)
+<!-- pinned from repo-template md/governance/README.md @ 05156a6; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `05156a6`)
 
 The documents that govern the repo. Five fixed names, each present only when
 it has content; a repo deletes the stubs it has no use for and lists the
