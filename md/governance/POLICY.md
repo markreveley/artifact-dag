@@ -68,11 +68,14 @@ glossary check against `main` before merging such a change. *Checked by:*
 the agent, before the PR; `next-agents.md` says how.
 
 **P9. The repo names no other project.** It is public. The projects that run
-this code are listed in the git-ignored `LOCAL.md`; thread files are
-redacted with `md/threads/redact.json`; a detail that identifies a private
-project even with its name cut (its stack, its policy language) is cut too.
-*Checked by:* the thread script refuses to write a file in which a mapped
-name survives; after adding a term to the map, rescan every tracked file.
+this code are listed in the git-ignored `LOCAL.md`; a detail that
+identifies a private project even with its name cut (its stack, its policy
+language) is cut too. Threads, which name them freely, are kept in the
+private thread-archive repo, never here (repo-template guideline 10).
+*Checked by:* a scan of every tracked file against the private names and
+terms in the git-ignored `.local/private-terms.json` (its `replace` and
+`check` patterns, as case-insensitive regexes), before a PR and after a
+term is added.
 
 **P10. Changes reach `main` through a PR.** `/end` commits where the work is
 and opens the PR. *Checked by:* GitHub.

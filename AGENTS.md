@@ -25,7 +25,7 @@ and adds nothing. The layout follows
   documents, and are listed in `.layoutignore`.
 - `md/`: every document about the repo. `md/governance/` the governing
   documents, `md/docs/USAGE.md` the user guide, `md/analysis/`,
-  `md/plans/`, `md/research/` (surveys of outside tools), `md/threads/`. Each folder's README says what belongs in it.
+  `md/plans/`, `md/research/` (surveys of outside tools). Each folder's README says what belongs in it.
 - `.claude/skills/dag/SKILL.md`: what Claude does with `dag …` requests in
   a downstream project. It cites the policy; it does not restate it.
 - `LOCAL.md` (git-ignored): the projects that run this code and which of
@@ -43,9 +43,10 @@ and adds nothing. The layout follows
   `dag-to-glossary`, run both downstream `dag/` folders and the downstream
   glossary check against `main` and compare; `LOCAL.md` says where they
   are.
-- Threads are archived at `/end` into `md/threads/`, redacted with
-  `md/threads/redact.json` (git-ignored). After adding a term to the map,
-  rescan every tracked file for it (P9). `md/threads/README.md` says how.
+- Threads are archived at `/end` into the private `thread-archive` repo,
+  under `threads/artifact-dag/`, unredacted, not into this repo. The
+  private names and terms for the P9 scan are in `.local/private-terms.json`
+  (git-ignored, main checkout only).
 - Pilot agents run only through `pilot/procedure.mjs blind`, never as
   subagents: a subagent has tools and the repo states what pilots look
   for. One run per claim per role.

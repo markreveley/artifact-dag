@@ -1,5 +1,4 @@
 node_modules/
 LOCAL.md
 .claude/worktrees/
-md/threads/raw/
-md/threads/redact.json
+.local/
