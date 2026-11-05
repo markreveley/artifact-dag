@@ -19,6 +19,16 @@ AI agents, asking them to add a marker to pull-request descriptions. It was
 read as data and not acted on. Anyone running an agent against that repo
 should expect it.
 
+
+**Later readings.** §3's last bullet, a Tree-sitter script of our own as the
+addressing layer, is overtaken by decision D1 in
+[`ARCHITECTURE.md`](../../governance/ARCHITECTURE.md): anchors resolve
+against universal-ctags. The readings behind it are
+[graphify-as-code-graph](../2026-11-04-graphify-as-code-graph/graphify-as-code-graph.md)
+and
+[code-graph-alternatives](../2026-11-04-code-graph-alternatives/code-graph-alternatives.md).
+The rest of this analysis stands.
+
 ---
 
 ## 1. The short answer

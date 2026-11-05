@@ -1,5 +1,12 @@
 # docs/
 
+- [USAGE.md](USAGE.md): the user guide: adding nodes, checking them, viewing the graph.
+
+---
+
+<!-- pinned from repo-template md/docs/README.md @ 120a4bd; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `120a4bd`)
+
 How to use and work on what the repo holds: user guides, setup, reference
 for a tool or format the repo ships, decision records that a reader needs
 in order to work here.

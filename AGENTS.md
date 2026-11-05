@@ -13,7 +13,9 @@ and adds nothing. The layout follows
    `next-agents.md`.
 3. `md/governance/POLICY.md` before any change: its rules are numbered
    (`P8`) and cited below. `md/governance/SCHEMA.md` before touching a
-   node, the parser or a CLI. `pilot/PROCEDURE.md` before running a pilot.
+   node, the parser or a CLI. `md/governance/ARCHITECTURE.md` before changing how
+   the parts fit, or choosing a tool a decision there already settles.
+   `pilot/PROCEDURE.md` before running a pilot.
 
 ## Where things are
 

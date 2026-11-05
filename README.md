@@ -28,7 +28,7 @@ and view the graph. The rest of this file is for someone working on the code.
 | `bin/build-viewer.js` | builds the viewer page from one or more `dag/` folders  |
 | `bin/dag-to-glossary.js` | writes each document's `## Glossary` (and an optional master glossary) from the definitions, per a project's `glossary.config.json`; can draw terms from other projects' DAGs |
 | `md/docs/USAGE.md` | the user guide                                              |
-| `md/governance/`   | the documents that govern the repo, per [repo-template](https://github.com/markreveley/repo-template): `SCHEMA.md` (the node format: frontmatter, ids, edges, body layout) and `POLICY.md`; its README says where the others stand |
+| `md/governance/`   | the documents that govern the repo, per [repo-template](https://github.com/markreveley/repo-template): `SCHEMA.md` (the node format: frontmatter, ids, edges, body layout), `POLICY.md` (the numbered rules) and `ARCHITECTURE.md` (the parts and the design decisions); its README says where the others stand |
 | `md/analysis/`     | dated analysis documents: findings and recommendations, one folder per analysis; open questions go to the next docs, not here |
 | `md/plans/`        | what will be done, in what order, and what it waits on: one folder per plan, decisions numbered `D1` |
 | `md/research/`     | dated surveys of tools and prior work outside the repo, with sources; recommendations drawn from them are analyses |
