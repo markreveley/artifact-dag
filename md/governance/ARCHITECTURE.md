@@ -33,8 +33,8 @@ id (P2).
 
 ## 4. Boundaries and invariants
 
-- The node files are the only source; outputs are rebuilt, never committed
-  (P1).
+- The node files are the only source, and nothing keeps a parallel copy of
+  a node (P1). A built viewer page is never committed.
 - The node format is `SCHEMA.md`; a change to it or to a CLI is checked
   against the downstream collections before it merges (P8).
 - Anything derived from code, such as a code graph, stays outside the DAG:

@@ -26,6 +26,16 @@ document keeps the source's words (now in the `dag` skill, "Claims from a
 document"). A `ratified` field is wanted. The glossary is the set of
 definition nodes, which it already is.
 
+**Later readings.** Recommendation 5, and the Tree-sitter pass in §1 and §4,
+are overtaken by decision D1 in
+[`ARCHITECTURE.md`](../../governance/ARCHITECTURE.md): anchors resolve
+against universal-ctags, and a tool for references waits. The readings
+behind it are
+[graphify-as-code-graph](../2026-11-04-graphify-as-code-graph/graphify-as-code-graph.md)
+and
+[code-graph-alternatives](../2026-11-04-code-graph-alternatives/code-graph-alternatives.md).
+The rest of this analysis stands.
+
 ---
 
 ## 1. The short answer

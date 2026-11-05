@@ -1,5 +1,9 @@
 # research/
 
+- [2026-11-04-code-graph-tools](2026-11-04-code-graph-tools/code-graph-tools.md): tools that could give claim anchors a code graph; read by `../analysis/2026-11-04-code-graph-alternatives/`.
+
+This folder is this repo's addition; repo-template has no `research/`.
+
 Dated surveys of what exists outside the repo: tools, projects, papers,
 with what each one is, how it was checked, and where the facts came from.
 A survey reports; it does not recommend. What the repo should do about it
