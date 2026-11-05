@@ -37,7 +37,8 @@ and view the graph. The rest of this file is for someone working on the code.
 | `evals/`           | the assertion-DAG evals brought from another project (commit `fa3db1d`): prose against assertion graphs as context for a model; its README explains |
 | `pilot/`           | pilots: bounded tests of a method before it is built in. What a pilot is and how to run one (`pilot/README.md`), the procedure under test (`pilot/PROCEDURE.md`) and its tools, and one folder per pilot |
 | `next-agents.md`, `next-operator.md` | the handoff between working threads: next steps for the agent and for the operator, rewritten at the end of each thread |
-| `md/threads/`      | the exchange of working threads, written at `/end` from the session transcript (user turns and assistant text, other projects' names redacted). The redaction map `md/threads/redact.json`, and raw `/export` files in `md/threads/raw/` if one is used, are git-ignored |
+
+Working threads are archived in a separate private repo, not here.
 
 A git-ignored `LOCAL.md` at the root may hold notes that stay on one machine,
 such as which projects run this code and which of them run it in CI. This

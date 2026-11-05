@@ -13,7 +13,6 @@ root README's table.
 | [`plans/`](plans/README.md) | what will be done, in order, and what it waits on | `YYYY-MM-DD-<slug>/<slug>.md` |
 | [`analysis/`](analysis/README.md) | dated findings and recommendations | `YYYY-MM-DD-<slug>/<slug>.md` |
 | [`research/`](research/README.md) | dated surveys of tools and prior work outside the repo, with sources; added here, not a template default | `YYYY-MM-DD-<slug>/<slug>.md` |
-| [`threads/`](threads/README.md) | the exchange of each working thread | `YYYY-MM-DD-<slug>.md` |
 
 The template's other defaults (`issues/`, `audits/`, `tested/`)
 are created when the repo first has one. A survey reports and an analysis
@@ -22,8 +21,8 @@ recommends: an analysis that rests on a survey links to it in its
 
 ---
 
-<!-- pinned from repo-template md/README.md @ 120a4bd; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `120a4bd`)
+<!-- pinned from repo-template md/README.md @ 868468a; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `868468a`)
 
 Every Markdown document about this repo or its work. The rule: a folder that
 holds Markdown files and only Markdown files lives here. Markdown that a tool
@@ -37,7 +36,6 @@ stays where its tool expects it, and is named in the root README's table.
 | [`plans/`](plans/README.md) | what will be done, in order, and what it waits on | `YYYY-MM-DD-<slug>/<slug>.md` |
 | [`analysis/`](analysis/README.md) | dated findings and recommendations | `YYYY-MM-DD-<slug>/<slug>.md` |
 | [`issues/`](issues/README.md) | dated findings against something | `YYYY-MM-DD-<slug>.md` |
-| [`threads/`](threads/README.md) | the exchange of each working thread | `YYYY-MM-DD-<slug>.md` |
 | [`audits/`](audits/README.md) | a dated reading of the repo against what it claims to be | `YYYY-MM-DD-<slug>.md` |
 | [`tested/`](tested/README.md) | one report per run of something only a run can check | `YYYY-MM-DD-HHMM-<kind>.md` |
 

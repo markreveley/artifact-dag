@@ -4,8 +4,8 @@
 
 ---
 
-<!-- pinned from repo-template md/plans/README.md @ f762c0f; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `f762c0f`)
+<!-- pinned from repo-template md/plans/README.md @ 868468a; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `868468a`)
 
 What will be done, in what order, and what it waits on. A plan is the
 bridge from an analysis's recommendations to the steps in `next-agents.md`.
@@ -29,6 +29,9 @@ plan changes:
 ```
 
 Status words: `proposed`, `accepted`, `in progress`, `done`, `dropped`.
-Decisions are numbered (`D1`) so steps and other documents cite them. A
+Decisions are numbered (`D1`) so steps and other documents cite them;
+outside the plan, cite them with its slug (`<plan-slug> D1`). A decision
+adopted as design moves to `governance/ARCHITECTURE.md` under its next
+number, and the plan links to it. A
 question in a plan moves to `next-operator.md` when the step that waits on
 it comes up.
