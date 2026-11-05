@@ -11,10 +11,15 @@ required of it and of the people and agents who write it.
 ## Nodes
 
 **P1. Node files are the source of truth.** A definition, claim or resource
-is its Markdown file under `dag/`. Nothing keeps a parallel copy. The viewer
-and the glossary are built from the files and never committed.
-*Why:* two copies drift. *Checked by:* review; a committed viewer page is
-refused.
+is its Markdown file under `dag/`. Nothing keeps a parallel copy that is
+edited by hand. Anything built from the files is either never committed
+(the viewer page, a code-graph index) or committed as a generated view (a
+document's `## Glossary`), which is never edited by hand and is checked
+against the nodes by a command that fails when it drifts
+(`dag-to-glossary --check`).
+*Why:* two copies drift; a generated view with a check cannot.
+*Checked by:* review, where a committed viewer page is refused; the view's
+check, in each project's CI.
 
 **P2. Ids are global.** `def:credence` means the same thing in every project
 that uses it, so per-project graphs join cleanly. Reuse an id that exists in
