@@ -81,5 +81,5 @@ reasoning comparison in `dag-vs-prose-reasoning/README.md`, and a DAG
 of an agent's identity in its system prompt, against identity conflation
 (`CONFLATION.md`), which was discussed and not built.
 
-Added to this repo in commit `fa3db1d`. Local paths in the raw results
-(`purity-test/results/a/run_1.txt`) are cut to `<eval>`.
+Added to this repo in commit `fa3db1d`. The raw results are as the model
+wrote them.
