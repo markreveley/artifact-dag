@@ -4,9 +4,9 @@
 
 This document describes the eval methodology used to test whether structuring knowledge as an assertion DAG produces better LLM adherence to design principles than equivalent knowledge presented as prose.
 
-## Origin: test_1 (Conceptual Prototype)
+## Origin: the conceptual prototype
 
-The project began with a conceptual prototype (`test_1/`) exploring whether compound claims could be accurately deduced from atomic claims. Six primitive assertions about apples, fruit, colors, and seeds were composed into basic, complex, and recombined compound claims.
+The project began with a conceptual prototype (`conceptual-prototype/`) exploring whether compound claims could be accurately deduced from atomic claims. Six primitive assertions about apples, fruit, colors, and seeds were composed into basic, complex, and recombined compound claims.
 
 ### Finding: Composition Gaps Are Detectable
 
@@ -30,7 +30,7 @@ The design principles were derived from Alex Kladov's (matklad) article "Unit an
 
 ### Primitive Assertions (6)
 
-Each stored as a separate `.md` file in `eval/primitives/`:
+Each stored as a separate `.md` file in `purity-test/primitives/`:
 
 | ID | Statement |
 |----|-----------|
@@ -43,7 +43,7 @@ Each stored as a separate `.md` file in `eval/primitives/`:
 
 ### Compound Assertions (3)
 
-Each stored as a `.md` file with an associated `_deps.json` in `eval/compounds/`:
+Each stored as a `.md` file with an associated `_deps.json` in `purity-test/compounds/`:
 
 | ID | Statement | Dependencies |
 |----|-----------|-------------|
@@ -66,11 +66,11 @@ This task was chosen because it forces real design decisions about purity. The f
 
 ### Context A: Prose
 
-The matklad article's ideas presented as prose paragraphs. Same information content as context B, but presented as a narrative explanation of the testing philosophy. No structural decomposition. See `eval/context_a/prompt.md`.
+The matklad article's ideas presented as prose paragraphs. Same information content as context B, but presented as a narrative explanation of the testing philosophy. No structural decomposition. See `purity-test/context_a/prompt.md`.
 
 ### Context B: Assertion DAG
 
-The same ideas decomposed into labeled primitives [p1]-[p6], compound assertions [c1]-[c3] with explicit dependency lists, and an ASCII dependency graph. See `eval/context_b/prompt.md`.
+The same ideas decomposed into labeled primitives [p1]-[p6], compound assertions [c1]-[c3] with explicit dependency lists, and an ASCII dependency graph. See `purity-test/context_b/prompt.md`.
 
 ### Execution
 
@@ -168,7 +168,7 @@ The original eval used Simon Willison's `llm` CLI. This was abandoned because `l
 
 ### Attempt 2: `agent` wrapper
 
-Used the `agent` script from SHELL-AGENTICS (`/Users/mark/dev/repos/mine/SHELL-AGENTICS/agent/agent`) which wraps `claude -p`. The problem: `claude -p` by default has tool access and read the existing filesystem instead of generating fresh code. Outputs were commentary on existing files rather than new scripts.
+Used an `agent` wrapper script around `claude -p`, from another project and not kept here. The problem: `claude -p` by default has tool access and read the existing filesystem instead of generating fresh code. Outputs were commentary on existing files rather than new scripts.
 
 ### Attempt 3: `claude -p` with `--tools ""`
 

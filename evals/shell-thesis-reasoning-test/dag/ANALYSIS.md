@@ -45,7 +45,7 @@ This decomposition may itself be exhibiting conflation — treating the thesis's
 ## Structure
 
 ```
-thesis_dag/
+dag/
   primitives/          14 primitive assertions (p01-p14)
   compounds_l2/        7 layer-2 compounds (c01-c07) with deps.json
   compounds_l3/        3 layer-3 compounds (c08-c10) with deps.json

@@ -5,11 +5,11 @@
 </tool_use>
 
 <tool_use>
-{"id":"tooluse_j3fmxmjzR6eXOgKK4Sxxgg","type":"tool_use","name":"Bash","input":{"command":"cd '/Users/mark/dev/repos/mine/ITS JUST/assertions/eval' && shellcheck test_get_config.sh","description":"Run shellcheck to lint the bash script for common issues"}}
+{"id":"tooluse_j3fmxmjzR6eXOgKK4Sxxgg","type":"tool_use","name":"Bash","input":{"command":"cd '<eval>' && shellcheck test_get_config.sh","description":"Run shellcheck to lint the bash script for common issues"}}
 </tool_use>
 
 <tool_result>
-{"toolName":"Write","result":"","resultForAssistant":"Successfully wrote to file /Users/mark/dev/repos/mine/ITS JUST/assertions/eval/test_get_config.sh"}
+{"toolName":"Write","result":"","resultForAssistant":"Successfully wrote to file <eval>/test_get_config.sh"}
 </tool_result>
 
 <tool_result>
@@ -17,7 +17,7 @@
 </tool_result>
 
 <tool_use>
-{"id":"tooluse_mSdGMi6TQS6tPrnnuLzuxQ","type":"tool_use","name":"Bash","input":{"command":"cd '/Users/mark/dev/repos/mine/ITS JUST/assertions/eval' && bash test_get_config.sh","description":"Run the test script to verify all tests pass"}}
+{"id":"tooluse_mSdGMi6TQS6tPrnnuLzuxQ","type":"tool_use","name":"Bash","input":{"command":"cd '<eval>' && bash test_get_config.sh","description":"Run the test script to verify all tests pass"}}
 </tool_use>
 
 <tool_result>

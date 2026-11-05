@@ -1,11 +1,11 @@
 
-ITS JUST SHELL — ASSERTION DEPENDENCY GRAPH
-════════════════════════════════════════════
+THE SHELL THESIS — ASSERTION DEPENDENCY GRAPH
+═════════════════════════════════════════════
 
 LAYER 4 (Top-level thesis)
 ──────────────────────────
 
-  [c11] ITS JUST SHELL
+  [c11] THE SHELL THESIS
   "The shell is all the tool you need for building simple agents.
    It is also a methodology for producing reliable knowledge with agents."
   │

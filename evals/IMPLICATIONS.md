@@ -75,7 +75,7 @@ Two LLM agents operating over the same assertion DAG:
 
 The adversarial setup would:
 1. **Contest primitives**: "I reject p2, here's why" (itself a compound assertion)
-2. **Attack composition**: "p1+p2+p3 doesn't entail c1 because..." (the "visible fruit" problem from test_1)
+2. **Attack composition**: "p1+p2+p3 doesn't entail c1 because..." (the "visible fruit" problem from the conceptual prototype)
 3. **Construct counter-assertions**: Alternative compounds from the same primitives
 4. **Force decomposition**: Demand finer-grained primitives, exposing hidden assumptions
 
@@ -95,13 +95,13 @@ This enables:
 
 ### The Deliberation Layer
 
-The Its Just Shell thesis identifies three layers: deliberation (unconstrained NL), execution (shell-semantic), verification (shell-inspectable). The deliberation layer is currently the weak link — it's unconstrained.
+The shell thesis identifies three layers: deliberation (unconstrained NL), execution (shell-semantic), verification (shell-inspectable). The deliberation layer is currently the weak link — it's unconstrained.
 
 The assertion DAG constrains the deliberation layer without restricting natural language. Agents can chat freely, but beliefs resulting from deliberation must be deposited as structured assertions. The deliberation is unconstrained; the *output* of deliberation is structured.
 
 ### Self-Referential Testing
 
-The Its Just Shell thesis itself makes testable claims that decompose into primitive and compound assertions. An eval could:
+The shell thesis itself makes testable claims that decompose into primitive and compound assertions. An eval could:
 1. Decompose the thesis into an assertion DAG
 2. Give an LLM the thesis-as-DAG and ask it to build an agent system
 3. Give another LLM the thesis-as-prose
@@ -130,7 +130,7 @@ No existing system fully implements epistemic dependency graphs where claims are
 
 3. **Who writes the assertions?** Human-authored assertions are expensive. LLM-authored assertions might inherit the same reasoning gaps they're meant to prevent. The decomposition step is where interpretation happens — it's the compilation from prose to structured form.
 
-4. **How do you validate the DAG itself?** The recombined claim in test_1 showed that a DAG can be internally consistent but logically flawed. Who checks the composition?
+4. **How do you validate the DAG itself?** The recombined claim in the conceptual prototype showed that a DAG can be internally consistent but logically flawed. Who checks the composition?
 
 5. **Does the scorer agree with itself?** We have not tested scorer consistency. The same output scored twice might produce different results, especially on philosophical assertions like "purity implies stability."
 

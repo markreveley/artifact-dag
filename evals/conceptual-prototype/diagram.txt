@@ -1,6 +1,6 @@
 
-EPISTEMIC DEPENDENCY GRAPH — test_1
-════════════════════════════════════
+EPISTEMIC DEPENDENCY GRAPH — conceptual prototype
+═════════════════════════════════════════════════
 
 PRIMITIVES (depth 0, confidence: absolute)
 ──────────────────────────────────────────

@@ -12,42 +12,48 @@ This project explores whether structuring knowledge as **assertion dependency gr
 
 The key distinction from prose instructions: **the composition is explicit**. A compound assertion doesn't just list ideas — it declares which primitives combine and what design decision their combination produces. The LLM receives not just *what* to value but *how those values compose into actions*.
 
-## Repository Structure
+## What is here
 
 ```
-assertions/
-  README.md                    # this file
-  METHODOLOGY.md               # detailed eval methodology and findings
-  IMPLICATIONS.md              # theoretical implications and future directions
-  CONNECTION_TO_ITSJUSTSHELL.md # relationship to the Its Just Shell thesis
+evals/
+  README.md                       this file
+  METHODOLOGY.md                  the purity-test eval: method, results, failed approaches, threats to validity
+  IMPLICATIONS.md                 theoretical implications and future directions
+  LIKELIHOOD_ANALYSIS.md          how likely the result is to hold, and what testing it needs
+  CONFLATION.md                   reasoning failures read as conflation rather than hallucination
+  CONNECTION_TO_SHELL_THESIS.md   how assertion DAGs extend the shell thesis
+  ASSERTION_DAGS_THESIS_SECTION.md  a section on assertion DAGs written for that thesis
+  NEXT_EXPERIMENT.md              the four-condition experiment (A/B/C/D): design, and how to build it
 
-  test_1/                      # original conceptual prototype (apples/fruit)
-    primitives/                # 6 atomic claims about apples, fruit, colors
-    claims/                    # basic, complex, and recombined compound claims
-    diagram.txt                # ASCII dependency graph
-    verdict.md                 # analysis of the complex claim
-
-  eval/                        # empirical eval: prose vs assertion DAG
-    task.md                    # the coding task given to the LLM
-    context_a/prompt.md        # prose context (article ideas as paragraphs)
-    context_b/prompt.md        # assertion DAG context (primitives + compounds + deps)
-    primitives/                # 6 primitive assertions about testing philosophy
-    compounds/                 # 3 compound assertions with deps.json files
-    run.sh                     # generates outputs: N runs x 2 contexts
-    score.sh                   # scores outputs against primitives and compounds
-    results/                   # raw outputs and summary scores
+  conceptual-prototype/           the first prototype (apples, fruit, seeds): the "visible fruit" deduction gap
+    primitives/  claims/  diagram.txt  verdict.md
+  purity-test/                    the eval: prose (A) against an assertion DAG (B) as context for writing tests
+    task.md                       the coding task given to the model
+    context_a/prompt.md           prose context (the article's ideas as paragraphs)
+    context_b/prompt.md           assertion DAG context (primitives, compounds, deps)
+    primitives/  compounds/       6 primitives and 3 compounds with deps.json; also the scoring rubric
+    run.sh  score.sh              generate N runs per context; score each against the rubric
+    run_tests.sh  tests/          left from the earlier "write a test runner" task (METHODOLOGY.md, "Wrong task alignment"); not used by run.sh or score.sh
+    results/                      raw outputs and summary.txt
+  shell-thesis-reasoning-test/    the shell thesis as prose and as a 4-layer DAG, for a reasoning comparison a person runs
+    README.md  prose.md  dag/
+  knowledge-domains/domains/stable-marriage/   a worked example: an article on the stable marriage problem as a DAG
 ```
+
+The nodes here are this eval's own format (an assertion per file, a
+`deps.json` per compound), not `md/governance/SCHEMA.md`'s.
 
 ## Quick Start
 
 ```bash
-cd eval/
+cd evals/purity-test/
 ./run.sh 3       # generate 3 runs per context (6 total LLM calls)
 ./score.sh       # score all outputs (54 total LLM calls for scoring)
 cat results/summary.txt
 ```
 
-Requires `claude` CLI (Claude Code) installed and authenticated.
+Requires the `claude` CLI (Claude Code), installed and signed in, and `jq`
+for `score.sh`.
 
 ## Key Finding
 
@@ -66,3 +72,12 @@ See [METHODOLOGY.md](METHODOLOGY.md) for full details.
 ## Status
 
 Early-stage experimental. N=3 on one task with one model. The signal is strong but narrow. This is a proof of concept, not a validated result.
+
+Not run yet: the four-condition experiment (`NEXT_EXPERIMENT.md`), the
+reasoning comparison in `shell-thesis-reasoning-test/README.md`, and a DAG
+of an agent's identity in its system prompt, against identity conflation
+(`CONFLATION.md`), which was discussed and not built.
+
+These evals came from another project at its commit `8f8780c` (this repo's
+`fa3db1d`). Local paths in the raw results (`purity-test/results/a/run_1.txt`)
+are cut to `<eval>`.

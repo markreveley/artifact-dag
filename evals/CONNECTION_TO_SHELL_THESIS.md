@@ -1,12 +1,12 @@
-# Connection to Its Just Shell
+# Connection to the Shell Thesis
 
-This document describes how the assertion DAG framework relates to and extends the Its Just Shell thesis. It is a companion document, not part of the assertion library itself.
+This document describes how the assertion DAG framework relates to and extends the shell thesis. It is a companion document, not part of the assertion library itself.
 
 ---
 
 ## The Missing Layer
 
-The Its Just Shell thesis provides full observability of **what an agent does**: execution traces, exit codes, file state. Every command, every decision, every timestamp is inspectable with Unix tools. The trust gradient terminates at shell semantics.
+The shell thesis provides full observability of **what an agent does**: execution traces, exit codes, file state. Every command, every decision, every timestamp is inspectable with Unix tools. The trust gradient terminates at shell semantics.
 
 But the thesis does not provide observability of **why an agent does it**. The reasoning lives inside the context window — opaque, ephemeral, ungreppable. You can reconstruct *what* from logs. You infer *why* from vibes.
 
@@ -176,6 +176,6 @@ This means the thesis can test itself: decompose its claims into an assertion DA
 
 ## Summary
 
-The assertion DAG framework is not a separate project from Its Just Shell. It is the thesis's natural extension from actions to beliefs. The same primitives (files, text, composition, inspection) that make agent actions observable now make agent reasoning observable. The same trust gradient that distinguishes shell semantics from natural language now distinguishes assertion DAGs from prose beliefs.
+The assertion DAG framework is not a separate project from the shell thesis. It is the thesis's natural extension from actions to beliefs. The same primitives (files, text, composition, inspection) that make agent actions observable now make agent reasoning observable. The same trust gradient that distinguishes shell semantics from natural language now distinguishes assertion DAGs from prose beliefs.
 
 The thesis says: the shell is the control plane. The assertion framework says: the filesystem is the belief plane. Both terminate the inspection chain. Both are built from the same primitives. Both resist the temptation to abstract away the thing you need to see.
