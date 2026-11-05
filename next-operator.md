@@ -44,6 +44,16 @@ tags and how many of their existing `sources` anchors resolve or are
 ambiguous (`md/analysis/2026-11-04-code-graph-alternatives/code-graph-alternatives.md`,
 §4, item 5). It comes before step 1's anchor work.
 
+## 4. Answer the governance-as-DAG questions
+
+[`md/plans/2026-11-04-governance-as-dag/governance-as-dag.md`](md/plans/2026-11-04-governance-as-dag/governance-as-dag.md)
+designs governance as inherited nodes with generated `POLICY.md` views.
+Its four questions, each with a recommendation, wait on you before step 2:
+where the global collection lives (recommended: repo-template), pin or
+track `main` (pin), `POLICY.md` hand-edited until the generator exists
+(yes), and the order against the claims-to-code steps (their `ratified`
+step first). Then say go.
+
 ## Questions
 - **`PROCEDURE.md` stays in `pilot/` until adopted.** The governance README points at it and says it moves to `md/governance/` when a pilot adopts it. Say if it should move now instead.
 - **Where does a document claim's source sentence live?** As the body itself where one sentence is the claim (the skill now says so), and otherwise in a field the parser keeps (`quote:`) rather than in `sources`, so the `stale_claim` rule has one place to read. Say if you want it elsewhere.
