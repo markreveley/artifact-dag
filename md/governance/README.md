@@ -10,13 +10,13 @@ each present only when it has content.
 | `POLICY.md` | [POLICY.md](POLICY.md) | in force; the rules are numbered so other documents cite them |
 | `SCHEMA.md` | [SCHEMA.md](SCHEMA.md) | the node format, a contract: downstream repos and their CI read it (POLICY P8) |
 | `PROCEDURE.md` | [`pilot/PROCEDURE.md`](../../pilot/PROCEDURE.md) | under test in pilots, not adopted outside `pilot/`; moves here when adopted |
-| `ARCHITECTURE.md` | [ARCHITECTURE.md](ARCHITECTURE.md) | draft: the parts, the flow, the boundaries, and the decisions (D1, claim anchors on universal-ctags) |
+| `ARCHITECTURE.md` | [ARCHITECTURE.md](ARCHITECTURE.md) | draft: the parts, the flow, the boundaries, and the decisions (ARCHITECTURE D1, claim anchors on universal-ctags) |
 | `DOCTRINE.md` | none | |
 
 ---
 
-<!-- pinned from repo-template md/governance/README.md @ 120a4bd; refresh from the template, do not edit by hand -->
-## About this folder (repo-template `120a4bd`)
+<!-- pinned from repo-template md/governance/README.md @ efe325f; refresh from the template, do not edit by hand -->
+## About this folder (repo-template `efe325f`)
 
 The documents that govern the repo. Five fixed names, each present only when
 it has content; a repo deletes the stubs it has no use for and lists the
