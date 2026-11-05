@@ -1,7 +1,7 @@
 ---
 type: handoff
 audience: operator
-updated: 2026-11-04
+updated: 2026-11-05
 ---
 
 # Next steps for the operator
@@ -53,6 +53,16 @@ where the global collection lives (recommended: repo-template), pin or
 track `main` (pin), `POLICY.md` hand-edited until the generator exists
 (yes), and the order against the claims-to-code steps (their `ratified`
 step first). Then say go.
+
+## 5. (optional) Delete the old raw export
+
+`.local/2026-11-02-library-pilot-run.raw-export.md` (git-ignored) is the
+`/export` the first thread file was made from. thread-archive now holds that
+thread whole, so it is redundant. The agent leaves deletions to you:
+
+```sh
+rm ~/dev/repos/artifact-dag/.local/2026-11-02-library-pilot-run.raw-export.md
+```
 
 ## Questions
 - **`PROCEDURE.md` stays in `pilot/` until adopted.** The governance README points at it and says it moves to `md/governance/` when a pilot adopts it. Say if it should move now instead.

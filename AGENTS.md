@@ -62,6 +62,12 @@ and adds nothing. The layout follows
   merge. Right after a push, `gh pr merge` can report conflicts while
   `gh pr view <n> --json mergeable` still says `UNKNOWN`; wait for
   `MERGEABLE`.
+- The auto-mode classifier refuses to execute downloaded code (a tool
+  fetched with `uvx` or cloned): reading it is fine; running it is the
+  operator's.
+- `check-layout.sh` flags a Markdown-only folder even when it is
+  git-ignored; keep local Markdown in `.local/` as files beside a non-Markdown
+  file, not in a subfolder.
 - Headless Chrome (`--headless=new --dump-dom` or `--screenshot`) checks
   the viewer; its window is never narrower than 500px.
 - zsh expands a word starting with `=`, so `echo =====` aborts a command
